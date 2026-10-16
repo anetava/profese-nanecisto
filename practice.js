@@ -1,4 +1,4 @@
-import {renderJobSim,chooseJobSim,clearJobSim} from './job-sim.js?v=20261016-16';
+import {renderJobSim,chooseJobSim,clearJobSim} from './job-sim.js?v=20261016-17';
 import {sk,initLocale,translateVisible} from './site-locale.js?v=20261016-16';
 import {V4_PROJECT_ID,V4_PROTOCOL_VERSION,V4_RECORD_PURPOSE,V4_TRAINING_IDS,validV4Context,v4Meta,configureV4,activeV4,assessmentKey,previousProbeAnswers} from './v4-pilot-core.js?v=20261016-5';
 import {tracks,trainingCases,probeCases,allCases,sources,findCase,findStage,contentVersion,rubricVersion,locale} from './practice-data.js?v=20261016-12';
