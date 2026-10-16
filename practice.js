@@ -1,6 +1,6 @@
-import {sk,initLocale,translateVisible} from './site-locale.js?v=20261016-4';
-import {V4_PROJECT_ID,V4_PROTOCOL_VERSION,V4_RECORD_PURPOSE,V4_TRAINING_IDS,validV4Context,v4Meta,configureV4,activeV4,assessmentKey,previousProbeAnswers} from './v4-pilot-core.js?v=20261016-4';
-import {tracks,trainingCases,probeCases,allCases,sources,findCase,findStage,contentVersion,rubricVersion,locale} from './practice-data.js?v=20261016-4';
+import {sk,initLocale,translateVisible} from './site-locale.js?v=20261016-5';
+import {V4_PROJECT_ID,V4_PROTOCOL_VERSION,V4_RECORD_PURPOSE,V4_TRAINING_IDS,validV4Context,v4Meta,configureV4,activeV4,assessmentKey,previousProbeAnswers} from './v4-pilot-core.js?v=20261016-5';
+import {tracks,trainingCases,probeCases,allCases,sources,findCase,findStage,contentVersion,rubricVersion,locale} from './practice-data.js?v=20261016-5';
 import {STORAGE_KEY,MAX_RECORDS,freshState,uid,confidenceValue,responseFor,orderedOptions,appendEvent,switchRecording,probeForm,commitTraining,csv,exportColumns,makeExport,validEvent} from './practice-core.js';
 const photoFor=c=>c.track==='kpv'?(c.stage==='kpv-3'?'career-workshop-2026.webp':c.stage==='kpv-4'?'practice-research-2026.webp':'career-counseling-2026.webp'):(['upv-1','upv-2','upv-3'].includes(c.stage)?'classroom-observation-2026.webp':'vocational-teaching-2026.webp');
 const photoAlt=c=>c.track==='kpv'?(sk?'Ilustračná fotografia kariérového poradenstva a práce so skupinou':'Ilustrační fotografie kariérového poradenství a práce se skupinou'):(sk?'Ilustračná fotografia pedagogickej praxe na cvičnej škole':'Ilustrační fotografie pedagogické praxe ve cvičné škole');

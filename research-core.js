@@ -1,6 +1,6 @@
-import {allCases,contentVersion,rubricVersion} from './practice-data.js?v=20261016-4';
+import {allCases,contentVersion,rubricVersion} from './practice-data.js?v=20261016-5';
 import {SCHEMA,importExport,exportColumns} from './practice-core.js';
-import {V4_PROJECT_ID,V4_PROTOCOL_VERSION} from './v4-pilot-core.js?v=20261016-4';
+import {V4_PROJECT_ID,V4_PROTOCOL_VERSION} from './v4-pilot-core.js?v=20261016-5';
 export const BUNDLE_SCHEMA='nanecisto-research-bundle-1';
 export function importResearch(text){
  if(text.length>8_000_000)throw new Error('Limit jednoho souboru je 8 MB.');

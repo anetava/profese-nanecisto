@@ -2,9 +2,9 @@ import {kpvCases,kpvStages,kpvSources} from './kpv-cases.js?v=20261016-3';
 import {upvCases,upvStages,upvSources} from './upv-cases.js?v=20261016-3';
 import {probeCases,probeSources} from './probe-cases.js';
 import {kpvRevisions,upvRevisions} from './practice-revisions.js';
-import {localizeCase,skStages} from './sk-cases.js';
+import {localizeCase,skStages} from './sk-cases.js?v=20261016-5';
 export const locale=new URLSearchParams(location.search).get('lang')==='sk'?'sk':'cs';
-export const contentVersion='2026-10-16.4';
+export const contentVersion='2026-10-16.5';
 export const rubricVersion='author-draft-1';
 const stages=list=>locale==='sk'?list.map(s=>({...s,name:skStages[s.id][0],short:skStages[s.id][1],description:skStages[s.id][2]})):list;
 export const tracks={
