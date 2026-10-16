@@ -8,7 +8,7 @@ const main=document.querySelector('#scenario-main');
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const initial=new URLSearchParams(location.search);
 if(initial.get('lang')==='cs')location.replace('praxe.html#'+(['kpv','upv'].includes(initial.get('track'))?initial.get('track'):'kpv'));
-let lang='sk',track=['kpv','upv'].includes(initial.get('track'))?initial.get('track'):null,index=initial.has('case')&&Number.isInteger(Number(initial.get('case')))?Math.max(0,Math.min(5,Number(initial.get('case')))):null,chosen=null;
+let lang='sk',track=['kpv','upv'].includes(initial.get('track'))?initial.get('track'):null,index=Number.isInteger(Number(initial.get('case')))?Math.max(0,Math.min(5,Number(initial.get('case')))):null,chosen=null;
 let saved=[];try{saved=JSON.parse(localStorage.getItem('nanecisto-bilingual-done')||'[]');if(!Array.isArray(saved))saved=[];}catch{}const done=new Set(saved);
 function updateURL(){const p=new URLSearchParams({lang});if(track)p.set('track',track);if(index!==null)p.set('case',String(index));history.replaceState(null,'',`${location.pathname}?${p}`);}
 function render(){const t=ui[lang];document.documentElement.lang=lang;document.title=(lang==='sk'?'Situácie z praxe':'Situace z praxe')+' · Nanečisto';document.querySelectorAll('[data-lang]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lang===lang)));updateURL();
