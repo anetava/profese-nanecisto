@@ -1,5 +1,5 @@
-import {renderJobSim,submitJobSim} from './job-sim.js?v=20261016-11';
-import {sk,initLocale,translateVisible} from './site-locale.js?v=20261016-14';
+import {renderJobSim,chooseJobSim,clearJobSim} from './job-sim.js?v=20261016-16';
+import {sk,initLocale,translateVisible} from './site-locale.js?v=20261016-16';
 import {V4_PROJECT_ID,V4_PROTOCOL_VERSION,V4_RECORD_PURPOSE,V4_TRAINING_IDS,validV4Context,v4Meta,configureV4,activeV4,assessmentKey,previousProbeAnswers} from './v4-pilot-core.js?v=20261016-5';
 import {tracks,trainingCases,probeCases,allCases,sources,findCase,findStage,contentVersion,rubricVersion,locale} from './practice-data.js?v=20261016-12';
 import {STORAGE_KEY,MAX_RECORDS,freshState,uid,confidenceValue,responseFor,orderedOptions,appendEvent,switchRecording,probeForm,commitTraining,csv,exportColumns,makeExport,validEvent} from './practice-core.js';
@@ -104,6 +104,7 @@ function report(){const rows=trainingCases.filter(c=>state.progress[c.id]);downl
 document.addEventListener('click',e=>{
  const source=e.target.closest('[data-source]');if(source&&current&&(!state.progress[current.id]||draft===current.id))sourceSeen=true;
  const b=e.target.closest('[data-do]');if(!b||b.disabled)return;const action=b.dataset.do;
+ if(action==='sim-choice'){const result=chooseJobSim(b.dataset.id,b.dataset.choice,locale);if(result){appendEvent(state,{...meta(),event_type:'sim_choice',mode:'job_simulation',track:result.track,practice_stage:'preparation',scenario_id:result.id,choice_id:result.choiceId,score:result.score,attempt_index:result.attemptIndex,first_choice_id:result.firstChoiceId,first_exposure_to_scenario:result.firstExposure,display_option_order:'a,b,c,d,e',completion_status:'answered'});save();render();document.querySelector('#sim-feedback')?.scrollIntoView({block:'nearest',behavior:'smooth'});}return;}
  if(action==='track'){track=b.dataset.track;stage=tracks[track].stages[0].id;go('#'+track+'/'+stage);}
  if(action==='stage'){stage=b.dataset.stage;go('#'+track+'/'+stage);}
  if(action==='quick'){const list=trainingCases.filter(c=>c.track===track&&(stage==='all'||c.stage===stage));const c=list.find(c=>!state.progress[c.id])||list[0];if(c)go('#situace/'+c.id);}
@@ -118,7 +119,7 @@ document.addEventListener('click',e=>{
  if(action==='export-json')download(JSON.stringify(makeExport(state,contentVersion),null,2),'nanecisto-vyzkumny-export.json','application/json');
  if(action==='export-csv')download(csv(state.recording.events,exportColumns),'nanecisto-vyzkumny-export.csv','text/csv');
  if(action==='erase-records'||action==='erase-all'){$('#practice-dialog-content').innerHTML=`<h2 id="practice-dialog-title">${action==='erase-all'?'Smazat celý místní postup?':'Smazat podrobný záznam?'}</h2><p>${action==='erase-all'?'Odstraní se trénink, sondy, reflexe i podrobný záznam.':'Trénink a výsledky sond zůstanou. Odstraní se podrobný záznam a jeho kód a záznam se vypne.'} Stažené soubory se tím nesmažou.</p><div class="dialog-actions"><button class="button primary" data-do="confirm-erase" data-all="${action==='erase-all'}">Ano, smazat místní data</button><button class="button secondary" data-do="privacy">Ponechat</button></div>`;}
- if(action==='confirm-erase'){if(b.dataset.all==='true'){state=freshState();seed=uid();draft=null;probeDraft=null;caseEntry='';}else{state.recording=freshState().recording;state.v4=null;}save();$('#practice-dialog').close();render();toast('Místní data byla smazána.');}
+ if(action==='confirm-erase'){if(b.dataset.all==='true'){state=freshState();seed=uid();draft=null;probeDraft=null;caseEntry='';clearJobSim();}else{state.recording=freshState().recording;state.v4=null;}save();$('#practice-dialog').close();render();toast('Místní data byla smazána.');}
  if(action==='v4-pause'&&state.v4){state.v4.active=!state.v4.active;save();go('#v4');}
  if(action==='v4-feedback')v4Feedback();
  if(action==='report')report();
@@ -130,7 +131,6 @@ function privacyRefresh(){// Refresh contents without opening an already open mo
  $('#practice-dialog').close();privacy();
 }
 document.addEventListener('submit',e=>{
- if(e.target.id==='job-sim-form'){e.preventDefault();const result=submitJobSim(e.target,locale);if(result){appendEvent(state,{...meta(),event_type:'work_submission',mode:'job_simulation',track:result.track,practice_stage:'preparation',scenario_id:result.id,answer_length:result.answerLength,completion_status:'self_report'});save();render();document.querySelector('#sim-model')?.scrollIntoView({block:'start',behavior:'smooth'});}return;}
  if(e.target.id==='v4-setup'){e.preventDefault();const f=new FormData(e.target);try{const c=configureV4(state,{track:f.get('track'),country:f.get('country'),priorPractice:f.get('prior-practice'),ageConfirmed:f.get('age')==='yes',localConfirmed:f.get('local')==='yes'});track=c.track;save();go('#v4');}catch(err){$('#v4-setup-error').textContent=err.message;}return;}
  if(e.target.id==='v4-feedback-form'){e.preventDefault();if(!activeV4(state))return;const f=new FormData(e.target),clarity=Number(f.get('clarity')),relevance=Number(f.get('relevance'));if(![1,2,3,4,5].includes(clarity)||![1,2,3,4,5].includes(relevance))return;appendEvent(state,{...meta(),...v4Meta(state,state.v4.track),event_type:'pilot_feedback',mode:'project_context',track:state.v4.track,practice_stage:'feedback',scenario_id:'v4-feedback',clarity,relevance,technical_issue:f.get('issue')||'unknown',completion_status:'self_report'});save();$('#practice-dialog').close();toast('Reflexe uložena pouze do místního záznamu.');return;}
  if(e.target.id==='effort-form'){e.preventDefault();if(!current)return;const f=new FormData(e.target);appendEvent(state,{...meta(),event_type:'reflection',mode:'training',track:current.track,practice_stage:current.stage,scenario_id:current.id,attempt_index:state.progress[current.id]?.attempts,effort:f.get('effort')?Number(f.get('effort')):null,self_reported_ai_use:f.get('ai'),completion_status:'self_report'});save();toast('Reflexe uložena do místního záznamu.');}

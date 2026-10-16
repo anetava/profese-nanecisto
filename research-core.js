@@ -1,4 +1,5 @@
 import {simulations} from './job-sim-data.js?v=20261016-7';
+import {simChoices} from './job-sim-choices.js?v=20261016-16';
 import {allCases,contentVersion,rubricVersion} from './practice-data.js?v=20261016-5';
 import {SCHEMA,importExport,exportColumns} from './practice-core.js';
 import {V4_PROJECT_ID,V4_PROTOCOL_VERSION} from './v4-pilot-core.js?v=20261016-5';
@@ -14,6 +15,7 @@ export function auditEvents(events){
  const accepted=[],flagged=[];
  for(const e of events){const c=allCases.find(c=>c.id===e.scenario_id);let problem='';
   if(e.mode==='job_simulation'&&e.event_type==='work_submission'){const item=simulations[e.track]?.cs.tasks.find(x=>x.id===e.scenario_id);if(!item||e.scenario_version!==contentVersion||e.rubric_version!==rubricVersion)flagged.push({event:e,problem:'Neznáma úloha alebo verzia'});else accepted.push(e);continue;}
+  if(e.mode==='job_simulation'&&e.event_type==='sim_choice'){const option=simChoices[e.scenario_id]?.cs.options.find(x=>x.id===e.choice_id);if(!option||!e.scenario_id.startsWith(e.track+'-')||option.score!==e.score||e.attempt_index===1&&e.first_choice_id!==e.choice_id||e.scenario_version!==contentVersion||e.rubric_version!==rubricVersion)flagged.push({event:e,problem:'Neznáma voľba, skóre alebo verzia'});else accepted.push(e);continue;}
   if(e.mode==='project_context'&&['v4-context','v4-feedback'].includes(e.scenario_id)){if(e.study_project_id!==V4_PROJECT_ID||e.project_protocol_version!==V4_PROTOCOL_VERSION)problem='Neplatný projektový kontext';else if(e.scenario_version!==contentVersion||e.rubric_version!==rubricVersion)problem='Jiná či chybějící verze obsahu/klíče';if(problem)flagged.push({event:e,problem});else accepted.push(e);continue;}
   if(!c||c.track!==e.track)problem='Neznámá situace nebo nesoulad programu';
   else if(e.scenario_version!==contentVersion||e.rubric_version!==rubricVersion)problem='Jiná či chybějící verze obsahu/klíče';
@@ -24,7 +26,7 @@ export function auditEvents(events){
  }
  // Duplicate "first attempts" cannot silently inflate the summary.
  const firstKeys=new Set(),clean=[];
- for(const e of accepted){if(e.event_type==='decision'&&e.mode==='training'&&e.attempt_index===1){const key=[e.participant_code,e.scenario_id].join('|');if(firstKeys.has(key)){flagged.push({event:e,problem:'Více prvních pokusů stejného kódu a situace'});continue;}firstKeys.add(key);}clean.push(e);}
+ for(const e of accepted){if((e.event_type==='decision'&&e.mode==='training'||e.event_type==='sim_choice'&&e.mode==='job_simulation')&&e.attempt_index===1){const key=[e.participant_code,e.scenario_id].join('|');if(firstKeys.has(key)){flagged.push({event:e,problem:'Více prvních pokusů stejného kódu a situace'});continue;}firstKeys.add(key);}clean.push(e);}
  return {accepted:clean,flagged};
 }
 export function assessmentSummary(events){

@@ -1,6 +1,6 @@
 import {sources,contentVersion} from './practice-data.js?v=20261016-5';
 import {csv,exportColumns,mergeEvents,summarizeEvents} from './practice-core.js';
-import {importResearch,researchBundle,auditEvents,assessmentSummary} from './research-core.js?v=20261016-5';
+import {importResearch,researchBundle,auditEvents,assessmentSummary} from './research-core.js?v=20261016-16';
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let events=[];
 const number=n=>n===null?'—':n.toLocaleString('cs-CZ',{maximumFractionDigits:2});
