@@ -12,7 +12,7 @@ service cloud.firestore {
   match /profiles/{uid} {
    allow create: if owner(uid) && request.resource.data.keys().hasOnly(['id','role','track','country','label','createdAt','updatedAt']) && request.resource.data.id == uid && request.resource.data.role == 'student' && request.resource.data.track in ['kpv','upv'] && request.resource.data.country in ['CZ','SR'] && request.resource.data.label is string && request.resource.data.label.size() <= 80;
    allow get, list: if owner(uid) || admin();
-   allow update: if owner(uid) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['track','country','label','updatedAt']) && request.resource.data.track in ['kpv','upv'] && request.resource.data.country in ['CZ','SR'] && request.resource.data.label is string && request.resource.data.label.size() <= 80;
+   allow update: if false; // The cohort assignment is fixed after enrollment in this pilot.
    allow delete: if admin();
    match /choices/{caseId} {
     allow read: if owner(uid) || admin();
