@@ -1,4 +1,4 @@
-import {trainingCases,probeCases,contentVersion,rubricVersion} from './practice-data.js?v=20261016-2';
+import {trainingCases,probeCases,contentVersion,rubricVersion} from './practice-data.js?v=20261016-3';
 import {appendEvent,switchRecording} from './practice-core.js';
 export const V4_PROJECT_ID='v4-gen-nanecisto-2027';
 export const V4_PROTOCOL_VERSION='v4-pilot-draft-4';

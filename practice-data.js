@@ -1,8 +1,8 @@
-import {kpvCases,kpvStages,kpvSources} from './kpv-cases.js?v=20261016-2';
-import {upvCases,upvStages,upvSources} from './upv-cases.js?v=20261016-2';
+import {kpvCases,kpvStages,kpvSources} from './kpv-cases.js?v=20261016-3';
+import {upvCases,upvStages,upvSources} from './upv-cases.js?v=20261016-3';
 import {probeCases,probeSources} from './probe-cases.js';
 import {kpvRevisions,upvRevisions} from './practice-revisions.js';
-export const contentVersion='2026-10-16.2';
+export const contentVersion='2026-10-16.3';
 export const rubricVersion='author-draft-1';
 export const tracks={
  kpv:{id:'kpv',title:'Kariérové poradenství a vzdělávání',short:'Kariérové poradenství',tag:'KPV · ČLOVĚK A JEHO DALŠÍ KROK',lead:'Naslouchat. Ověřit. Pomoci rozhodnout.',description:'Příprava na Odbornou praxi I–IV: od orientace v pracovišti přes rozhovor a práci se skupinou po samostatný projekt pod odborným vedením.',stages:kpvStages},
