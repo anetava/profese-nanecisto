@@ -1,5 +1,5 @@
-import {V4_PROJECT_ID,V4_PROTOCOL_VERSION,V4_RECORD_PURPOSE,V4_TRAINING_IDS,validV4Context,v4Meta,configureV4,activeV4,assessmentKey,previousProbeAnswers} from './v4-pilot-core.js';
-import {tracks,trainingCases,probeCases,allCases,sources,findCase,findStage,contentVersion,rubricVersion} from './practice-data.js';
+import {V4_PROJECT_ID,V4_PROTOCOL_VERSION,V4_RECORD_PURPOSE,V4_TRAINING_IDS,validV4Context,v4Meta,configureV4,activeV4,assessmentKey,previousProbeAnswers} from './v4-pilot-core.js?v=20261016-2';
+import {tracks,trainingCases,probeCases,allCases,sources,findCase,findStage,contentVersion,rubricVersion} from './practice-data.js?v=20261016-2';
 import {STORAGE_KEY,MAX_RECORDS,freshState,uid,confidenceValue,responseFor,orderedOptions,appendEvent,switchRecording,probeForm,commitTraining,csv,exportColumns,makeExport,validEvent} from './practice-core.js';
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

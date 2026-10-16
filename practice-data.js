@@ -1,5 +1,5 @@
-import {kpvCases,kpvStages,kpvSources} from './kpv-cases.js';
-import {upvCases,upvStages,upvSources} from './upv-cases.js';
+import {kpvCases,kpvStages,kpvSources} from './kpv-cases.js?v=20261016-2';
+import {upvCases,upvStages,upvSources} from './upv-cases.js?v=20261016-2';
 import {probeCases,probeSources} from './probe-cases.js';
 import {kpvRevisions,upvRevisions} from './practice-revisions.js';
 export const contentVersion='2026-10-16.2';
