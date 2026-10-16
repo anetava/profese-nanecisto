@@ -15,7 +15,8 @@ export const kpvSources = {
   'kpv-cakp': { title: 'ČAKP: Etický kodex', url: 'https://www.cakp.cz/dokumenty-cakp/', note: 'Kodex asociace slouží jako profesní inspirace; nezaměňovat s obecně závazným právem.' },
   'kpv-quality': { title: 'Euroguidance: Podpora kvality kariérového poradenství', url: 'https://www.euroguidance.cz/publikace/sultana.pdf', note: 'Metodické východisko pro cíle, portfolio a vyhodnocování vzdělávání.' },
   'kpv-competencies': { title: 'IAEVG: International Competencies', url: 'https://iaevg.com/competencies', note: 'Profesní rámec zahrnuje výzkum, hodnocení služeb, spolupráci a práci s informacemi.' },
-  'kpv-europass': { title: 'Evropská komise: Create your Europass CV', url: 'https://europass.europa.eu/en/create-europass-cv', note: 'Doporučení pro srozumitelný životopis odpovídající konkrétní nabídce.' }
+  'kpv-europass': { title: 'Evropská komise: Create your Europass CV', url: 'https://europass.europa.eu/en/create-europass-cv', note: 'Doporučení pro srozumitelný životopis odpovídající konkrétní nabídce.' },
+  'kpv-school': { title: 'NPI ČR · Školní poradenská pracoviště', url: 'https://poradenstvi.npi.cz/skolni-poradenska-pracoviste', note: 'Kariérové poradenství ve škole a návaznost na další pracovníky poradenského pracoviště.' }
 };
 
 export const kpvStages = [

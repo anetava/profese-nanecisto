@@ -11,7 +11,8 @@ export const upvSources = {
   'upv-calendar': { title: 'IVP · Harmonogram 2026/2027', url: 'https://www.ivp.czu.cz/dl/156253?lang=cs', note: 'Pro konkrétní termíny praxe platí harmonogram a pokyny garanta, nikoli pořadí tréninkových karet.' },
   'upv-method': { title: 'IVP · Metodika souvislé řízené praxe UPV', url: 'https://www.ivp.czu.cz/dl/135149?lang=cs', note: 'Veřejný metodický materiál, aktualizace 7. 10. 2024. Organizační detaily je nutné porovnat s aktuálními pokyny předmětu.' },
   'upv-kraau': { title: 'MŠMT · Kompetenční rámec absolventa a absolventky učitelství', url: 'https://msmt.gov.cz/vzdelavani/pedagogicti-pracovnici/priprava-pedagogickych-pracovniku/kompetencni-ramec-absolventa-a-absolventky-ucitelstvi', note: 'Formativní profesní rámec; skóre simulace není jeho certifikovaným měřením.' },
-  'upv-oskr': { title: 'MŠMT · Oborový rámec pro odborné předměty, praktické vyučování a odborný výcvik', url: 'https://edu.gov.cz/wp-content/uploads/2026/07/OSKR_Ucitelstvi-odbornych-predmetu-praktickeho-vyucovani-a-odborneho-vycviku_final_prosinec-2025.pdf', note: 'Oborová příloha KRAAU, finální verze od prosince 2025. Slouží pro tematické mapování, nikoli jako oficiální klíč odpovědí.' }
+  'upv-oskr': { title: 'MŠMT · Oborový rámec pro odborné předměty, praktické vyučování a odborný výcvik', url: 'https://edu.gov.cz/wp-content/uploads/2026/07/OSKR_Ucitelstvi-odbornych-predmetu-praktickeho-vyucovani-a-odborneho-vycviku_final_prosinec-2025.pdf', note: 'Oborová příloha KRAAU, finální verze od prosince 2025. Slouží pro tematické mapování, nikoli jako oficiální klíč odpovědí.' },
+  'upv-prevention': { title: 'MŠMT · Prevence rizikového chování a metodické postupy škol', url: 'https://msmt.gov.cz/vzdelavani/specialni-vzdelavani-prevence-institucionalni-vychova/prevence', note: 'Pro situace ponižování a podezření na šikanu. Student praxe předává věcný popis, vlastní šetření nepřebírá.' }
 };
 
 export const upvStages = [
