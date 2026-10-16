@@ -1,3 +1,4 @@
+import {simulations} from './job-sim-data.js?v=20261016-7';
 import {allCases,contentVersion,rubricVersion} from './practice-data.js?v=20261016-5';
 import {SCHEMA,importExport,exportColumns} from './practice-core.js';
 import {V4_PROJECT_ID,V4_PROTOCOL_VERSION} from './v4-pilot-core.js?v=20261016-5';
@@ -12,6 +13,7 @@ export function researchBundle(events){const groups=new Map();for(const e of eve
 export function auditEvents(events){
  const accepted=[],flagged=[];
  for(const e of events){const c=allCases.find(c=>c.id===e.scenario_id);let problem='';
+  if(e.mode==='job_simulation'&&e.event_type==='work_submission'){const item=simulations[e.track]?.cs.tasks.find(x=>x.id===e.scenario_id);if(!item||e.scenario_version!==contentVersion||e.rubric_version!==rubricVersion)flagged.push({event:e,problem:'Neznáma úloha alebo verzia'});else accepted.push(e);continue;}
   if(e.mode==='project_context'&&['v4-context','v4-feedback'].includes(e.scenario_id)){if(e.study_project_id!==V4_PROJECT_ID||e.project_protocol_version!==V4_PROTOCOL_VERSION)problem='Neplatný projektový kontext';else if(e.scenario_version!==contentVersion||e.rubric_version!==rubricVersion)problem='Jiná či chybějící verze obsahu/klíče';if(problem)flagged.push({event:e,problem});else accepted.push(e);continue;}
   if(!c||c.track!==e.track)problem='Neznámá situace nebo nesoulad programu';
   else if(e.scenario_version!==contentVersion||e.rubric_version!==rubricVersion)problem='Jiná či chybějící verze obsahu/klíče';

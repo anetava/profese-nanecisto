@@ -1,9 +1,10 @@
+import {renderJobSim,submitJobSim} from './job-sim.js?v=20261016-7';
 import {sk,initLocale,translateVisible} from './site-locale.js?v=20261016-6';
 import {V4_PROJECT_ID,V4_PROTOCOL_VERSION,V4_RECORD_PURPOSE,V4_TRAINING_IDS,validV4Context,v4Meta,configureV4,activeV4,assessmentKey,previousProbeAnswers} from './v4-pilot-core.js?v=20261016-5';
 import {tracks,trainingCases,probeCases,allCases,sources,findCase,findStage,contentVersion,rubricVersion,locale} from './practice-data.js?v=20261016-5';
 import {STORAGE_KEY,MAX_RECORDS,freshState,uid,confidenceValue,responseFor,orderedOptions,appendEvent,switchRecording,probeForm,commitTraining,csv,exportColumns,makeExport,validEvent} from './practice-core.js';
-const photoFor=c=>c.track==='kpv'?(c.stage==='kpv-3'?'career-workshop-2026.webp':c.stage==='kpv-4'?'practice-research-2026.webp':'career-counseling-2026.webp'):(['upv-1','upv-2','upv-3'].includes(c.stage)?'classroom-observation-2026.webp':'vocational-teaching-2026.webp');
-const photoAlt=c=>c.track==='kpv'?(sk?'Ilustračná fotografia kariérového poradenstva a práce so skupinou':'Ilustrační fotografie kariérového poradenství a práce se skupinou'):(sk?'Ilustračná fotografia pedagogickej praxe na cvičnej škole':'Ilustrační fotografie pedagogické praxe ve cvičné škole');
+const photoFor=c=>c.track==='kpv'?(c.stage==='kpv-3'?'career-illustration.svg':c.stage==='kpv-4'?'research-illustration.svg':'career-illustration.svg'):(['upv-1','upv-2','upv-3'].includes(c.stage)?'observation-illustration.svg':'teaching-illustration.svg');
+const photoAlt=c=>c.track==='kpv'?(sk?'Ilustrácia kariérového poradenstva a práce so skupinou':'Ilustrace kariérového poradenství a práce se skupinou'):(sk?'Ilustrácia pedagogickej praxe na cvičnej škole':'Ilustrace pedagogické praxe ve cvičné škole');
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let state=freshState(),storageOK=true,seed=uid(),sessionId=uid(),track='kpv',stage='all',current=null,draft=null,probeDraft=null;
@@ -88,11 +89,12 @@ function privacy(){dialog(`<p class="eyebrow">VAŠE ROZHODNUTÍ · VAŠE DATA</p
 function render(){
  timingStop();let parts;try{parts=decodeURIComponent(location.hash.slice(1)).split('/');}catch{parts=[];}
  const [route,id,wave]=parts;let html;
- if(route==='situace'&&trainingCases.some(c=>c.id===id))html=caseScreen(findCase(id));
+ if(route==='prace'){current=null;html=renderJobSim(id,wave,locale,sources);}
+ else if(route==='situace'&&trainingCases.some(c=>c.id===id))html=caseScreen(findCase(id));
  else if(route==='v4'||route==='v4-trenink'){current=null;html=v4Screen();}
  else if(route==='prehled'){current=null;html=summaryScreen();}
  else if(route==='sonda'&&tracks[id]){current=null;html=wave&&['T0','T1','T2'].includes(wave)?probeScreen(id,wave):probeHome(id);}
- else{current=null;if(tracks[route]){track=route;stage=id==='all'||tracks[route].stages.some(s=>s.id===id)?id:tracks[route].stages[0].id;}else{stage=tracks[track].stages[0].id;}html=home();}
+ else{current=null;if(tracks[route]){track=route;stage=id==='all'||tracks[route].stages.some(s=>s.id===id)?id:tracks[route].stages[0].id;}else{stage=tracks[track].stages[0].id;}html=route?home():renderJobSim(null,null,locale,sources);}
  main().innerHTML=html;translateVisible(main());window.scrollTo({top:0,behavior:'instant'});main().focus({preventScroll:true});
  $('#case-help')?.addEventListener('toggle',e=>{if(e.target.open)hint=true;});
  if(current&&(!state.progress[current.id]||draft===current.id||current.stage==='probe'))timingStart();
@@ -128,6 +130,7 @@ function privacyRefresh(){// Refresh contents without opening an already open mo
  $('#practice-dialog').close();privacy();
 }
 document.addEventListener('submit',e=>{
+ if(e.target.id==='job-sim-form'){e.preventDefault();const result=submitJobSim(e.target,locale);if(result){appendEvent(state,{...meta(),event_type:'work_submission',mode:'job_simulation',track:result.track,practice_stage:'preparation',scenario_id:result.id,answer_length:result.answerLength,completion_status:'self_report'});save();render();document.querySelector('#sim-model')?.scrollIntoView({block:'start',behavior:'smooth'});}return;}
  if(e.target.id==='v4-setup'){e.preventDefault();const f=new FormData(e.target);try{const c=configureV4(state,{track:f.get('track'),country:f.get('country'),priorPractice:f.get('prior-practice'),ageConfirmed:f.get('age')==='yes',localConfirmed:f.get('local')==='yes'});track=c.track;save();go('#v4');}catch(err){$('#v4-setup-error').textContent=err.message;}return;}
  if(e.target.id==='v4-feedback-form'){e.preventDefault();if(!activeV4(state))return;const f=new FormData(e.target),clarity=Number(f.get('clarity')),relevance=Number(f.get('relevance'));if(![1,2,3,4,5].includes(clarity)||![1,2,3,4,5].includes(relevance))return;appendEvent(state,{...meta(),...v4Meta(state,state.v4.track),event_type:'pilot_feedback',mode:'project_context',track:state.v4.track,practice_stage:'feedback',scenario_id:'v4-feedback',clarity,relevance,technical_issue:f.get('issue')||'unknown',completion_status:'self_report'});save();$('#practice-dialog').close();toast('Reflexe uložena pouze do místního záznamu.');return;}
  if(e.target.id==='effort-form'){e.preventDefault();if(!current)return;const f=new FormData(e.target);appendEvent(state,{...meta(),event_type:'reflection',mode:'training',track:current.track,practice_stage:current.stage,scenario_id:current.id,attempt_index:state.progress[current.id]?.attempts,effort:f.get('effort')?Number(f.get('effort')):null,self_reported_ai_use:f.get('ai'),completion_status:'self_report'});save();toast('Reflexe uložena do místního záznamu.');}
