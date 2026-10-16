@@ -1,0 +1,25 @@
+rules_version = '2';
+service cloud.firestore {
+ match /databases/{database}/documents {
+  function signed() { return request.auth != null; }
+  function admin() { return signed() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)); }
+  function owner(uid) { return signed() && request.auth.uid == uid; }
+  match /admins/{uid} {
+   allow get: if owner(uid) || admin();
+   allow list: if admin();
+   allow write: if false; // Bootstrap through Firebase Console / privileged admin only.
+  }
+  match /profiles/{uid} {
+   allow create: if owner(uid) && request.resource.data.keys().hasOnly(['id','role','track','country','label','createdAt','updatedAt']) && request.resource.data.id == uid && request.resource.data.role == 'student' && request.resource.data.track in ['kpv','upv'] && request.resource.data.country in ['CZ','SR'] && request.resource.data.label is string && request.resource.data.label.size() <= 80;
+   allow get, list: if owner(uid) || admin();
+   allow update: if owner(uid) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['track','country','label','updatedAt']) && request.resource.data.track in ['kpv','upv'] && request.resource.data.country in ['CZ','SR'] && request.resource.data.label is string && request.resource.data.label.size() <= 80;
+   allow delete: if admin();
+   match /choices/{caseId} {
+    allow read: if owner(uid) || admin();
+    allow create: if owner(uid) && caseId.matches('^(kpv|upv)-[a-d]$') && caseId.matches('^' + get(/databases/$(database)/documents/profiles/$(uid)).data.track + '-[a-d]$') && request.resource.data.keys().hasOnly(['caseId','firstChoice','latestChoice','attempts','updatedAt']) && request.resource.data.caseId == caseId && request.resource.data.firstChoice in ['a','b','c','d','e'] && request.resource.data.latestChoice == request.resource.data.firstChoice && request.resource.data.attempts == 1;
+    allow update: if owner(uid) && caseId.matches('^(kpv|upv)-[a-d]$') && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['latestChoice','attempts','updatedAt']) && request.resource.data.firstChoice == resource.data.firstChoice && request.resource.data.caseId == resource.data.caseId && request.resource.data.latestChoice in ['a','b','c','d','e'] && request.resource.data.attempts == resource.data.attempts + 1 && request.resource.data.attempts <= 100;
+    allow delete: if admin();
+   }
+  }
+ }
+}
