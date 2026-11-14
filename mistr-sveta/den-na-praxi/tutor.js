@@ -44,6 +44,9 @@ function shiftRibbon(phase) {
 function todayBrief(p,s) {
   const info=heroText(p,s);
   const exercise=serviceExercise(p,s);
+  if(s.phase===5||s.phase===6){
+    return {head:s.phase===6?t('Další dovednost v portfoliu.','Ďalšia zručnosť v portfóliu.'):t('Směna za vámi. Co už umíte?','Zmena je za vami. Čo už viete?'),text:s.phase===6?t('Pedagog potvrdil vaši práci. Podívejte se, podle čeho ji hodnotil a co už můžete ukázat zaměstnavateli.','Pedagóg potvrdil vašu prácu. Pozrite sa, podľa čoho ju hodnotil a čo už môžete ukázať zamestnávateľovi.'):t('Ranní cíl i vlastní postřeh už máte u dnešní dovednosti. Cestou domů si otevřete svou směnu.','Ranný cieľ aj vlastný postreh už máte pri dnešnej zručnosti. Cestou domov si otvorte svoju zmenu.'),cta:t('Moje shrnutí směny','Moje zhrnutie zmeny'),act:'go',val:'summary',duration:''};
+  }
   const cook=p.track==='cook';
   if(s.phase===0 && exercise && s.warmupDone) {
     return {head:t('Dolaďte přípravu na směnu.','Dolaďte prípravu na zmenu.'),text:hasNote(s.notes.before)?t('Váš cíl je v deníku. Zbývá krátká situace k bezpečnosti na pracovišti.','Váš cieľ je v denníku. Zostáva krátka situácia k bezpečnosti na pracovisku.'):t('Nácvik máte za sebou. Vyberte si jeden vlastní cíl a vyřešte krátkou situaci k bezpečnosti.','Nácvik máte za sebou. Vyberte si jeden vlastný cieľ a vyriešte krátku situáciu k bezpečnosti.'),cta:t('Dokončit ranní přípravu','Dokončiť rannú prípravu'),act:'step',val:'prepare',duration:''};
@@ -72,7 +75,7 @@ function todayTutor(){
   const currentName=stageLabels()[n];
   const img=picture(p,n);
   const support=n===3?goBtn('during',t('Potřebuji radu / přidat postřeh','Potrebujem radu / pridať postreh'),'side-action'):n<=2?action('tip',t('Ukázat pracovní vzor','Ukázať pracovný vzor'),'result','side-action'):'';
-  const skill=competency(s.code);
+
   const inset=n===0&&serviceExercise(p,s)?'<div class="preview-photo">'+photo(p.track==='cook'?'photos/plate.webp':'photos/table.webp',p.track==='cook'?t('Vzor porce pečené mrkve','Vzor porcie pečenej mrkvy'):t('Vzor stolu pro dva hosty','Vzor stola pre dvoch hostí'))+'<small>'+t('Dnešní zadání','Dnešné zadanie')+'</small></div>':'';
   return '<div class="shift-meta"><strong>'+html(p.name)+' <span>/</span> '+html(profession(p))+'</strong><span>'+html(relativeDate(s.day))+' · '+html(station(p))+' · 08:00</span></div>'+
     '<section class="shift-hero"><div class="shift-story"><div class="shift-kicker"><i></i>'+html(currentName)+'</div>'+
@@ -80,10 +83,9 @@ function todayTutor(){
     (studentStyle?'<small class="peer-line">'+(p.track==='cook'?t('Výdej máte v rukou.','Výdaj máte v rukách.'):t('Dobrý servis začíná u vás.','Dobrý servis sa začína pri vás.'))+'</small>':'')+
     '<div class="shift-action">'+primary(brief.cta,brief.act,brief.val)+(brief.duration?'<small>'+html(brief.duration)+'</small>':'')+'</div></div>'+
     '<figure class="shift-visual">'+photo(img,p.name+' · '+photoCaption(p,n))+'<figcaption>'+html(photoCaption(p,n))+'</figcaption>'+inset+'</figure></section>'+
-    shiftRibbon(n)+
+    progressPanel(s)+shiftRibbon(n)+
     '<div class="shift-tools"><div>'+sectionHead(t('Po ruce na směně','Poruke na zmene'))+'</div>'+support+'</div>'+
     trail(p,s)+
-    '<section class="journey"><div><span class="ey">'+t('Moje cesta k profesi','Moja cesta k profesii')+'</span><strong>'+html(skill.name)+'</strong><span>'+t('Dnešní cíl','Dnešný cieľ')+' · '+t('úroveň ')+s.level+'</span></div>'+goBtn('path',earned(model)+' / '+skillSet(p).length+' '+t('dovedností','zručností')+' →','progress-link')+'</section>'+
     photoWay(p,s);
 }
 
