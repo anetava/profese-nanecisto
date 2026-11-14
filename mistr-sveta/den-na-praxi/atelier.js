@@ -45,7 +45,7 @@ function mutate(fn,p=person()){
 }
 function setPref(k,value){try{localStorage.setItem(scopedKey(k),value)}catch{}}
 function tell(message){outlet.textContent=message;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>outlet.textContent='',5500)}
-function go(page){if(busy||audioSession){tell(t('Nejdřív dokončete záznam.','Najskôr dokončite záznam.'));return}window.speechSynthesis?.cancel();view=page;quizError=false;render(true)}
+function go(page){if(busy||audioSession){tell(t('Nejdřív dokončete záznam.','Najskôr dokončite záznam.'));return}window.speechSynthesis?.cancel();if(page!=='exercise'&&['#vydej','#obsluha'].includes(window.location?.hash))window.history.replaceState(null,'',window.location.pathname+window.location.search);view=page;quizError=false;render(true)}
 function scenes(p){const folder=p.full&&p.id!=='ema'?'assets/':'photos/';const n=p.full?6:3;return Array.from({length:n},(_,i)=>folder+p.photo+'-'+i+'.webp')}
 function picture(p,phase){const images=scenes(p);const idx=p.full?[0,1,2,3,4,5,3,5][phase]:[0,0,1,1,2,2,1,2][phase];return images[idx]}
 function face(p){return scenes(p)[0]}
@@ -74,8 +74,8 @@ function heroText(p,s){
 function sectionHead(h,sub=''){return '<div class="section-head"><h2>'+html(h)+'</h2>'+(sub?'<small>'+html(sub)+'</small>':'')+'</div>'}
 function nav(){
  const items=role==='student'?['day','path','journal','portfolio']:role==='teacher'?['group']:role==='leader'?['overview']:['admin'];
- const active=['prepare','reflect','tip','during','inspire'].includes(view)?'day':view==='skill'?'path':view==='inspect'?'group':view;
- return '<header class="bar"><div class="shell bar-inner">'+action('home','MISTR SVĚTA','','brand')+'<nav aria-label="'+t('Hlavní navigace','Hlavná navigácia')+'">'+items.map(k=>action('go',labelsNav()[k],k,'nav-link',active===k?'aria-current="page"':'')).join('')+'</nav><div class="bar-tools">'+action('lang',language==='cs'?'SK':'CZ','','language','aria-label="'+t('Přepnout do slovenštiny','Prepnúť do češtiny')+'"')+'<button class="profile-btn" data-do="accounts" aria-haspopup="dialog">'+(role==='student'?photo(face(person()),'','avatar'):'')+'<span>'+html(role==='student'?person().name:roleLabel(role))+'</span><b aria-hidden="true">⌄</b></button></div></div></header>';
+ const active=['prepare','reflect','tip','during','exercise'].includes(view)?'day':view==='skill'?'path':view==='inspect'?'group':view;
+ return '<header class="bar"><div class="shell bar-inner">'+'<button type="button" class="wordmark" data-do="home"><span>MISTR SVĚTA<span aria-hidden="true">.</span></span><small>'+t('Průvodce odborným výcvikem','Sprievodca odborným výcvikom')+'</small></button>'+'<nav aria-label="'+t('Hlavní navigace','Hlavná navigácia')+'">'+items.map(k=>action('go',labelsNav()[k],k,'nav-link',active===k?'aria-current="page"':'')).join('')+'</nav><div class="bar-tools">'+action('lang',language==='cs'?'SK':'CZ','','language','aria-label="'+t('Přepnout do slovenštiny','Prepnúť do češtiny')+'"')+'<button class="profile-btn" data-do="accounts" aria-haspopup="dialog">'+(role==='student'?photo(face(person()),'','avatar'):'')+'<span>'+html(role==='student'?person().name:roleLabel(role))+'</span><b aria-hidden="true">⌄</b></button></div></div></header>';
 }
 function footer(){return '<footer class="shell footer"><span>'+t('Fiktivní skupina · údaje v tomto prohlížeči','Fiktívna skupina · údaje v tomto prehliadači')+'</span><div>'+action('accounts',t('Přepnout roli','Prepnúť rolu'),'','text-link')+' · '+action('about',t('O aplikaci a zdrojích','O aplikácii a zdrojoch'),'','text-link')+'</div></footer>'}
 function guide(p,s){
@@ -89,6 +89,7 @@ function trail(p,s){
  [p.track==='cook'?'photos/plate.webp':'photos/table.webp',t('Pracovní vzor','Pracovný vzor'),p.track==='cook'?t('Jak poznat vyváženou porci','Ako spoznať vyváženú porciu'):t('Stůl z pohledu hosta','Stôl z pohľadu hosťa'),'tip','result'],
  [p.track==='cook'?'photos/chef-mentor.webp':'photos/service-mentor.webp',t('Od mistra','Od majstra'),p.track==='cook'?t('Co si na výdeji hlídá šéfkuchařka','Čo si na výdaji všíma šéfkuchárka'):t('Jak dát hostovi prostor','Ako dať hosťovi priestor'),'tip','mentor'],
  [scenes(p).at(-1),t('Vlastní záznam','Vlastný záznam'),t('Co si chci zapamatovat','Čo si chcem zapamätať'),'go','journal']];
+ if(s.code===DEFAULT_CODE[p.track])cards[0]=[p.track==='cook'?'photos/ema-3.webp':'assets/service-3.webp',t('Nácvik · 1 min','Nácvik · 1 min'),p.track==='cook'?t('Rozhodnutí na výdeji','Rozhodnutie na výdaji'):t('Co říct hostovi u stolu','Čo povedať hosťovi pri stole'),'exercise',''];
  if(s.code!==DEFAULT_CODE[p.track])cards[0]=[picture(p,3),t('Dnešní kritéria','Dnešné kritériá'),competency(s.code).name,'detail',s.code];
  return '<div class="library-cards">'+cards.map(([img,tag,name,act,val])=>'<button class="photo-card" data-do="'+act+'" data-value="'+html(val)+'">'+photo(img,'')+'<span>'+html(tag)+'</span><strong>'+html(name)+' <i>↗</i></strong></button>').join('')+'</div>';
 }
@@ -104,14 +105,7 @@ function photoWay(p,s){
  t('Stačí zachytit jeden moment a co příště vyzkoušíte.','Stačí zachytiť jeden moment a čo vyskúšate nabudúce.')];
  return '<details class="day-sequence"><summary>'+t('Projít den ve fotografiích','Prejsť deň vo fotografiách')+'</summary><div class="scene-gallery">'+indices.map((i,j)=>'<figure>'+photo(photos[j],p.name+' · '+photoCaption(p,i))+'<figcaption><b>'+html(photoCaption(p,i))+'</b><p>'+html(steps[i])+'</p></figcaption></figure>').join('')+'</div></details>';
 }
-function dayPage(){
- const p=person(),m=data(),s=m.shift,info=heroText(p,s),n=s.phase;
- const buttons=['prepare','arrive','observed','finish','reflect','journal','portfolio','reflect'];
- const sub=n===3?goBtn('during',t('Přidat postřeh','Pridať postreh'),'text-link'):n<4?action('tip',t('Napovědět','Poradiť'),'result','text-link'):'';
- return '<div class="context"><span>'+html(p.name)+' / '+html(profession(p))+'</span><span>'+relativeDate(s.day)+' · '+t('odborný výcvik','odborný výcvik')+'</span></div><section class="hero"><div class="hero-visual">'+photo(picture(p,n),p.name+' · '+photoCaption(p,n))+'<div class="caption">'+html(p.name)+' / '+html(photoCaption(p,n))+'</div></div><div class="hero-copy"><div class="ey"><i></i>'+html(stageLabels()[n])+'</div>'+(studentStyle?'<p class="motivation">'+(p.track==='cook'?t('Dneska máte výdej v rukou.','Dnes máte výdaj v rukách.'):t('Dobrý servis začíná u vás.','Dobrý servis sa začína pri vás.'))+'</p>':'')+'<h1>'+html(info[0])+'</h1><p>'+html(info[1])+'</p><div class="place">08:00 <span>·</span> '+html(station(p))+'</div><div class="actions">'+primary(info[2],'step',buttons[n])+sub+'</div></div></section>'+
- '<section class="journey"><div><span class="ey">'+t('Moje cesta k profesi','Moja cesta k profesii')+'</span><strong>'+html(competency(s.code).name)+'</strong><span>'+t('Dnešní cíl','Dnešný cieľ')+' · '+t('úroveň ','úroveň ')+s.level+'</span></div>'+goBtn('path',earned(m)+' / '+skillSet(p).length+' '+t('dovedností','zručností')+'  →','progress-link')+'</section>'+
- sectionHead(t('Po ruce na směně','Poruke na zmene'))+trail(p,s)+photoWay(p,s);
-}
+function dayPage(){return todayTutor()}
 function back(page='day'){return goBtn(page,'← '+(labelsNav()[page]||t('Zpět','Späť')),'back')}
 function tipPage(){
  const p=person(),s=data().shift,mentor=hintStage==='mentor',defaultTask=s.code===DEFAULT_CODE[p.track];
@@ -140,7 +134,8 @@ function noteForm(k){
  const quiz=cook?[t('Na cestě na výdej je mokrá podlaha. Co uděláte?','Na ceste na výdaj je mokrá podlaha. Čo urobíte?'),t('Zastavím se a upozorním pedagoga.','Zastavím sa a upozorním pedagóga.'),t('Projdu s talíři co nejrychleji.','Prejdem s taniermi čo najrýchlejšie.')]:[t('Na sklenici je odštípnutý okraj. Jak postupujete?','Na pohári je odštiepený okraj. Ako postupujete?'),t('Otočím sklenici druhou stranou.','Otočím pohár druhou stranou.'),t('Vyřadím ji a upozorním pedagoga.','Vyradím ho a upozorním pedagóga.')];
  const ready=hasNote(n)&&(!isAfter||n.next!==null)&&(k!=='before'||s.quiz);
  const figure=photo(picture(p,k==='before'?0:k==='during'?3:5),p.name+' · '+period(k),'note-pic');
- return back()+title(period(k),current)+'<div class="note-layout"><div class="formbody">'+(s.hint&&k==='before'?'<p class="callout"><b>'+roleLabel('teacher')+'</b> '+html(s.hint)+'</p>':'')+(s.phase===7&&isAfter?'<p class="callout"><b>'+t('Komentář pedagoga','Komentár pedagóga')+'</b> '+html(loc(s.feedback))+mediaMarkup({audio:s.reviews.at(-1)?.audio})+'</p>':'')+
+ const previous=isAfter&&hasNote(s.notes.before)?'<div class="focus-recall"><b>'+t('Váš ranní cíl','Váš ranný cieľ')+'</b><p>'+html([s.notes.before.choice!==null?loc(options(p,s).before[s.notes.before.choice]):'',loc(s.notes.before.text)].filter(Boolean).join(' · '))+'</p>'+mediaMarkup({audio:s.notes.before.audio})+'</div>':'';
+ return back()+title(period(k),current)+'<div class="note-layout"><div class="formbody">'+previous+(s.hint&&k==='before'?'<p class="callout"><b>'+roleLabel('teacher')+'</b> '+html(s.hint)+'</p>':'')+(s.phase===7&&isAfter?'<p class="callout"><b>'+t('Komentář pedagoga','Komentár pedagóga')+'</b> '+html(loc(s.feedback))+mediaMarkup({audio:s.reviews.at(-1)?.audio})+'</p>':'')+
  '<div class="field"><h2>'+t('Stačí jedna volba nebo vlastní postřeh','Stačí jedna voľba alebo vlastný postreh')+'</h2>'+choices(p,s,k,n.choice,'choice')+'<label>'+t('Vlastní slova','Vlastnými slovami')+'<textarea data-note="'+k+'" maxlength="1000" placeholder="'+t('Jedna věta stačí…','Stačí jedna veta…')+'">'+html(loc(n.text))+'</textarea></label>'+recordingControl(k,n)+mediaMarkup(n)+'</div>'+
  (isAfter?'<div class="field"><h2>'+t('Co zkusíte příště?','Čo skúsite nabudúce?')+'</h2>'+choices(p,s,'next',n.next,'next')+'<label class="file-pick">'+t('Připojit fotku vlastní práce','Pripojiť fotku vlastnej práce')+'<input type="file" data-photo accept="image/jpeg,image/png,image/webp"></label>'+(n.photo?action('clear-photo',t('Odebrat fotku','Odobrať fotku'),'','text-link'):'')+'</div>':'')+
  (k==='before'?'<div class="field"><span class="ey">BOZP</span><h2>'+quiz[0]+'</h2><div class="choices">'+quiz.slice(1).map((label,i)=>action('quiz',label,String(i),'choice','aria-pressed="'+(s.quiz&&i===(cook?0:1))+'"')).join('')+'</div>'+(s.quiz?'<p class="success">'+t('Správně. Pokyny k vašemu stanovišti ještě projdete s pedagogem.','Správne. Pokyny k pracovisku ešte prejdete s pedagógom.')+'</p>':quizError?'<p class="warning">'+t('Zkuste jinou možnost. Nebezpečí nejdřív ohlaste.','Skúste inú možnosť. Nebezpečenstvo najskôr nahláste.')+'</p>':'')+'</div>':'')+
@@ -217,7 +212,7 @@ function admin(){
  '<form id="settingsForm" class="settings"><label>'+t('Název skupiny','Názov skupiny')+'<input name="group" required maxlength="45" value="'+html(classroomSettings.title)+'"></label><label>'+t('Výchozí jazyk ukázky','Predvolený jazyk ukážky')+'<select name="language"><option value="cs" '+(classroomSettings.lang==='cs'?'selected':'')+'>Čeština</option><option value="sk" '+(classroomSettings.lang==='sk'?'selected':'')+'>Slovenčina</option></select></label><button class="button primary">'+t('Uložit nastavení','Uložiť nastavenia')+'</button></form>'+
  '<details><summary>'+t('Šest fiktivních profilů','Šesť fiktívnych profilov')+'</summary>'+PEOPLE.map(p=>'<p>'+html(p.name+' · '+profession(p)+' · '+p.year+'. '+t('ročník'))+'</p>').join('')+'</details><details><summary>'+t('Záznam rozhodnutí pedagogů','Záznam rozhodnutí pedagógov')+'</summary>'+PEOPLE.map(p=>'<h3>'+p.name+'</h3>'+[...data(p).history.map(a=>dateLabel(a.day)+' · '+competency(a.code).name+' · '+a.author),...data(p).log.filter(e=>e.kind==='returned').map(e=>dateLabel(e.day)+' · '+t('Vráceno k doplnění','Vrátené na doplnenie')+' · PED-01')].map(x=>'<p>'+html(x)+'</p>').join('')).join('')+'</details><details><summary>'+t('Přístupy v ukázce','Prístupy v ukážke')+'</summary><p>'+t('Žák zapisuje vlastní práci. Pedagog pozoruje a potvrzuje. Vedení sleduje souhrny. Správce mění nastavení skupiny. Přepínač umožňuje vyzkoušet všechny role bez přihlášení.','Žiak zaznamenáva vlastnú prácu. Pedagóg pozoruje a potvrdzuje. Vedenie sleduje súhrny. Správca mení nastavenia skupiny. Prepínač umožňuje vyskúšať všetky roly bez prihlásenia.')+'</p></details>';
 }
-function about(){return '<div class="modal-head"><h2 id="dialogtitle">'+t('O aplikaci','O aplikácii')+'</h2>'+closeBtn()+'</div><p>'+t('MISTR SVĚTA vás provází odborným výcvikem. Vyberete si, co chcete procvičit, vyzkoušíte to při práci a uložíte si zpětnou vazbu pedagoga.','MISTR SVĚTA vás sprevádza odborným výcvikom. Vyberiete si, čo chcete precvičiť, vyskúšate si to pri práci a uložíte si spätnú väzbu pedagóga.')+'</p><p>'+t('Šest fiktivních žáků a ilustrační fotografie vytvořené pomocí AI. Záznamy se ukládají do tohoto prohlížeče.','Šesť fiktívnych žiakov a ilustračné fotografie vytvorené pomocou AI. Záznamy sa ukladajú do tohto prehliadača.')+'</p><p>'+t('Pracovní mapa dovedností vychází z oboru Kuchař–číšník. Konkrétní přiřazení ke školnímu programu ověří škola.','Pracovná mapa zručností vychádza z odboru Kuchár–čašník. Konkrétne priradenie k školskému programu overí škola.')+'</p><a href="https://edu.gov.cz/wp-content/uploads/2022/01/65-51-H01-Kuchar-cisnik.pdf" target="_blank" rel="noopener">RVP 65-51-H/01 ↗</a><p><a href="archiv.html">'+t('Původní akademie a starší lokální zápisy','Pôvodná akadémia a staršie lokálne zápisy')+' ↗</a></p>'}
+function about(){return '<div class="modal-head"><h2 id="dialogtitle">'+t('O aplikaci','O aplikácii')+'</h2>'+closeBtn()+'</div><p>'+t('MISTR SVĚTA vás provází odborným výcvikem. Vyberete si, co chcete procvičit, vyzkoušíte to při práci a uložíte si zpětnou vazbu pedagoga.','MISTR SVĚTA vás sprevádza odborným výcvikom. Vyberiete si, čo chcete precvičiť, vyskúšate si to pri práci a uložíte si spätnú väzbu pedagóga.')+'</p><p>'+t('Šest fiktivních žáků a ilustrační fotografie vytvořené pomocí AI. Záznamy se ukládají do tohoto prohlížeče.','Šesť fiktívnych žiakov a ilustračné fotografie vytvorené pomocou AI. Záznamy sa ukladajú do tohto prehliadača.')+'</p><p>'+t('Pracovní mapa dovedností vychází z oboru Kuchař–číšník. Konkrétní přiřazení ke školnímu programu ověří škola.','Pracovná mapa zručností vychádza z odboru Kuchár–čašník. Konkrétne priradenie k školskému programu overí škola.')+'</p><a href="https://edu.gov.cz/wp-content/uploads/2022/01/65-51-H01-Kuchar-cisnik.pdf" target="_blank" rel="noopener">RVP 65-51-H/01 ↗</a><p><a href="#vydej">'+t('Vyzkoušet kuchyň','Vyskúšať kuchyňu')+'</a> · <a href="#obsluha">'+t('Vyzkoušet obsluhu','Vyskúšať obsluhu')+'</a></p><details><summary>'+t('Zahraniční předlohy průvodce','Zahraničné predlohy sprievodcu')+'</summary><p><a href="https://www.epfl.ch/labs/ml4ed/research/412-2/" target="_blank" rel="noopener">DUAL-T · EPFL ↗</a> — '+t('pracovní deník kuchařského učně a zpětná vazba mistra.','pracovný denník kuchárskeho učňa a spätná väzba majstra.')+'</p><p><a href="https://apprenticeship.rouxbe.com/" target="_blank" rel="noopener">ACF · Rouxbe ↗</a> — '+t('krátká příprava a výkon na pracovišti.','krátka príprava a výkon na pracovisku.')+'</p><p><a href="https://www.rp.edu.sg/industry/solutions/technologies-for-licensing/adaptive-customer-experience-training-system-acets/" target="_blank" rel="noopener">ACETS · Republic Polytechnic ↗</a> — '+t('nácvik interakce s hostem.','nácvik interakcie s hosťom.')+'</p></details><p><a href="archiv.html">'+t('Původní akademie a starší lokální zápisy','Pôvodná akadémia a staršie lokálne zápisy')+' ↗</a></p>'}
 function closeBtn(){return action('close','×','','close','aria-label="'+t('Zavřít','Zavrieť')+'"')}
 function accountModal(){
  return '<div class="modal-head"><h2 id="dialogtitle">'+t('Přepnout pohled','Prepnúť pohľad')+'</h2>'+closeBtn()+'</div><p class="meta">'+t('Ukázková skupina','Ukážková skupina')+' · '+html(classroomSettings.title)+'</p>'+
@@ -226,7 +221,7 @@ function accountModal(){
 }
 const homeFor=()=>({student:'day',teacher:'group',leader:'overview',admin:'admin'})[role];
 function render(scroll=false){
- const pages=role==='student'?{day:dayPage,prepare:()=>noteForm('before'),during:()=>noteForm('during'),reflect:()=>noteForm('after'),journal:journalPage,path:pathPage,skill:skillPage,portfolio,tip:tipPage}:role==='teacher'?{group,inspect}:role==='admin'?{admin}:{overview};
+ const pages=role==='student'?{day:dayPage,prepare:morningPage,exercise:exercisePage,during:()=>noteForm('during'),reflect:()=>noteForm('after'),journal:journalPage,path:pathPage,skill:skillPage,portfolio,tip:tipPage}:role==='teacher'?{group,inspect}:role==='admin'?{admin}:{overview};
  if(!pages[view])view=homeFor();
  const s=data().shift;
  if(role==='student'&&((view==='prepare'&&s.phase!==0)||(view==='during'&&s.phase!==3)||(view==='reflect'&&![4,7].includes(s.phase))))view='day';
@@ -242,6 +237,8 @@ function checkedNote(key){
 }
 function syncButtons(){
  const m=data(),s=m.shift,k=noteKey(),btn=document.querySelector('[data-save]');
+ const focusNext = document.querySelector('[data-focus-next]');
+ if(view==='prepare'&&focusNext)focusNext.disabled=!hasNote(s.notes.before)||!!audioSession;
  if(k&&btn)btn.disabled=!hasNote(s.notes[k])||(k==='after'&&s.notes.after.next===null)||(k==='before'&&!s.quiz)||!!audioSession;
  if(view==='inspect'&&s.phase===5){
   const approve=document.querySelector('[data-do=approve]'),ret=document.querySelector('[data-do=return]');
@@ -251,6 +248,7 @@ function syncButtons(){
 }
 function navigateStage(v){
  const s=data().shift;
+ if(v==='prepare')morningStep=hasNote(s.notes.before)?'safety':'focus';
  if(['prepare','reflect','journal','portfolio'].includes(v)){go(v);return}
  const phase={arrive:1,observed:2,finish:3}[v];guard(role==='student'&&s.phase===phase);
  mutate(m=>m.shift.phase++);go('day');
@@ -312,6 +310,26 @@ function handle(act,val){
  case 'student':switchPerson(val);role='student';dialog.close();go('day');break;
  case 'lang':language=language==='cs'?'sk':'cs';setPref('language',language);render();break;
  case 'go':go(val);break;
+ case 'exercise':{
+  guard(role==='student'&&!!serviceExercise(person(),data().shift));
+  exerciseState.answer=null;go('exercise');break;
+ }
+ case 'answer-exercise':{
+  guard(role==='student'&&view==='exercise'&&/^[012]$/.test(val));
+  exerciseState.answer=Number(val);render();
+  document.querySelector('.answer-reply')?.focus();
+  break;
+ }
+ case 'finish-exercise':{
+  const p=person(),s=data().shift,ex=serviceExercise(p,s);
+  guard(role==='student'&&view==='exercise'&&ex&&exerciseState.answer===ex.best);
+  if(s.phase===0){
+   mutate(m=>{m.shift.warmupDone=true});morningStep=hasNote(s.notes.before)?'safety':'focus';go('prepare');
+  }else{go('day')}
+  break;
+ }
+ case 'morning-next':checkedNote('before');guard(hasNote(data().shift.notes.before));morningStep='safety';quizError=false;render(true);break;
+ case 'morning-back':checkedNote('before');morningStep='focus';render(true);break;
  case 'step':guard(role==='student');navigateStage(val);break;
  case 'detail':guard(role==='student'&&!!competency(val));selectedCode=val;go('skill');break;
  case 'tip':guard(role==='student');hintStage=val;go('tip');break;
@@ -350,4 +368,13 @@ document.addEventListener('submit',e=>{const form=e.target;e.preventDefault();if
  }catch(err){problem(err)}});
 window.addEventListener('storage',e=>{if(e.key?.startsWith('mistr-sveta.atelier.1.')&&!busy&&!audioSession){if(e.key===scopedKey('settings')&&e.newValue)classroomSettings=JSON.parse(e.newValue);render()}});
 window.addEventListener('pagehide',()=>{if(audioSession){stopVoice();audioSession.stream.getTracks().forEach(x=>x.stop())}});
+function openSharedExercise(){
+ const profile={'#vydej':'ema','#obsluha':'matej'}[window.location?.hash];
+ if(!profile||busy||audioSession)return;
+ if(dialog.open)dialog.close();
+ switchPerson(profile);role='student';exerciseState.answer=null;
+ view=serviceExercise(person(),data().shift)?'exercise':'day';
+}
+window.addEventListener('hashchange',()=>{openSharedExercise();render(true)});
+openSharedExercise();
 render();
