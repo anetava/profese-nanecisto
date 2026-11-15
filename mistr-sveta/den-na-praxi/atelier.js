@@ -45,7 +45,7 @@ function mutate(fn,p=person()){
 }
 function setPref(k,value){try{localStorage.setItem(scopedKey(k),value)}catch{}}
 function tell(message){outlet.textContent=message;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>outlet.textContent='',5500)}
-function go(page){if(busy||audioSession){tell(t('Nejdřív dokončete záznam.','Najskôr dokončite záznam.'));return}window.speechSynthesis?.cancel();if(page!=='exercise'&&['#vydej','#obsluha','#po-smene','#moje-portfolio','#listek-kuchyne','#listek-obsluha'].includes(window.location?.hash))window.history.replaceState(null,'',window.location.pathname+window.location.search);view=page;quizError=false;render(true)}
+function go(page){if(busy||audioSession){tell(t('Nejdřív dokončete záznam.','Najskôr dokončite záznam.'));return}window.speechSynthesis?.cancel();if(window.location?.hash?.startsWith('#dovednost-')||page!=='exercise'&&['#vydej','#obsluha','#po-smene','#moje-portfolio','#listek-kuchyne','#listek-obsluha'].includes(window.location?.hash))window.history.replaceState(null,'',window.location.pathname+window.location.search);view=page;quizError=false;render(true)}
 function scenes(p){const folder=p.full&&p.id!=='ema'?'assets/':'photos/';const n=p.full?6:3;return Array.from({length:n},(_,i)=>folder+p.photo+'-'+i+'.webp')}
 function picture(p,phase){const images=scenes(p);const idx=p.full?[0,1,2,3,4,5,3,5][phase]:[0,0,1,1,2,2,1,2][phase];return images[idx]}
 function face(p){return scenes(p)[0]}
@@ -321,6 +321,7 @@ function handle(act,val){
  case 'step':guard(role==='student');navigateStage(val);break;
  case 'detail':openMenuSkill(val);break;
  case 'menu-filter':menuFilterAction(val);break;
+ case 'station-try':handleStationTry(val);break;
  case 'menu-study':case 'menu-study-save':menuStudyAction(act,val);break;
  case 'menu-proof':{
   guard(role==='student'&&skillSet(person()).some(c=>c.code===val)&&maxLevel(data(),val)>0);
@@ -372,6 +373,19 @@ function openSharedExercise(){
  switchPerson(profile);role='student';exerciseState.answer=null;
  view=hash.startsWith('#listek-')?'path':hash==='#moje-portfolio'?'employer':hash==='#po-smene'?(data().shift.phase>=4?'summary':'day'):serviceExercise(person(),data().shift)?'exercise':'day';
 }
-window.addEventListener('hashchange',()=>{openSharedExercise();render(true)});
-openSharedExercise();
-render();
+function renderSharedEntry(scroll=false){
+ const code = window.location?.hash?.match(/^#dovednost-(K\d{2}\.\d+)$/)?.[1];
+ const skill = code && competency(code);
+ if (skill && !busy && !audioSession) {
+   if (dialog.open) dialog.close();
+   if (!skillSet(person()).some(c => c.code === code)) {
+     switchPerson(CATALOG.cs.competencies.find(c => c.code === code).branch === 'Kuchař' ? 'ema' : 'matej');
+   }
+   role='student';view='path';resetMenu();menuOpenCode=code;
+   render();focusMenuRow(code);
+   return;
+ }
+ openSharedExercise();render(scroll);
+}
+window.addEventListener('hashchange',()=>renderSharedEntry(true));
+renderSharedEntry();

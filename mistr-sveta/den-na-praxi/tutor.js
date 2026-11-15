@@ -66,6 +66,14 @@ function todayBrief(p,s) {
     t('Co si vezmete na příště?','Čo si vezmete nabudúce?'),t('Váš zápis je u mistra.','Váš zápis je u majstra.'),
     t('Tuhle práci už umíte doložit.','Túto prácu už viete doložiť.'),info[0]
   ];
+  if(s.phase===3 && exercise){
+    const before=s.notes.before;
+    const focus=before.choice===null?'':loc(options(p,s).before[before.choice]);
+    const task=cook
+      ? t('Připravte dvě porce podle vzoru. Před předáním na výdej je položte vedle sebe a naposledy je porovnejte.', 'Pripravte dve porcie podľa vzoru. Pred odovzdaním na výdaj ich položte vedľa seba a naposledy ich porovnajte.')
+      : t('Prostřete pro dva. Až se hosté usadí, přivítejte je a nabídněte jim vodu.', 'Prestrite pre dvoch. Keď sa hostia usadia, privítajte ich a ponúknite im vodu.');
+    return {head:steps[3],text:task+(focus?' '+t('Vaše ranní volba','Vaša ranná voľba')+' · '+focus+'.':''),cta:info[2],act:'step',val:destinations[3],duration:''};
+  }
   const text=s.phase===2 && exercise?(cook?t('Postavte se k výdeji vedle pedagoga. Sledujte, jak porovná obě porce a co upraví jako poslední.','Postavte sa k výdaju vedľa pedagóga. Sledujte, ako porovná obe porcie a čo upraví ako posledné.'):t('Sledujte s pedagogem příchod ke stolu, pozdrav a nabídnutí vody. Po ukázce si vezmete druhý stůl vy.','Sledujte s pedagógom príchod k stolu, pozdrav a ponuku vody. Po ukážke si vezmete druhý stôl vy.')):info[1];
   return {head:exercise?steps[s.phase]:info[0],text,cta:info[2],act:'step',val:destinations[s.phase],duration:''};
 }
@@ -94,6 +102,7 @@ function exercisePage(){
   if(!ex)return todayTutor();
   const picked=exerciseState.answer;
   const solved=picked===ex.best;
+  const skill=competency(s.code);
   const parts=ex.answers.map(([answer],i)=>'<button type="button" data-do="answer-exercise" data-value="'+i+'" class="exercise-choice" aria-pressed="'+(i===picked)+'"><span aria-hidden="true">'+['A','B','C'][i]+'</span>'+html(answer)+'</button>').join('');
   let response='';
   if(picked!==null) {
@@ -101,11 +110,11 @@ function exercisePage(){
     if(solved) response+=primary(s.phase===0?t('Vybrat si cíl na směnu','Vybrať si cieľ na zmenu'):t('Zpět k mé směně','Späť k mojej zmene'),'finish-exercise');
   }
   return back()+'<div class="exercise-title"><span class="shift-kicker">'+t('Nácvik nanečisto · asi 1 min','Nácvik nanečisto · asi 1 min')+'</span><h1>'+html(ex.heading)+'</h1></div>'+
-    '<div class="exercise-layout"><figure>'+photo(ex.image,ex.alt)+'</figure><section><p class="scenario">'+html(ex.situation)+'</p><div class="exercise-choices">'+parts+'</div>'+response+'</section></div>';
+    '<div class="exercise-layout"><figure>'+photo(ex.image,ex.alt)+'<figcaption class="exercise-skill"><span class="ey">'+t('Dovednost z mého lístku','Zručnosť z môjho lístka')+'</span><b>'+html(menuSkillName(skill))+'</b></figcaption></figure><section><p class="scenario">'+html(ex.situation)+'</p><div class="exercise-choices">'+parts+'</div>'+response+'</section></div>';
 }
 
 function morningPage(){
-  const p=person(),s=data().shift,n=s.notes.before,cook=p.track==='cook';
+  const p=person(),s=data().shift,n=s.notes.before,cook=p.track==='cook',skill=competency(s.code);
   if(morningStep==='safety'&&!hasNote(n))morningStep='focus';
   const safety=morningStep==='safety';
   const question=safety?(cook?t('Na cestě na výdej je mokrá podlaha. Co uděláte?','Na ceste na výdaj je mokrá podlaha. Čo urobíte?'):t('Sklenice má odštípnutý okraj. Co uděláte?','Pohár má odštiepený okraj. Čo urobíte?')):t('Co si dnes chcete pohlídat?','Čo si dnes chcete postrážiť?');
@@ -117,7 +126,7 @@ function morningPage(){
   return (safety?action('morning-back','← '+t('Můj cíl','Môj cieľ'),'','back'):back())+
     '<div class="exercise-title"><span class="shift-kicker">'+(safety?t('Před směnou · 2 ze 2 · bezpečí','Pred zmenou · 2 z 2 · bezpečnosť'):t('Před směnou · 1 ze 2 · můj cíl','Pred zmenou · 1 z 2 · môj cieľ'))+'</span><h1>'+html(question)+'</h1></div>'+
     '<div class="morning-layout"><section>'+(s.hint&&!safety?'<p class="callout"><b>'+roleLabel('teacher')+'</b> '+html(s.hint)+'</p>':'')+
-    (safety?quizMarkup:'<p>'+t('Vyberte jeden detail. Po směně se k němu vrátíte v deníku.','Vyberte si jeden detail. Po zmene sa k nemu vrátite v denníku.')+'</p>'+choices(p,s,'before',n.choice,'choice')+own)+
+    (safety?quizMarkup:'<div class="focus-recall brief-purpose"><b>'+html(menuSkillName(skill))+'</b><p>'+html(menuSkillWhy(skill,p))+'</p></div>'+choices(p,s,'before',n.choice,'choice')+own)+
     '<div class="actions">'+(safety?action('save-note',t('Dokončit přípravu','Dokončiť prípravu'),'before','button primary arrow','data-save '+(ready?'':'disabled')):action('morning-next',t('Pokračovat k bezpečnosti','Pokračovať k bezpečnosti'),'','button primary arrow','data-focus-next '+(hasNote(n)?'':'disabled')))+'</div></section>'+
     '<aside class="brief-aside">'+photo(picture(p,safety?1:3),p.name+' · '+photoCaption(p,safety?1:3))+'<b>'+html(courseTitle(p,s))+'</b>'+action('listen',t('Poslechnout zadání','Vypočuť si zadanie'),'','text-link')+'</aside></div>';
 }

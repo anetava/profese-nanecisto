@@ -195,7 +195,7 @@ function menuStudyPage() {
 
   return '<section class="menu-practice">' + returnLink +
     title(moduleInfo(skill.code).title + ' · ' + levelCopy + ' · ' + t('úroveň ') + draft.level, menuSkillName(skill)) +
-    caseMarkup + '<details class="menu-practice-proof"><summary>' +
+    (stationChallenge(skill.code, person()) || caseMarkup) + '<details class="menu-practice-proof"><summary>' +
     t('Úkol pro tuto úroveň a způsob ověření', 'Úloha pre túto úroveň a spôsob overenia') + '</summary>' +
     '<p>' + html(skill.name) + '</p><p><strong>' + t('Praktický úkol', 'Praktická úloha') + '</strong> · ' + html(skill.tasks[draft.level - 1]) + '</p>' +
     '<p><strong>' + t('Očekávaný výkon', 'Očakávaný výkon') + '</strong> · ' + html(skill.levels[draft.level - 1]) + '</p>' +

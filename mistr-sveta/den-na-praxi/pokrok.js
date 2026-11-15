@@ -43,23 +43,27 @@ function personalEvidence(s){
 }
 
 function progressPanel(s){
-  const c=competency(s.code);
-  return '<section class="skill-strip"><div><span class="ey">'+t('Co se dnes učím','Čo sa dnes učím')+'</span><h2>'+html(learnerOutcome(s))+'</h2></div><div class="skill-strip-end"><span class="live-state" data-status="'+progressTone(s.phase)+'">'+html(progressState(s))+'</span>'+action('detail',t('Moje kompetence','Moja kompetencia')+' →',c.code,'text-link')+'</div></section>';
+  const c = competency(s.code);
+  return '<section class="skill-strip"><div><span class="ey">' + t('Dovednost této směny', 'Zručnosť tejto zmeny') +
+    '</span><h2>' + html(menuSkillName(c)) + '</h2><p class="skill-purpose">' + html(menuSkillWhy(c, person())) +
+    '</p></div><div class="skill-strip-end"><span class="live-state" data-status="' + progressTone(s.phase) + '">' +
+    html(progressState(s)) + '</span>' + action('detail', t('Otevřít dovednost', 'Otvoriť zručnosť') + ' →', c.code, 'text-link') + '</div></section>';
 }
 
 function summaryPage(){
   const p=person(),m=data(),s=m.shift,c=competency(s.code);
   const approved=m.history.find(a=>a.id===s.id&&a.code===s.code);
   const result=approved?feedbackText(approved):s.phase===7?loc(s.feedback):'';
+  const reviewTitle = approved ? t('Potvrzená úroveň ', 'Potvrdená úroveň ') + approved.level + ' / 3' : progressState(s);
   const heroImage=scenes(p).at(-1);
   return back()+ '<div class="ride-title"><span class="ey">'+html(p.name)+' · '+html(relativeDate(s.day))+' · '+html(profession(p))+'</span><h1>'+t('Co si ze směny odnáším','Čo si zo zmeny odnášam')+'</h1></div>'+
-    '<section class="ride-cover"><div class="ride-copy"><span class="ey">'+t('Moje dovednost','Moja zručnosť')+'</span><h2>'+html(learnerOutcome(s))+'</h2><p>'+html(c.name)+' · '+t('úroveň ')+s.level+'</p><strong class="live-state" data-status="'+progressTone(s.phase)+'">'+html(progressState(s))+'</strong></div>'+photo(heroImage,p.name+' · '+period('after'))+'</section>'+
-    '<div class="ride-grid"><section><h2>'+html(courseTitle(p,s))+'</h2>'+personalEvidence(s)+
+    '<section class="ride-cover"><div class="ride-copy"><span class="ey">'+t('Dovednost této směny','Zručnosť tejto zmeny')+'</span><h2>'+html(menuSkillName(c))+'</h2><p>'+html(menuSkillWhy(c,p))+'</p></div>'+photo(heroImage,p.name+' · '+period('after'))+'</section>'+
+    '<div class="ride-grid"><section><span class="ey">'+t('Moje práce','Moja práca')+'</span><h2>'+html(courseTitle(p,s))+'</h2><p class="meta">'+t('Cíl směny','Cieľ zmeny')+' · '+html(learnerOutcome(s))+'</p>'+personalEvidence(s)+
       (s.notes.after.next!==null?'<p class="next-practice"><b>'+t('Příště','Nabudúce')+'</b> '+html(loc(options(p,s).next[s.notes.after.next]))+'</p>':'')+'</section>'+
-    '<section class="ride-review"><span class="ey">'+t('Očima mistra','Očami majstra')+'</span><h2>'+html(progressState(s))+'</h2>'+
+    '<section class="ride-review"><span class="ey">'+t('Očima mistra','Očami majstra')+'</span><h2>'+html(reviewTitle)+'</h2>'+
     (result?'<p>'+html(result)+'</p>':'')+mediaMarkup({audio:approved?.audio||s.reviews?.at(-1)?.audio})+
-    (s.phase===5?'<p>'+t('Váš záznam už je u této kompetence. Pedagog teď podle pozorování v provozu posoudí úroveň. Zpětnou vazbu najdete tady.','Váš záznam už je pri tejto kompetencii. Pedagóg teraz podľa pozorovania v prevádzke posúdi úroveň. Spätnú väzbu nájdete tu.')+'</p>':'')+
-    (approved?goBtn('portfolio',t('Zobrazit potvrzenou práci','Zobraziť potvrdenú prácu'),'button primary'):s.phase===4||s.phase===7?goBtn('reflect',t('Doplnit vlastní zápis','Doplniť vlastný zápis'),'button primary'):action('detail',t('Podívat se na dovednost','Pozrieť si zručnosť'),s.code,'button'))+'</section></div>';
+    (s.phase===5?'<p>'+t('Pedagog má váš zápis. Podle toho, co viděl na směně, posoudí úroveň a připíše vám zpětnou vazbu.','Pedagóg má váš zápis. Podľa toho, čo videl na zmene, posúdi úroveň a pridá vám spätnú väzbu.')+'</p>':'')+
+    (approved?action('menu-proof',t('Zobrazit potvrzenou práci','Zobraziť potvrdenú prácu'),c.code,'button primary'):s.phase===4||s.phase===7?goBtn('reflect',t('Doplnit vlastní zápis','Doplniť vlastný zápis'),'button primary'):action('detail',t('Podívat se na dovednost','Pozrieť si zručnosť'),s.code,'button'))+'</section></div>';
 }
 
 function employerPage(){

@@ -58,13 +58,24 @@ function menuSkillBody(c, p, model) {
   const latest = history.filter(h => h.level === confirmed).sort((a, b) => b.day.localeCompare(a.day))[0];
   const related = skillSet(p).filter(other => other.code !== c.code &&
     (other.module === c.module || other.code.split('.')[0] === c.code.split('.')[0])).slice(0, 2);
-  const studyLabel = confirmed === 3 ? t('Zopakovat si nácvik', 'Zopakovať si nácvik') : t('Vyzkoušet si nácvik', 'Vyskúšať si nácvik');
+  const station = stationCase(c.code, p.track === 'cook');
+  const studyLabel = station ? station.title : confirmed === 3 ? t('Zopakovat si nácvik', 'Zopakovať si nácvik') : t('Vyzkoušet si nácvik', 'Vyskúšať si nácvik');
+  const situation = assigned ? learnerOutcome(s) : station?.question || loc(studySituations[c.code][0]);
+  const workCheck = station ? '' : '<div class="menu-work-check"><h3>' +
+    t('Čeho si při práci všimnout', 'Čo si pri práci všimnúť') +
+    '</h3><p>' + html(loc(studySituations[c.code][1])) + '</p></div>';
   const actions = (assigned ? menuAssignmentAction(s) : '') +
     action('menu-study', studyLabel, c.code, assigned ? 'button' : 'button primary') +
     (latest && !(assigned && s.phase === 6) ? action('menu-proof', t('Moje práce v portfoliu', 'Moja práca v portfóliu'), c.code, 'text-link') : '');
-  return '<div class="menu-body"><div class="menu-target"><span class="ey">' + html(c.name) + '</span><p>' + html(menuSkillWhy(c)) + '</p><h3>' +
+  const ownNote = assigned && ['after','during'].map(k => loc(s.notes[k]?.text).trim()).find(Boolean);
+  const personalObservation = ownNote
+    ? '<div class="menu-evidence"><b>' + t('Můj postřeh z této směny', 'Môj postreh z tejto zmeny') +
+      '</b><p>„' + html(ownNote) + '“</p></div>' : '';
+  return '<div class="menu-body"><div class="menu-target"><span class="ey">' + t('Kompetence', 'Kompetencia') +
+    ' · ' + html(c.name) + '</span><h3>' +
     (assigned ? t('Úkol této směny', 'Úloha tejto zmeny') : t('Situace k nácviku', 'Situácia na nácvik')) +
-    '</h3><p>' + html(assigned ? learnerOutcome(s) : loc(studySituations[c.code][0])) + '</p></div><div class="menu-actions">' + actions + '</div>' +
+    '</h3><p>' + html(situation) + '</p></div>' + workCheck + '<div class="menu-actions">' + actions + '</div>' +
+    personalObservation +
     '<details class="menu-detail-fold"><summary>' + t('Co posuzuje pedagog a jaké jsou úrovně', 'Čo posudzuje pedagóg a aké sú úrovne') +
     '</summary><p>' + html(c.goal) + '</p><ul>' +
     c.checks.map(check => '<li>' + html(check) + '</li>').join('') + '</ul>' +
@@ -79,9 +90,8 @@ function menuSkillBody(c, p, model) {
 
 function menuRow(c, p, model) {
   const state = menuState(c, model);
-  const assigned = c.code === model.shift.code;
   const expanded = menuOpenCode === c.code;
-  const caption = assigned ? courseTitle(p, model.shift) : moduleInfo(c.code).title;
+  const caption = menuSkillWhy(c, p);
   return '<details class="menu-item" name="competency-menu" data-code="' + html(c.code) + '"' + (expanded ? ' open' : '') +
     '><summary><span class="menu-item-title"><strong class="menu-item-name">' + html(menuSkillName(c)) +
     '</strong><span class="menu-item-caption">' + html(caption) + '</span></span><span class="menu-item-status" data-tone="' +
@@ -95,27 +105,31 @@ function pathPage() {
   const current = model.shift.code, cook = p.track === 'cook';
   const specialty = cook ? t('Kuchyně', 'Kuchyňa') : t('Obsluha');
   const groups = [
-    [t('Na mé směně', 'Na mojej zmene'), c => c.code === current],
-    [cook ? t('Kuchařské dovednosti', 'Kuchárske zručnosti') : t('Obsluha hostů', 'Obsluha hostí'), c => !commonSkill(c)],
-    [t('Příprava a chod provozu', 'Príprava a chod prevádzky'), c => /^K0[125]\./.test(c.code)],
-    [t('Kvalita a hospodaření', 'Kvalita a hospodárenie'), c => /^K(09|10)\./.test(c.code)],
-    [t('Spolupráce a samostatná práce', 'Spolupráca a samostatná práca'), () => true]
+    ['shift', t('Co se při tom učím', 'Čo sa pri tom učím'), '', c => c.code === current],
+    ['specialty', cook ? t('Kuchařské dovednosti', 'Kuchárske zručnosti') : t('Obsluha hostů', 'Obsluha hostí'),
+      cook ? 'assets/cook-3.webp' : 'assets/service-3.webp', c => !commonSkill(c)],
+    ['operations', t('Příprava a chod provozu', 'Príprava a chod prevádzky'),
+      cook ? 'photos/ema-1.webp' : 'photos/table.webp', c => /^K0[125]\./.test(c.code)],
+    ['quality', t('Kvalita a hospodaření', 'Kvalita a hospodárenie'),
+      cook ? 'photos/plate.webp' : 'photos/matej-1.webp', c => /^K(09|10)\./.test(c.code)],
+    ['team', t('Spolupráce a samostatná práce', 'Spolupráca a samostatná práca'),
+      cook ? 'photos/chef-mentor.webp' : 'photos/service-mentor.webp', () => true]
   ];
   let remaining = skills;
-  const sections = groups.map(([heading, accepts], i) => {
+  const sections = groups.map(([chapter, heading, image, accepts], i) => {
     const rows = remaining.filter(accepts);
     if (!rows.length) return '';
     remaining = remaining.filter(c => !accepts(c));
-    return '<section class="menu-section' + (i === 0 ? ' menu-featured' : '') + '"><header class="menu-section-head"><h2>' +
-      html(heading) + '</h2>' + (i === 0 ? goBtn('day', t('Moje směna →', 'Moja zmena →'), 'text-link') : '<small>' + rows.length + '</small>') +
+    return '<section class="menu-section' + (i === 0 ? ' menu-featured' : '') + '" data-chapter="' + chapter + '"><header class="menu-section-head">' +
+      (image ? '<img class="menu-section-image" src="' + html(image) + '" alt="" decoding="async" loading="lazy">' : '') + '<h2>' + html(heading) + '</h2>' + (i === 0 ? goBtn('day', t('Moje směna →', 'Moja zmena →'), 'text-link') : '<small>' + rows.length + '</small>') +
       '</header><div class="menu-rows">' + rows.map(c => menuRow(c, p, model)).join('') + '</div></section>';
   }).join('');
   const filters = [['all', t('Vše', 'Všetko')], ['specialty', specialty], ['shared', t('Společný základ', 'Spoločný základ')], ['confirmed', t('Potvrzené', 'Potvrdené')]];
   return '<div class="menu-page"><header class="menu-hero"><div class="menu-hero-copy"><span class="ey">' +
     html(p.name + ' · ' + profession(p) + ' · ' + p.year + '. ' + t('ročník')) +
-    '</span><h1>' + t('Můj lístek dovedností', 'Môj lístok zručností') + '</h1><p>' +
-    t('Vyberte si dovednost. Uvidíte, kde ji využijete, co si můžete vyzkoušet a co už máte potvrzené.', 'Vyberte si zručnosť. Uvidíte, kde ju využijete, čo si môžete vyskúšať a čo už máte potvrdené.') +
-    '</p><div class="menu-hero-meta">' + t('Potvrzená úroveň u ', 'Potvrdená úroveň pri ') + earned(model) +
+    '</span><h1>' + t('Můj lístek dovedností', 'Môj lístok zručností') + '</h1><div class="menu-hero-outcome"><span>' +
+    t('Moje směna', 'Moja zmena') + '</span><strong>' + html(courseTitle(p, model.shift)) +
+    '</strong></div><div class="menu-hero-meta">' + t('Potvrzená úroveň u ', 'Potvrdená úroveň pri ') + earned(model) +
     ' ' + t('z ') + all.length + ' ' + t('dovedností', 'zručností') + '</div></div>' + photo(picture(p, 3), p.name + ' · ' + profession(p)) + '</header>' +
     '<div class="menu-controls"><div class="menu-filters" role="group" aria-label="' + t('Zobrazit dovednosti', 'Zobraziť zručnosti') + '">' +
     filters.map(([key, label]) => action('menu-filter', label, key, 'choice', 'aria-pressed="' + (menuFilter === key) + '"')).join('') +
@@ -135,6 +149,10 @@ function openMenuSkill(code) {
   if (!menuAccepts(competency(code), data())) menuFilter = 'all';
   menuOpenCode = code;
   go('path');
+  focusMenuRow(code);
+}
+
+function focusMenuRow(code) {
   const summary = [...document.querySelectorAll('.menu-item')].find(el => el.dataset.code === code)?.querySelector('summary');
   if (summary) { summary.focus({preventScroll:true}); summary.scrollIntoView({block:'start'}); }
 }
