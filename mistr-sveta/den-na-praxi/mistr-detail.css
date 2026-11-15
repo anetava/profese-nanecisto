@@ -11,3 +11,7 @@
 .master-guide ol{counter-reset:step;list-style:none;padding:0 18px;margin:0}.master-guide li{counter-increment:step;position:relative;padding:12px 0 12px 44px;border-bottom:1px solid #a5bdb6}.master-guide li:before{content:counter(step);position:absolute;left:0;top:13px;border-radius:50%;background:#ff94b8;color:#172f32;width:32px;height:32px;text-align:center;line-height:32px;font-weight:800}.master-guide li b{font-size:1.24rem}.master-guide li p{margin:4px 0;font-size:1.06rem}
 .master-guide footer{background:#172f32;color:white;padding:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}.master-guide footer details{background:transparent;color:white;margin:0;max-width:58ch}.master-guide footer summary{color:white}.master-guide footer .primary{background:#ff94b8;color:#172f32}
 @media(max-width:700px){.master-grid{grid-template-columns:1fr}.master-guide li p{font-size:1.04rem}.master-guide footer .primary{width:100%}}
+
+.ms-patch,.wordmark>span:before{background:transparent url("gastro-znak.svg") center/contain no-repeat;border:0;border-radius:0;padding:0;aspect-ratio:1;color:transparent}
+.wordmark>span:before{content:"";width:1.04em;height:1.04em;margin-right:.21em;vertical-align:-.12em}
+.ms-patch{display:block;width:6.5%;height:auto;font-size:0}
