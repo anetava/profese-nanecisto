@@ -45,7 +45,7 @@ function mutate(fn,p=person()){
 }
 function setPref(k,value){try{localStorage.setItem(scopedKey(k),value)}catch{}}
 function tell(message){outlet.textContent=message;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>outlet.textContent='',5500)}
-function go(page){if(busy||audioSession){tell(t('Nejdřív dokončete záznam.','Najskôr dokončite záznam.'));return}window.speechSynthesis?.cancel();if((/^#(?:dovednost|budoucnost|stul|ukazka)-/.test(window.location?.hash))||page!=='exercise'&&['#karierni-mapa','#denik','#vydej','#obsluha','#po-smene','#moje-portfolio','#listek-kuchyne','#listek-obsluha'].includes(window.location?.hash))window.history.replaceState(null,'',window.location.pathname+window.location.search);view=page;quizError=false;render(true)}
+function go(page){if(busy||audioSession){tell(t('Nejdřív dokončete záznam.','Najskôr dokončite záznam.'));return}window.speechSynthesis?.cancel();if((/^#(?:dovednost|budoucnost|stul|ukazka)-/.test(window.location?.hash))||page!=='exercise'&&['#karierni-mapa','#denik','#vydej','#obsluha','#po-smene','#moje-portfolio','#listek-kuchyne','#listek-obsluha'].includes(window.location?.hash))window.history.replaceState(null,'',window.location.pathname+window.location.search);if(page==='career')window.history.replaceState(null,'','#karierni-mapa');view=page;quizError=false;render(true)}
 function scenes(p){const folder=p.full&&p.id!=='ema'?'assets/':'photos/';const n=p.full?6:3;return Array.from({length:n},(_,i)=>folder+p.photo+'-'+i+'.webp')}
 function picture(p,phase){const images=scenes(p);const idx=p.full?[0,1,2,3,4,5,3,5][phase]:[0,0,1,1,2,2,1,2][phase];return images[idx]}
 function face(p){return scenes(p)[0]}
@@ -53,7 +53,9 @@ const photo=(path,alt,cls='')=>'<img class="'+cls+'" src="'+html(path)+'" alt="'
 const action=(name,label,value='',cls='button',attrs='')=>'<button type="button" class="'+cls+'" data-do="'+name+'" data-value="'+html(value)+'" '+attrs+'>'+html(label)+'</button>';
 const goBtn=(v,label,cls='button')=>action('go',label,v,cls);
 const pill=(label,cls='')=>'<span class="pill '+cls+'">'+html(label)+'</span>';
-const labelsNav=()=>({day:t('Směna','Zmena'),path:t('Moje cesta','Moja cesta'),journal:t('Deník','Denník'),portfolio:t('Portfolio','Portfólio'),group:t('Moje skupina','Moja skupina'),overview:t('Přehled výcviku','Prehľad výcviku'),admin:t('Správa ukázky','Správa ukážky')});
+const careerLabel=()=>t('Kariérní mapa','Kariérna mapa');
+function careerPage(){return '<section class="career-poster" id="karierni-mapa"><h2>'+t('Kam mě může dovést praxe?', 'Kam ma môže priviesť prax?')+'</h2><a href="photos/karierni-mapa.webp"><img src="photos/karierni-mapa.webp" width="1086" height="1448" alt="'+t('Od úkolu na směně přes potvrzení pedagogem a vlastní portfolio až k vedení kuchyně nebo restaurace.', 'Od úlohy na zmene cez potvrdenie pedagógom a vlastné portfólio až k vedeniu kuchyne alebo reštaurácie.')+'"></a></section>'}
+const labelsNav=()=>({career:careerLabel(),day:t('Směna','Zmena'),path:t('Moje cesta','Moja cesta'),journal:t('Deník','Denník'),portfolio:t('Portfolio','Portfólio'),group:t('Moje skupina','Moja skupina'),overview:t('Přehled výcviku','Prehľad výcviku'),admin:t('Správa ukázky','Správa ukážky')});
 const primary=(label,act,val='')=>action(act,label,val,'button primary arrow');
 const title=(tag,name,desc='')=>'<div class="page-title"><span class="ey">'+html(tag)+'</span><h1>'+html(name)+'</h1>'+(desc?'<p>'+html(desc)+'</p>':'')+'</div>';
 function courseTitle(p,s){if(s.code!==DEFAULT_CODE[p.track])return competency(s.code).name;return p.track==='cook'?t('Dvě porce pečené mrkve','Dve porcie pečenej mrkvy'):t('Oběd pro dva hosty','Obed pre dvoch hostí');}
@@ -73,9 +75,9 @@ function heroText(p,s){
 }
 function sectionHead(h,sub=''){return '<div class="section-head"><h2>'+html(h)+'</h2>'+(sub?'<small>'+html(sub)+'</small>':'')+'</div>'}
 function nav(){
- const items=role==='student'?['path','day','journal','portfolio']:role==='teacher'?['group']:role==='leader'?['overview']:['admin'];
+ const items=role==='student'?['path','day','journal','portfolio','career']:role==='teacher'?['group']:role==='leader'?['overview']:['admin'];
  const active=['prepare','reflect','tip','during','exercise','summary'].includes(view)?'day':view==='employer'?'portfolio':['menu-study','future','table'].includes(view)?'path':view==='inspect'?'group':view;
- return '<header class="bar"><div class="shell bar-inner">'+'<button type="button" class="wordmark" data-do="home"><span>MISTR SVĚTA<span aria-hidden="true">.</span></span><small>'+t('Průvodce odborným výcvikem','Sprievodca odborným výcvikom')+'</small></button>'+'<nav aria-label="'+t('Hlavní navigace','Hlavná navigácia')+'">'+items.map(k=>action('go',labelsNav()[k],k,'nav-link',active===k?'aria-current="page"':'')).join('')+'</nav><div class="bar-tools">'+action('lang',language==='cs'?'SK':'CZ','','language','aria-label="'+t('Přepnout do slovenštiny','Prepnúť do češtiny')+'"')+'<button class="profile-btn" data-do="accounts" aria-haspopup="dialog">'+(role==='student'?photo(face(person()),'','avatar'):'')+'<span>'+html(role==='student'?person().name:roleLabel(role))+'</span><b aria-hidden="true">⌄</b></button></div></div></header>';
+ return '<header class="bar"><div class="shell bar-inner">'+'<button type="button" class="wordmark" data-do="home"><span>MISTR SVĚTA<span aria-hidden="true">.</span></span><small>'+t('Průvodce odborným výcvikem','Sprievodca odborným výcvikom')+'</small></button>'+'<nav aria-label="'+t('Hlavní navigace','Hlavná navigácia')+'">'+items.map(k=>k==='career'?'<a class="nav-link career-link" href="#karierni-mapa" data-do="go" data-value="career" '+(active===k?'aria-current="page"':'')+'>'+careerLabel()+'</a>':action('go',labelsNav()[k],k,'nav-link',active===k?'aria-current="page"':'')).join('')+'</nav><div class="bar-tools">'+action('lang',language==='cs'?'SK':'CZ','','language','aria-label="'+t('Přepnout do slovenštiny','Prepnúť do češtiny')+'"')+'<button class="profile-btn" data-do="accounts" aria-haspopup="dialog">'+(role==='student'?photo(face(person()),'','avatar'):'')+'<span>'+html(role==='student'?person().name:roleLabel(role))+'</span><b aria-hidden="true">⌄</b></button>'+(role==='student'?'<a class="career-thumb" href="#karierni-mapa" data-do="go" data-value="career" aria-label="'+careerLabel()+'" title="'+careerLabel()+'"><img src="photos/karierni-mapa.webp" alt="" width="34" height="44"></a>':'')+'</div></div></header>';
 }
 function footer(){return '<footer class="shell footer"><span>'+t('Fiktivní skupina · údaje v tomto prohlížeči','Fiktívna skupina · údaje v tomto prehliadači')+'</span><div>'+action('accounts',t('Přepnout roli','Prepnúť rolu'),'','text-link')+' · '+action('about',t('O aplikaci a zdrojích','O aplikácii a zdrojoch'),'','text-link')+'</div></footer>'}
 function guide(p,s){
@@ -253,7 +255,7 @@ function accountModal(){
 }
 const homeFor=()=>({student:'path',teacher:'group',leader:'overview',admin:'admin'})[role];
 function render(scroll=false){
- const pages=role==='student'?{day:dayPage,summary:summaryPage,employer:employerPage,prepare:morningPage,exercise:exercisePage,during:()=>noteForm('during'),reflect:()=>noteForm('after'),journal:journalPage,path:pathPage,future:futurePage,table:tablePage,'menu-study':menuStudyPage,portfolio,tip:tipPage}:role==='teacher'?{group,inspect}:role==='admin'?{admin}:{overview};
+ const pages=role==='student'?{career:careerPage,day:dayPage,summary:summaryPage,employer:employerPage,prepare:morningPage,exercise:exercisePage,during:()=>noteForm('during'),reflect:()=>noteForm('after'),journal:journalPage,path:pathPage,future:futurePage,table:tablePage,'menu-study':menuStudyPage,portfolio,tip:tipPage}:role==='teacher'?{group,inspect}:role==='admin'?{admin}:{overview};
  if(!pages[view])view=homeFor();
  const s=data().shift;
  if(role==='student'&&((view==='prepare'&&s.phase!==0)||(view==='during'&&s.phase!==3)||(view==='reflect'&&![4,7].includes(s.phase))))view='day';
@@ -428,7 +430,7 @@ function openSharedExercise(){
  view=hash.startsWith('#listek-')?'path':hash==='#moje-portfolio'?'employer':hash==='#po-smene'?(data().shift.phase>=4?'summary':'day'):serviceExercise(person(),data().shift)?'exercise':'day';
 }
 function renderSharedEntry(scroll=false){
- if(location.hash==='#karierni-mapa'&&!busy&&!audioSession){role='student';view='path';render();document.getElementById('karierni-mapa')?.scrollIntoView();return;}
+ if(location.hash==='#karierni-mapa'&&!busy&&!audioSession){role='student';view='career';render(true);return;}
  if(/^#denik(?:-[a-z]+)?$/.test(window.location.hash)&&!busy&&!audioSession){const requested=window.location.hash.slice(7);if(requested&&PEOPLE.some(p=>p.id===requested))switchPerson(requested);role='student';view='journal';render(scroll);return;}
  const tableLink=/^#stul-(12|7)-([a-z]+)$/.exec(window.location?.hash || '');
  if (tableLink && PEOPLE.some(p=>p.id===tableLink[2]) && !busy && !audioSession) {
