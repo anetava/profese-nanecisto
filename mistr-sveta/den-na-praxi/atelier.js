@@ -12,7 +12,7 @@ try{const s=JSON.parse(localStorage.getItem(scopedKey('settings'))||'null');if(s
 if(!['cs','sk'].includes(language))language='cs';
 if(!PEOPLE.some(p=>p.id===studentId))studentId='ema';
 const styleWords={
-'Moje cesta':'Moje skilly','Moja cesta':'Moje skilly','Směna':'Moje směna','Zmena':'Moja zmena','Deník':'Zápisky','Denník':'Zápisky','Portfolio':'Moje práce','Portfólio':'Moja práca','Plánovač':'Můj plán','Plánovač praxe':'Kdy mám praxi?','Kariérní mapa':'Kam mířím','Kariérna mapa':'Kam mierim','Můj lístek dovedností':'Moje skilly v provozu','Môj lístok zručností':'Moje skilly v prevádzke','Cíl směny':'Dnešní mise','Cieľ zmeny':'Dnešná misia','K nácviku':'Chci zkusit','Na nácvik':'Chcem skúsiť','Vlastní nácvik':'Můj trénink','Vlastný nácvik':'Môj tréning','Můj deník praxe':'Moje směny v kostce','Môj denník praxe':'Moje zmeny v kocke','Před směnou':'Před startem','Pred zmenou':'Pred štartom','Během směny':'Přímo v akci','Počas zmeny':'Priamo v akcii','Po směně':'Po směně v kostce','Po zmene':'Po zmene v kocke','Co posuzuje pedagog a jaké jsou úrovně':'Podle čeho mistr pozná můj level?','Čo posudzuje pedagóg a aké sú úrovne':'Podľa čoho majster spozná môj level?','Doklad práce':'Moje ukázka práce','Doklad práce ':'Moja ukážka práce','Situace k nácviku':'Co si zkusím','Situácia na nácvik':'Čo si skúsim','Úkol této směny':'Co dnes zvládnu','Úloha tejto zmeny':'Čo dnes zvládnem','Otevřít ranní přípravu':'Jdu na přípravu','Otvoriť rannú prípravu':'Idem na prípravu','Závěrečná reflexe':'Jak mi to šlo?','Záverečná reflexia':'Ako mi to išlo?','K čemu mi to je?':'Proč se mi tenhle skill hodí?','Na čo mi to je?':'Kde tento skill využijem?','Jak ji získám?':'Jak si odemknu další level?','Ako ju získam?':'Ako si odomknem ďalší level?','Co přesně zvládnu':'Co budu mít v ruce','Čo presne zvládnem':'Čo budem mať v rukách','Uložené dny':'Moje dosavadní směny','Uložené dni':'Moje doterajšie zmeny','Naplánovaná směna':'Co mě čeká','Naplánovaná zmena':'Čo ma čaká'};
+'Moje cesta':'Moje skilly','Moja cesta':'Moje skilly','Směna':'Moje směna','Zmena':'Moja zmena','Portfolio':'Moje práce','Portfólio':'Moja práca','Plánovač':'Můj plán','Plánovač praxe':'Kdy mám praxi?','Kariérní mapa':'Kam mířím','Kariérna mapa':'Kam mierim','Můj lístek dovedností':'Moje skilly v provozu','Môj lístok zručností':'Moje skilly v prevádzke','Cíl směny':'Dnešní mise','Cieľ zmeny':'Dnešná misia','K nácviku':'Chci zkusit','Na nácvik':'Chcem skúsiť','Vlastní nácvik':'Můj trénink','Vlastný nácvik':'Môj tréning','Můj deník praxe':'Moje směny v kostce','Môj denník praxe':'Moje zmeny v kocke','Před směnou':'Před startem','Pred zmenou':'Pred štartom','Během směny':'Přímo v akci','Počas zmeny':'Priamo v akcii','Po směně':'Po směně v kostce','Po zmene':'Po zmene v kocke','Co posuzuje pedagog a jaké jsou úrovně':'Podle čeho mistr pozná můj level?','Čo posudzuje pedagóg a aké sú úrovne':'Podľa čoho majster spozná môj level?','Doklad práce':'Moje ukázka práce','Doklad práce ':'Moja ukážka práce','Situace k nácviku':'Co si zkusím','Situácia na nácvik':'Čo si skúsim','Úkol této směny':'Co dnes zvládnu','Úloha tejto zmeny':'Čo dnes zvládnem','Otevřít ranní přípravu':'Jdu na přípravu','Otvoriť rannú prípravu':'Idem na prípravu','Závěrečná reflexe':'Jak mi to šlo?','Záverečná reflexia':'Ako mi to išlo?','K čemu mi to je?':'Proč se mi tenhle skill hodí?','Na čo mi to je?':'Kde tento skill využijem?','Jak ji získám?':'Jak si odemknu další level?','Ako ju získam?':'Ako si odomknem ďalší level?','Co přesně zvládnu':'Co budu mít v ruce','Čo presne zvládnem':'Čo budem mať v rukách','Uložené dny':'Moje dosavadní směny','Uložené dni':'Moje doterajšie zmeny','Naplánovaná směna':'Co mě čeká','Naplánovaná zmena':'Čo ma čaká'};
 function youthCopy(text){
  if(!studentStyle||role!=='student'||typeof text!=='string')return text;
  if(text==='Plánovač'&&language==='sk')return 'Môj plán';
@@ -206,18 +206,30 @@ function collectJournal(p,m){
  }
  return days;
 }
+document.addEventListener('input',e=>{
+ if(!['diary-find','diary-reflected'].includes(e.target.id))return;
+ const norm=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+ const words=norm(document.querySelector('#diary-find').value).trim().split(/\s+/).filter(Boolean);
+ const only=document.querySelector('#diary-reflected').checked;let count=0;
+ document.querySelectorAll('.journal-day').forEach(el=>{
+ const [y,m,d]=el.dataset.date.split('-');
+ const text=norm([el.dataset.date,Number(d)+'.'+Number(m)+'.'+y,el.querySelector('summary').textContent,...Array.from(el.querySelectorAll('article'),a=>a.textContent)].join(' '));
+ el.hidden=(only&&el.dataset.reflected!=='true')||!words.every(w=>text.includes(w));if(!el.hidden)count++;
+ });document.querySelector('#diary-count').textContent=t('Počet dnů','Počet dní')+' · '+count;
+});
 function journalPage(){
  const p=person(),m=data(),days=collectJournal(p,m);
  const fmt=new Intl.DateTimeFormat(language==='sk'?'sk-SK':'cs-CZ',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
  const cards=[...days.keys()].sort().reverse().map(day=>{
   const entries=days.get(day);
-  return '<details class="journal-day"><summary><span><strong>'+html(fmt.format(new Date(day+'T12:00:00')))+'</strong><span>'+entries.map(e=>html(e.label)).join(' · ')+'</span></span></summary>'+entries.map(e=>'<article><h3>'+html(e.label)+'</h3>'+e.body+'</article>').join('')+action('day-reflect',t('Moje reflexe a sebereflexe','Moja reflexia a sebareflexia'),day,'button')+'</details>';
+  const reflected=Boolean(m.dailyReflections?.[day]||[m.shift,...m.finished,...m.history].some(s=>s.day===day&&s.notes?.after&&hasNote(s.notes.after))||Object.values(m.tableNotes||{}).some(r=>[r,...(r.earlier||[])].some(x=>Number.isInteger(x.field)&&(x.fieldDay||x.day)===day)));
+  return '<details class="journal-day" data-reflected="'+reflected+'" data-date="'+day+'"><summary><span><strong>'+html(fmt.format(new Date(day+'T12:00:00')))+'</strong><span>'+entries.map(e=>html(e.label)).join(' · ')+'</span></span></summary>'+entries.map(e=>'<article><h3>'+html(e.label)+'</h3>'+e.body+'</article>').join('')+action('day-reflect',t('Moje reflexe a sebereflexe','Moja reflexia a sebareflexia'),day,'button')+'</details>';
  }).join('');
  const embedded=window.self!==window.top;
  const previewUrl='?nahled=telefon#denik-'+encodeURIComponent(p.id);
  const preview=embedded?'':'<details class="phone-preview" '+(new URLSearchParams(location.search).has('mobil')?'open':'')+'><summary>'+t('Zobrazit deník na mobilu','Zobraziť denník na mobile')+'</summary><iframe loading="lazy" title="'+t('Mobilní náhled deníku','Mobilný náhľad denníka')+'" src="'+previewUrl+'"></iframe></details>';
- return title(p.name,t('Můj deník praxe','Môj denník praxe'),t('Vyberte den a otevřete si zápisy z praxe.','Vyberte deň a otvorte si zápisy z praxe.'))+
- preview+'<section class="journal-days"><h2>'+t('Uložené dny','Uložené dni')+' ('+days.size+')</h2>'+ (cards||'<p>'+t('Zatím tu žádný den není. První zápis přibude po ranní přípravě.','Zatiaľ tu žiadny deň nie je. Prvý zápis pribudne po rannej príprave.')+'</p>')+'</section>'+
+ return title(p.name,t('Deník','Denník'),t('Vyberte den a otevřete si zápisy z praxe.','Vyberte deň a otvorte si zápisy z praxe.'))+
+ preview+'<div class="diary-tools"><label>'+t('Najít v deníku','Nájsť v denníku')+'<input type="search" id="diary-find" placeholder="'+t('Datum nebo slovo','Dátum alebo slovo')+'"></label><label><input type="checkbox" id="diary-reflected"> '+t('Jen dny s reflexí','Iba dni s reflexiou')+'</label><span id="diary-count" role="status"></span></div><section class="journal-days"><h2>'+t('Uložené dny','Uložené dni')+' ('+days.size+')</h2>'+ (cards||'<p>'+t('Zatím tu žádný den není. První zápis přibude po ranní přípravě.','Zatiaľ tu žiadny deň nie je. Prvý zápis pribudne po rannej príprave.')+'</p>')+'</section>'+
  '<details class="journal-days"><summary>'+t('Plánované dny v kalendáři','Plánované dni v kalendári')+'</summary>'+Object.entries(yearPlan(m,p,planYear)).sort(([a],[b])=>a.localeCompare(b)).map(([d,e])=>action('plan-day',dateLabel(d)+' · '+planName(e.type),d,'button')).join(' ')+'</details>'+(m.shift.phase===0?'<section><h2>'+t('Naplánovaná směna','Naplánovaná zmena')+'</h2><p>'+html(dateLabel(m.shift.day)+' · '+courseTitle(p,m.shift))+'</p>'+goBtn('prepare',t('Otevřít ranní přípravu','Otvoriť rannú prípravu'),'button primary')+'</section>':'')+tableJournal(p,m);
 }
 function pastJournal(p,m){
