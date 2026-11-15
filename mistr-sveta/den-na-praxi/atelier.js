@@ -395,7 +395,7 @@ function renderSharedEntry(scroll=false){
    if (dialog.open) dialog.close();
    switchPerson(futureProfile);role='student';view='future';render(scroll);return;
  }
- const code = window.location?.hash?.match(/^#dovednost-(K\d{2}\.\d+)$/)?.[1];
+ const code = window.location?.hash?.match(/^#dovednost-(K\d{2}\.\d+|P0[1-8])$/)?.[1];
  const skill = code && competency(code);
  if (skill && !busy && !audioSession) {
    if (dialog.open) dialog.close();

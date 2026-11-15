@@ -6,6 +6,7 @@ function skillChapters(p) {
     {id:'specialty', name:cook ? t('Kuchařské dovednosti','Kuchárske zručnosti') : t('Obsluha hostů','Obsluha hostí'), photo:cook ? 'assets/cook-3.webp' : 'assets/service-3.webp', accepts:c => !commonSkill(c)},
     {id:'operations', name:t('Příprava a chod provozu','Príprava a chod prevádzky'), photo:cook ? 'photos/ema-1.webp' : 'photos/table.webp', accepts:c => /^K0[125]\./.test(c.code)},
     {id:'quality', name:t('Kvalita a hospodaření','Kvalita a hospodárenie'), photo:cook ? 'photos/plate.webp' : 'photos/matej-1.webp', accepts:c => /^K(09|10)\./.test(c.code)},
+    {id:'graduate',name:t('Práce absolventa','Práca absolventa'),photo:'photos/table.webp',accepts:c=>c.code.startsWith('P')},
     {id:'team', name:t('Spolupráce a samostatná práce','Spolupráca a samostatná práca'), photo:cook ? 'photos/chef-mentor.webp' : 'photos/service-mentor.webp', accepts:() => true}
   ];
 }
@@ -50,7 +51,7 @@ function portfolioMap(p, model, forecast = false) {
     (reached ? t('Můj cíl v Mistru světa je splněný','Môj cieľ v aplikácii MISTR SVĚTA je splnený') :
       forecast ? t('Mapa v cíli','Mapa v cieli') : t('Moje mapa dovedností','Moja mapa zručností')) +
      '</h2><p>' + html(help) + '</p>' + evidenceLink + '</div><div class="map-count"><strong>' + complete + '<span> / ' + skills.length + '</span></strong><small>' +
-    (forecast ? t('cíl na úrovni 3','cieľ na úrovni 3') : t('na úrovni 3')) + '</small></div></div><div class="map-groups">' + groups + '</div><p><a class="map-recorded" href="profil-oboru.html?lang=' + language + '">' + t('Celý obor · 12 oblastí a 36 dovedností','Celý odbor · 12 oblastí a 36 zručností') + ' →</a></p></section>';
+    (forecast ? t('cíl na úrovni 3','cieľ na úrovni 3') : t('na úrovni 3')) + '</small></div></div><div class="map-groups">' + groups + '</div><p><a class="map-recorded" href="profil-oboru.html?lang=' + language + '">' + t('Celý obor · 13 oblastí a 44 dovedností','Celý odbor · 13 oblastí a 44 zručností') + ' →</a></p></section>';
 }
 
 function switchPortfolioMap(mode) {
