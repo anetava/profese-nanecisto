@@ -75,3 +75,5 @@ body .bar.studio-header{background:#fff;border:0;border-bottom:1px solid #dcdedb
 .studio-header .bar-tools :is(.text-link,.tone-btn,.language,.profile-btn,.career-thumb){min-height:40px}
 }
 }
+
+.diary-tools{display:flex;align-items:center;flex-wrap:wrap;gap:12px 20px;margin:18px 0;padding:14px;background:var(--mint-wash);border-radius:9px}.diary-tools label{font-weight:650}.diary-tools input[type=search]{display:block;margin-top:4px;max-width:100%}.journal-days .journal-day[hidden]{display:none}
