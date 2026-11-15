@@ -24,6 +24,7 @@
   let role='student',who='alex',search='',statusFilter='all';
   const person=()=>people.find(p=>p.id===who);
   const current=()=>db[who];
+  const recordRoute=r=>'praxe/'+r.moduleId+'/zaznam/'+encodeURIComponent(r.id);
   const navItems=[['start','Moje praxe'],['plan','Plán'],['skills','Kompetence'],['portfolio','Portfolio']];
   const names={student:'Student',mentor:'Cvičný učitel',ivp:'Přehled IVP'};
   const section=(ey,title,desc='')=>'<header class="subhead"><small class="eyebrow">'+e(ey)+'</small><h1>'+e(title)+'</h1>'+(desc?'<p>'+e(desc)+'</p>':'')+'</header>';
@@ -37,7 +38,7 @@
   function studentHome(){
     const p=person(),m=mod(p.stage),pending=current().records.find(r=>['draft','returned'].includes(r.status)),target=pending?mod(pending.moduleId):m;
     return '<section class="hero"><div class="hero-copy"><small>'+e(p.name)+' · Učitelství praktického vyučování</small><h1>'+({group:'Co dnes uvidíte ve výuce?',micro:'Jak povedete první výstup?',continuous:'Co si žáci odnesou z hodiny?'}[p.stage])+'</h1><p>'+({group:'Při náslechu vyberte jeden okamžik. Zapište, co udělal učitel a jak na to žáci reagovali.',micro:'Naplánujte si krátkou instruktáž a určete, podle čeho poznáte, že jí skupina rozumí.',continuous:'Spojte přípravu, vlastní výuku a rozbor s cvičným učitelem do jednoho záznamu.'}[p.stage])+'</p>'+link('praxe/'+target.id+(pending?'/upravit/'+pending.id:''),pending?'Pokračovat v záznamu →':'Otevřít moji praxi →','primary')+'</div><figure class="hero-photo"><img src="praxe.webp" alt="Studentka učitelství a mentorka poslouchají, jak žák vysvětluje sestavení dřevěného spoje."><figcaption>'+e(target.title)+'</figcaption></figure></section>'+
-    '<div class="section-head"><div><small class="eyebrow">Studijní cesta</small><h2>Od náslechu k vlastní výuce</h2></div></div><div class="grid">'+modules.map((m,i)=>'<article class="tile"><span class="tag">Praxe '+String(i+1).padStart(2,'0')+'</span><h3>'+e(m.title)+'</h3><p>'+e(m.short)+'</p>'+link('praxe/'+m.id,'Otevřít praxi →')+'</article>').join('')+'</div>';
+    '<div class="section-head"><div><small class="eyebrow">Studijní cesta</small><h2>Od náslechu k vlastní výuce</h2></div></div><div class="grid">'+modules.map((m,i)=>'<article class="tile phase-tile"><img class="phase-photo" src="phase-'+(i+1)+'.webp" alt="" loading="lazy"><span class="tag">'+[2,3,4,5,6,6][i]+'. semestr · Praxe '+String(i+1).padStart(2,'0')+'</span><h3>'+e(m.title)+'</h3><p>'+e(m.short)+'</p>'+link('praxe/'+m.id,'Otevřít praxi →')+'</article>').join('')+'</div>';
   }
   function modulePage(m){
     const records=current().records.filter(r=>r.moduleId===m.id);
@@ -49,8 +50,8 @@
   }
   function skills(){
     const records=visibleRecords();
-    return section(person().name+' · Kompetence','Co už dokládá moje praxe?','U každé kompetence najdete vlastní záznamy a uvidíte, které z nich prošly rozborem s učitelem.')+
-    '<div class="stack">'+AREAS.map(area=>'<details class="area-box"><summary>'+e(area.name)+'</summary>'+area.skills.map(s=>{const list=records.filter(r=>r.competency===s.code);return '<details><summary>'+e(s.code)+' · '+e(s.name)+' <small>('+list.length+')</small></summary><p>'+e(s.example||s.hint||'Vyberte při zápisu konkrétní situaci, na které tuto dovednost ukážete.')+'</p>'+(list.length?list.map(r=>'<p>'+e(r.title)+' · '+e(statusName(r.status))+' '+link('praxe/'+r.moduleId,'Otevřít praxi','text-btn')+'</p>').join(''):'<p>Zatím bez dokladu. Kompetenci přiřadíte v záznamu z praxe.</p>')+'</details>'}).join('')+'</details>').join('')+'</div><p class="muted">'+link('sources','Původ kompetencí a metodik','text-btn')+'</p>';
+    return section(person().name+' · Kompetence','Co už dokládá moje praxe?','U každé kompetence uvidíte, v kolika situacích jste ji pozorovali nebo sami použili. Do počítadla vstupují kompetence se záznamem po společném rozboru.')+
+    '<div class="stack">'+AREAS.map(area=>{const count=area.skills.filter(s=>records.some(r=>r.competency===s.code && r.status==='confirmed')).length;return '<details class="area-box"><summary>'+e(area.name)+' <small class="skill-count">'+count+' / '+area.skills.length+' po rozboru</small></summary>'+area.skills.map(s=>{const list=records.filter(r=>r.competency===s.code);return '<details><summary>'+e(s.code)+' · '+e(s.name)+' <small>('+list.length+')</small></summary><p>'+e(s.example||s.hint||'Vyberte při zápisu konkrétní situaci, na které tuto dovednost ukážete.')+'</p>'+(list.length?list.map(r=>'<p>'+e(r.title||'Rozepsaný záznam')+' · '+e(mod(r.moduleId)?.title)+' · '+e(statusName(r.status))+' '+link(recordRoute(r),'Otevřít doklad','text-btn')+'</p>').join(''):'<p>Zatím bez dokladu. Kompetenci přiřadíte v záznamu z praxe.</p>')+'</details>'}).join('')+'</details>'}).join('')+'</div><p class="muted">'+link('sources','Původ kompetencí a metodik','text-btn')+'</p>';
   }
   function exportBody(r){
     return '<article class="record-export"><h3>'+e(r.title||'Rozepsaný záznam')+'</h3><p>'+e(mod(r.moduleId)?.title)+' · '+e(statusName(r.status))+'</p>'+PRACTICE.recordBody(r)+'</article>';
@@ -58,16 +59,16 @@
   function listRecords(){
     const normalize=s=>String(s).toLocaleLowerCase('cs').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
     const out=visibleRecords().filter(r=>(statusFilter==='all'||statusFilter===r.status)&&normalize([r.title,r.date,fmt(r.date),mod(r.moduleId)?.title,r.competency,r.reflection,r.feedback,r.nextStep,...Object.values(r.fields||{}),...Object.values(r.review||{}),...(r.timeline||[]).flatMap(Object.values)].join(' ')).includes(normalize(search))).sort((a,b)=>b.date.localeCompare(a.date));
-    return out.length?out.map(r=>'<details class="area-box entry"><summary>'+e(r.title||'Rozepsaný záznam')+' · '+e(fmt(r.date))+'</summary>'+exportBody(r)+link('praxe/'+r.moduleId,'Otevřít záznamy praxe')+'</details>').join(''):'<p class="empty">Žádný odpovídající záznam.</p>';
+    return out.length?out.map(r=>'<details class="area-box entry"><summary>'+e(r.title||'Rozepsaný záznam')+' · '+e(fmt(r.date))+'</summary>'+exportBody(r)+link(recordRoute(r),'Otevřít v praxi')+'</details>').join(''):'<p class="empty">Žádný odpovídající záznam.</p>';
   }
   function portfolio(){
-    return section(person().name,'Moje portfolio','Na jednom místě najdete záznamy, vlastní reflexe a zpětnou vazbu z praxí.')+
+    return section(person().name,role==='student'?'Moje portfolio':'Portfolio studujícího','Na jednom místě najdete záznamy, vlastní reflexe a zpětnou vazbu z praxí.')+
     '<div class="panel portfolio-toolbar"><label>Hledat v portfoliu<input type="search" id="filter-q" placeholder="Téma, datum, kompetence…" value="'+e(search)+'"></label><label>Stav<select id="filter-st">'+[['all','Všechny záznamy'],...['draft','submitted','returned','confirmed'].map(s=>[s,statusName(s)])].map(([v,l])=>'<option value="'+v+'"'+(v===statusFilter?' selected':'')+'>'+e(l)+'</option>').join('')+'</select></label><button class="primary" data-print>Vytisknout celé portfolio / PDF</button></div><div class="records-list" id="results">'+listRecords()+'</div>';
   }
   function staff(){
     const pending=people.flatMap(p=>db[p.id].records.filter(r=>r.status==='submitted').map(r=>({p,r})));
     return section('Ukázková role · '+names[role],role==='mentor'?'Co čeká na rozbor?':'Přehled pedagogických praxí',role==='mentor'?'Otevřete práci studenta, přečtěte si reflexi a doplňte zpětnou vazbu.':'Sledujte zaznamenanou práci a průběh rozborů u modelové skupiny.')+
-    (role==='mentor'?'<section class="panel"><h2>K rozboru · '+pending.length+'</h2>'+pending.map(({p,r})=>'<div class="overview-row"><div><strong>'+e(r.title)+'</strong><small>'+e(p.name)+' · '+e(mod(r.moduleId).title)+'</small></div><button class="secondary" data-person="'+p.id+'" data-stage="'+r.moduleId+'">Otevřít</button></div>').join('')+(pending.length?'':'<p>V tuto chvíli nikdo nečeká na zpětnou vazbu.</p>')+'</section>':'')+
+    (role==='mentor'?'<section class="panel"><h2>K rozboru · '+pending.length+'</h2>'+pending.map(({p,r})=>'<div class="overview-row"><div><strong>'+e(r.title)+'</strong><small>'+e(p.name)+' · '+e(mod(r.moduleId).title)+'</small></div><button class="secondary" data-person="'+p.id+'" data-stage="'+r.moduleId+'" data-entry="'+e(r.id)+'">Otevřít</button></div>').join('')+(pending.length?'':'<p>V tuto chvíli nikdo nečeká na zpětnou vazbu.</p>')+'</section>':'')+
     '<div class="section-head"><h2>Studijní skupina</h2></div><div class="grid">'+people.map(p=>{const rs=db[p.id].records;return '<article class="tile"><span class="tag">'+e(mod(p.stage).title)+'</span><h3>'+e(p.name)+'</h3><p>Záznamy celkem · '+rs.length+'<br>Po rozboru · '+rs.filter(r=>r.status==='confirmed').length+'</p><button class="secondary" data-person="'+p.id+'">Otevřít portfolio</button></article>'}).join('')+'</div>';
   }
   function sources(){
@@ -80,9 +81,13 @@
     const content=m?modulePage(m):page==='skills'?skills():page==='portfolio'?portfolio():page==='sources'?sources():page==='plan'&&role==='student'?'<div id="plan-space">'+PLAN.render(current().events,modules)+'</div>':role==='student'?studentHome():staff();
     root.innerHTML='<header class="site-head"><a class="brand" href="#start"><img src="mark.svg" alt=""><span>Ateliér praxe<small>Učitelství praktického vyučování</small></span></a><nav aria-label="Hlavní nabídka">'+nav.map(([id,name])=>'<a href="#'+id+'" '+(active===id?'aria-current="page"':'')+'>'+e(name)+'</a>').join('')+'</nav><label class="account"><span class="sr">Ukázkový profil</span><select id="mode">'+[...people.map(p=>['student/'+p.id,p.name+' · student']),['mentor','Cvičný učitel'],['ivp','Přehled IVP']].map(([id,l])=>'<option value="'+id+'" '+(id===(role==='student'?'student/'+who:role)?'selected':'')+'>'+l+'</option>').join('')+'</select></label></header><main id="content" tabindex="-1">'+content+'</main><footer class="appfoot"><span>Ukázková skupina · záznamy zůstávají v tomto prohlížeči</span><a href="#sources">Metodiky a zdroje</a></footer>';
     document.querySelector('#mode').onchange=ev=>{const [r,p]=ev.target.value.split('/');role=r;if(p)who=p;search='';statusFilter='all';navigate('start')};
-    root.querySelectorAll('[data-person]').forEach(b=>b.onclick=()=>{who=b.dataset.person;search='';statusFilter='all';navigate(b.dataset.stage?'praxe/'+b.dataset.stage:'portfolio')});
+    root.querySelectorAll('[data-person]').forEach(b=>b.onclick=()=>{who=b.dataset.person;search='';statusFilter='all';navigate(b.dataset.stage?'praxe/'+b.dataset.stage+'/zaznam/'+encodeURIComponent(b.dataset.entry):'portfolio')});
     if(m?.id==='guided'&&role==='student')document.querySelector('#guided-target').onchange=ev=>{current().guidedPlan=ev.target.value;persist();render()};
     if(m){PRACTICE.bind(document.querySelector('#record-space'),m,current().records.filter(r=>r.moduleId===m.id),{role:role,save:items=>{current().records=[...current().records.filter(r=>r.moduleId!==m.id),...items];const ok=persist();render();if(ok)toast('Záznam je uložený.')},go:navigate})}
+    if(m && page.split('/')[2]==='zaznam'){
+      const sel=[...root.querySelectorAll('[data-record-id]')].find(el=>el.dataset.recordId===page.split('/')[3]);
+      if(sel){sel.open=true;requestAnimationFrame(()=>sel.scrollIntoView({block:'start'}))}
+    }
     if(m && page.split('/')[2]==='upravit' && role==='student'){
       const edit=[...root.querySelectorAll('[data-rec-edit]')].find(b=>b.dataset.recEdit===page.split('/')[3]);
       if(edit){edit.click();history.replaceState(null,'','#praxe/'+m.id)}

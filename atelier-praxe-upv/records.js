@@ -32,7 +32,7 @@ window.PRACTICE = (() => {
     const recordsToShow = records.filter(r => student || r.status !== 'draft').slice().sort((a,b)=>(b.date || '').localeCompare(a.date || ''));
     const rows = recordsToShow.map(r=>{
       const editable = student && ['draft','returned'].includes(r.status);
-      return '<details class="panel"><summary><b>'+esc(r.title || 'Rozepsaný záznam')+'</b> · '+esc(formatDate(r.date))+' <span class="pill">'+esc(statusLabel(r.status))+'</span></summary>'+
+      return '<details class="panel" data-record-id="'+esc(r.id)+'"><summary><b>'+esc(r.title || 'Rozepsaný záznam')+'</b> · '+esc(formatDate(r.date))+' <span class="pill">'+esc(statusLabel(r.status))+'</span></summary>'+
         recordBody(r)+(editable ? '<button class="secondary" type="button" data-rec-edit="'+esc(r.id)+'">Upravit záznam</button>' : '')+
         (role==='mentor' && r.status==='submitted' ? reviewForm(m,r) : '')+'</details>';
     }).join('');
