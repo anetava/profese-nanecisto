@@ -92,10 +92,11 @@ function menuRow(c, p, model) {
   const state = menuState(c, model);
   const expanded = menuOpenCode === c.code;
   const caption = menuSkillWhy(c, p);
-  return '<details class="menu-item" name="competency-menu" data-code="' + html(c.code) + '"' + (expanded ? ' open' : '') +
+  const level = maxLevel(model, c.code);
+  return '<details class="menu-item" name="competency-menu" data-code="' + html(c.code) + '" data-level="' + level + '"' + (expanded ? ' open' : '') +
     '><summary><span class="menu-item-title"><strong class="menu-item-name">' + html(menuSkillName(c)) +
     '</strong><span class="menu-item-caption">' + html(caption) + '</span></span><span class="menu-item-status" data-tone="' +
-    state.tone + '">' + html(state.label) + '</span><span class="menu-plus" aria-hidden="true"></span></summary>' +
+    state.tone + '">' + html(state.label) + (level ? '<i class="row-level level-' + level + '" aria-hidden="true"></i>' : '') + '</span><span class="menu-plus" aria-hidden="true"></span></summary>' +
     (expanded ? menuSkillBody(c, p, model) : '') + '</details>';
 }
 
@@ -106,14 +107,7 @@ function pathPage() {
   const specialty = cook ? t('Kuchyně', 'Kuchyňa') : t('Obsluha');
   const groups = [
     ['shift', t('Co se při tom učím', 'Čo sa pri tom učím'), '', c => c.code === current],
-    ['specialty', cook ? t('Kuchařské dovednosti', 'Kuchárske zručnosti') : t('Obsluha hostů', 'Obsluha hostí'),
-      cook ? 'assets/cook-3.webp' : 'assets/service-3.webp', c => !commonSkill(c)],
-    ['operations', t('Příprava a chod provozu', 'Príprava a chod prevádzky'),
-      cook ? 'photos/ema-1.webp' : 'photos/table.webp', c => /^K0[125]\./.test(c.code)],
-    ['quality', t('Kvalita a hospodaření', 'Kvalita a hospodárenie'),
-      cook ? 'photos/plate.webp' : 'photos/matej-1.webp', c => /^K(09|10)\./.test(c.code)],
-    ['team', t('Spolupráce a samostatná práce', 'Spolupráca a samostatná práca'),
-      cook ? 'photos/chef-mentor.webp' : 'photos/service-mentor.webp', () => true]
+    ...skillChapters(p).map(chapter => [chapter.id, chapter.name, chapter.photo, chapter.accepts])
   ];
   let remaining = skills;
   const sections = groups.map(([chapter, heading, image, accepts], i) => {
@@ -125,13 +119,8 @@ function pathPage() {
       '</header><div class="menu-rows">' + rows.map(c => menuRow(c, p, model)).join('') + '</div></section>';
   }).join('');
   const filters = [['all', t('Vše', 'Všetko')], ['specialty', specialty], ['shared', t('Společný základ', 'Spoločný základ')], ['confirmed', t('Potvrzené', 'Potvrdené')]];
-  return '<div class="menu-page"><header class="menu-hero"><div class="menu-hero-copy"><span class="ey">' +
-    html(p.name + ' · ' + profession(p) + ' · ' + p.year + '. ' + t('ročník')) +
-    '</span><h1>' + t('Můj lístek dovedností', 'Môj lístok zručností') + '</h1><div class="menu-hero-outcome"><span>' +
-    t('Moje směna', 'Moja zmena') + '</span><strong>' + html(courseTitle(p, model.shift)) +
-    '</strong></div><div class="menu-hero-meta">' + t('Potvrzená úroveň u ', 'Potvrdená úroveň pri ') + earned(model) +
-    ' ' + t('z ') + all.length + ' ' + t('dovedností', 'zručností') + '</div></div>' + photo(picture(p, 3), p.name + ' · ' + profession(p)) + '</header>' +
-    '<div class="menu-controls"><div class="menu-filters" role="group" aria-label="' + t('Zobrazit dovednosti', 'Zobraziť zručnosti') + '">' +
+  return '<div class="menu-page">' + passportIntro(p, model) + portfolioMap(p, model) +
+    '<div class="menu-controls"><h2>' + t('Můj lístek dovedností', 'Môj lístok zručností') + '</h2><div class="menu-filters" role="group" aria-label="' + t('Zobrazit dovednosti', 'Zobraziť zručnosti') + '">' +
     filters.map(([key, label]) => action('menu-filter', label, key, 'choice', 'aria-pressed="' + (menuFilter === key) + '"')).join('') +
     '</div></div>' + (sections || '<p>' + t('Zatím tu není potvrzená dovednost. První přibude po hodnocení pedagogem.', 'Zatiaľ tu nie je potvrdená zručnosť. Prvá pribudne po hodnotení pedagógom.') + '</p>') +
     '<details class="menu-detail-fold menu-program"><summary>' + t('Profil absolventa a výukové moduly', 'Profil absolventa a výučbové moduly') +

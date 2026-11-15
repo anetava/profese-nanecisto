@@ -1,0 +1,162 @@
+/* A turquoise tile represents one skill. Its filled width is the confirmed level. */
+:root { --mastery: #48e2c9; --map-ink: #142e30; --map-muted: #cadcd8; }
+body:has(.future-page, .my-portfolio) { background:var(--pink-wash); }
+body:has(.future-page, .my-portfolio) .bar { background:var(--mint); border-color:var(--ink); }
+.passport-cover, .future-spread, .evidence-title { color:var(--ink); }
+.passport-cover {
+  display:grid; grid-template-columns:minmax(0, 46fr) minmax(0, 54fr);
+  background:var(--pink);
+}
+.passport-identity {
+  display:flex; flex-direction:column; align-items:flex-start; justify-content:center;
+  padding:clamp(22px,3.3vw,52px); min-width:0;
+}
+.passport-kicker {
+  display:block; font-size:.79rem; font-weight:740; line-height:1.2;
+  letter-spacing:.055em; text-transform:uppercase;
+}
+.passport-identity h1, .evidence-title h1, .future-spread h1 {
+  margin:12px 0 4px; font-size:clamp(4.15rem,7.5vw,7.15rem);
+  font-weight:800; letter-spacing:-.066em; line-height:.91;
+}
+.passport-profession, .evidence-title > p { margin:5px 0 0; font-size:clamp(1rem,1.45vw,1.3rem); font-weight:670; line-height:1.2; }
+.passport-profession span { margin-inline:.1em; }
+.passport-goal { max-width:34ch; margin:clamp(16px,1.9vw,27px) 0 9px; font-weight:550; line-height:1.32; font-size:clamp(1.04rem,1.51vw,1.35rem); }
+.passport-link { display:inline-block; width:fit-content; padding:8px 0; border:0; background:none; color:inherit; text-align:left; font-size:.98rem; line-height:1.25; font-weight:680; text-decoration:underline; text-underline-offset:4px; }
+.passport-photo, .future-spread figure { position:relative; min-width:0; margin:0; isolation:isolate; }
+.passport-photo { min-height:300px; }
+.passport-photo > img, .future-spread figure > img { position:absolute; width:100%; height:100%; inset:0; object-fit:cover; object-position:center 44%; }
+.passport-photo figcaption { position:absolute; bottom:clamp(12px,1.4vw,24px); left:clamp(12px,1.4vw,24px); padding:0; background:transparent; }
+.future-link { display:flex; justify-content:space-between; align-items:center; gap:15px; min-height:46px; border:0; padding:5px 7px 5px 15px; background:var(--ink); color:white; font-weight:700; font-size:1rem; }
+.future-link b { display:grid; place-items:center; width:34px; height:34px; color:var(--ink); background:var(--mastery); font-size:1.3rem; }
+.future-link:hover b { background:white; }
+.next-shift { display:flex; align-items:center; justify-content:space-between; gap:14px; padding:18px clamp(15px,3.3vw,52px); color:var(--ink); background:var(--mint); }
+.next-shift h2 { margin:4px 0 0; font-size:clamp(1.45rem,2.35vw,2.15rem); line-height:1.07; }
+.next-shift .passport-kicker { font-size:.72rem; }
+.next-shift .button { min-height:47px; border:0; border-radius:3px; color:white; background:var(--ink); }
+.next-shift .button:hover { background:var(--map-ink); color:white; }
+.skill-map { margin:18px 0; color:white; background:var(--map-ink); padding:clamp(18px,2.5vw,34px); }
+.map-heading { display:flex; gap:18px; align-items:center; justify-content:space-between; }
+.map-heading h2, .market-value h2, .future-work h2, .menu-controls h2 { margin:0; font-size:clamp(1.55rem,2.65vw,2.42rem); font-weight:740; letter-spacing:-.044em; line-height:1.05; }
+.map-heading p { max-width:63ch; color:var(--map-muted); font-size:1rem; line-height:1.39; margin:6px 0 0; }
+.map-count { display:grid; text-align:right; color:var(--mastery); white-space:nowrap; }
+.map-count strong { font-size:clamp(2.1rem,3.1vw,3rem); line-height:.98; letter-spacing:-.045em; }
+.map-count strong span { font-weight:540; }
+.map-count small { font-size:.82rem; color:white; }
+.map-groups { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); align-items:start; gap:10px; margin-top:18px; }
+details.map-group { margin:0; padding:0; background:#1d3c3c; border:1px solid #527171; color:white; }
+.map-group > summary { display:grid; grid-template-columns:1fr auto; align-items:center; gap:8px; list-style:none; padding:12px; color:inherit; cursor:pointer; min-height:68px; }
+.map-group > summary::marker { content:""; }
+.map-group > summary::-webkit-details-marker { display:none; }
+.map-group > summary:hover { background:#294a48; }
+.map-group-name { font-size:.96rem; font-weight:670; line-height:1.1; }
+.map-caret { font-size:1.1rem; color:var(--mastery); }
+.map-group[open] .map-caret { transform:rotate(180deg); }
+.map-track { display:flex; gap:3px; min-width:0; grid-column:1/-1; }
+.map-tile { display:block; position:relative; flex:1; height:13px; max-width:32px; border:1px solid #91aba6; background:#304e4d; }
+.map-tile::before { display:block; content:""; height:100%; width:0; background:var(--mastery); }
+.map-tile[data-level="1"]::before { width:33.333%; }
+.map-tile[data-level="2"]::before { width:66.667%; }
+.map-tile[data-level="3"] { border-color:var(--mastery); }
+.map-tile[data-level="3"]::before { width:100%; }
+.map-group ul { padding:0 12px 3px; margin:0; list-style:none; }
+.map-group li { display:grid; gap:1px; border-top:1px solid #527171; padding:7px 0; }
+.map-group li > span { color:var(--map-muted); font-size:.78rem; }
+.map-skill-link { background:none; border:0; color:white; padding:3px 0; text-align:left; font-weight:650; text-decoration:underline; text-underline-offset:3px; }
+.map-group :focus-visible, .future-work :focus-visible { outline:2px solid white; outline-offset:-3px; }
+.menu-controls { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+.menu-controls h2 { font-size:clamp(1.25rem,2vw,1.7rem); color:white; }
+.menu-item[data-level="3"] > summary { color:var(--ink); background:var(--mastery); }
+.menu-item[data-level="3"] .menu-item-status { color:var(--ink); }
+.row-level { display:block; width:39px; height:5px; margin:5px 0 0 auto; background:transparent; outline:1px solid currentColor; }
+.row-level::before { display:block; content:""; height:100%; background:currentColor; }
+.level-1::before { width:33.333%; }
+.level-2::before { width:66.667%; }
+.level-3::before { width:100%; }
+.future-page, .my-portfolio { margin-block:14px 35px; }
+.future-spread { display:grid; grid-template-columns:1.14fr 1fr; background:var(--pink); }
+.future-spread figure { min-height:320px; }
+.future-spread > div { padding:clamp(23px,3.1vw,48px); align-self:center; }
+.future-spread h1 small { display:block; margin:14px 0 0; font-size:clamp(1.35rem,2.1vw,2rem); font-weight:670; letter-spacing:-.035em; line-height:1.07; }
+.future-spread p { margin:15px 0 0; line-height:1.43; max-width:44ch; }
+.future-work, .market-value { display:grid; grid-template-columns:1fr 1.3fr; gap:22px; padding:clamp(18px,2.5vw,35px); background:var(--mint); }
+.future-work { margin-top:14px; align-items:center; }
+.future-work h2, .market-value h2 { margin-top:7px; }
+.future-skill { display:block; width:100%; text-align:left; padding:11px 0; background:transparent; border:0; border-bottom:1px solid #769e9a; color:var(--ink); font-size:1.02rem; font-weight:670; }
+.future-skill:hover { text-decoration:underline; }
+.future-return { display:flex; align-items:center; flex-wrap:wrap; gap:10px 20px; }
+.evidence-title { padding:clamp(20px,2.9vw,44px); background:var(--pink); }
+.market-value { align-items:start; margin:0 0 17px; }
+.market-value p { margin:7px 0 0; max-width:50ch; line-height:1.4; }
+.market-example { padding-inline-start:20px; border-inline-start:2px solid var(--ink); }
+.market-example > span { font-size:.84rem; font-weight:650; }
+.market-example h3 { margin:3px 0; font-size:clamp(1.18rem,2vw,1.5rem); }
+.evidence-heading { margin:20px 0 7px; }
+@media(max-width:900px) {
+  .map-groups { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .map-group > summary { min-height:58px; }
+}
+@media(max-width:650px) {
+  .passport-cover { grid-template-columns:minmax(0,1fr) minmax(0, .88fr); }
+  .passport-photo { min-height:205px; }
+  .passport-identity { padding:17px 12px; }
+  .passport-kicker { font-size:.66rem; }
+  .passport-identity h1 { font-size:clamp(2.7rem,12vw,4.4rem); margin-top:8px; }
+  .passport-profession { font-size:.89rem; }
+  .passport-goal { margin:12px 0 2px; font-size:.94rem; }
+  .passport-link { font-size:.85rem; }
+  .passport-photo figcaption { bottom:7px; left:6px; right:6px; }
+  .future-link { width:100%; gap:3px; min-height:42px; padding:5px; font-size:.81rem; }
+  .future-link b { width:26px; height:26px; flex-shrink:0; }
+  .next-shift { align-items:flex-start; flex-wrap:wrap; gap:9px; padding:14px; }
+  .next-shift h2 { font-size:1.45rem; }
+  .next-shift .button { min-height:44px; }
+  .skill-map { padding:15px 13px; margin:11px 0; }
+  .map-heading { align-items:flex-start; gap:8px; }
+  .map-heading p { font-size:.89rem; }
+  .map-count { min-width:48px; }
+  .map-count strong { font-size:1.75rem; }
+  .map-count small { font-size:.68rem; }
+  .map-groups { gap:5px; margin-top:12px; }
+  .map-group > summary { padding:7px; gap:5px; }
+  .map-group-name { font-size:.87rem; }
+  .map-track { gap:2px; }
+  .map-tile { height:11px; }
+  .map-group li { font-size:.85rem; }
+  .row-level { margin-left:0; }
+  .future-spread { grid-template-columns:1fr; }
+  .future-spread figure { min-height:0; aspect-ratio:1.9; }
+  .future-spread > div { padding:19px 16px; }
+  .future-spread h1, .evidence-title h1 { font-size:3.75rem; }
+  .future-work, .market-value { grid-template-columns:1fr; gap:12px; }
+  .market-example { padding:12px 0 0; border:0; border-top:1px solid var(--ink); }
+}
+@media(max-width:360px) {
+  .passport-cover { grid-template-columns:minmax(0,1fr) minmax(0,.78fr); }
+  .passport-identity { padding:13px 9px; }
+  .future-link { font-size:.76rem; }
+  .future-link b { width:21px; }
+}
+@media print {
+  .market-value, .future-page, .passport-cover, .skill-map, .next-shift { display:none; }
+  .evidence-title { padding:0; background:white; }
+  .evidence-title h1 { font-size:30px; }
+}
+.passport-goal { margin-bottom:4px; line-height:1.16; font-weight:700; }
+.passport-target { margin:0 0 5px; line-height:1.35; font-size:1rem; }
+.future-link b { position:relative; }
+.future-link b::before, .future-link b::after { content:""; position:absolute; }
+.future-link b::before { width:13px; height:2px; background:currentColor; transform:rotate(-45deg); }
+.future-link b::after { width:8px; height:8px; border-top:2px solid; border-right:2px solid; transform:translate(2px,-2px); }
+.next-shift p { max-width:70ch; margin:4px 0 0; line-height:1.32; }
+.main .next-shift .button.primary { background:var(--ink); color:white; }
+.main .next-shift .button.primary:not(:disabled):hover { background:var(--map-ink); color:white; }
+@media(max-width:650px) {
+  .passport-target, .next-shift p { font-size:.87rem; }
+}
+.map-recorded { display:block; margin-top:5px; color:var(--mastery); font-size:.85rem; font-weight:650; }
+.shift-award { display:flex; align-items:center; gap:8px; }
+.shift-award .map-tile { width:38px; max-width:none; flex:none; }
+.shift-award p { margin:4px 0; font-size:.95rem; }
+button.map-recorded { padding:6px 0; border:0; background:none; text-align:left; }
+button.map-recorded:hover { text-decoration:underline; text-underline-offset:3px; }

@@ -63,7 +63,11 @@ function summaryPage(){
     '<section class="ride-review"><span class="ey">'+t('Očima mistra','Očami majstra')+'</span><h2>'+html(reviewTitle)+'</h2>'+
     (result?'<p>'+html(result)+'</p>':'')+mediaMarkup({audio:approved?.audio||s.reviews?.at(-1)?.audio})+
     (s.phase===5?'<p>'+t('Pedagog má váš zápis. Podle toho, co viděl na směně, posoudí úroveň a připíše vám zpětnou vazbu.','Pedagóg má váš zápis. Podľa toho, čo videl na zmene, posúdi úroveň a pridá vám spätnú väzbu.')+'</p>':'')+
-    (approved?action('menu-proof',t('Zobrazit potvrzenou práci','Zobraziť potvrdenú prácu'),c.code,'button primary'):s.phase===4||s.phase===7?goBtn('reflect',t('Doplnit vlastní zápis','Doplniť vlastný zápis'),'button primary'):action('detail',t('Podívat se na dovednost','Pozrieť si zručnosť'),s.code,'button'))+'</section></div>';
+    (approved?'<div class="shift-award"><span class="map-tile" aria-hidden="true" data-level="'+approved.level+'"></span><p>'+
+      (approved.level===3?t('Tahle dovednost už je v mé mapě celá tyrkysová.','Táto zručnosť je už v mojej mape celá tyrkysová.'):
+       t('V mé mapě je u této dovednosti potvrzená úroveň ','V mojej mape je pri tejto zručnosti potvrdená úroveň ')+approved.level+'/3.')+
+      '</p></div><div class="actions">'+action('map-result',t('Najít v mé mapě','Nájsť v mojej mape'),c.code,'button primary')+
+      action('menu-proof',t('Zobrazit potvrzenou práci','Zobraziť potvrdenú prácu'),c.code,'text-link')+'</div>':s.phase===4||s.phase===7?goBtn('reflect',t('Doplnit vlastní zápis','Doplniť vlastný zápis'),'button primary'):action('detail',t('Podívat se na dovednost','Pozrieť si zručnosť'),s.code,'button'))+'</section></div>';
 }
 
 function employerPage(){

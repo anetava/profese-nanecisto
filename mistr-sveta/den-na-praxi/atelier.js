@@ -45,7 +45,7 @@ function mutate(fn,p=person()){
 }
 function setPref(k,value){try{localStorage.setItem(scopedKey(k),value)}catch{}}
 function tell(message){outlet.textContent=message;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>outlet.textContent='',5500)}
-function go(page){if(busy||audioSession){tell(t('Nejdřív dokončete záznam.','Najskôr dokončite záznam.'));return}window.speechSynthesis?.cancel();if(window.location?.hash?.startsWith('#dovednost-')||page!=='exercise'&&['#vydej','#obsluha','#po-smene','#moje-portfolio','#listek-kuchyne','#listek-obsluha'].includes(window.location?.hash))window.history.replaceState(null,'',window.location.pathname+window.location.search);view=page;quizError=false;render(true)}
+function go(page){if(busy||audioSession){tell(t('Nejdřív dokončete záznam.','Najskôr dokončite záznam.'));return}window.speechSynthesis?.cancel();if((/^#(?:dovednost|budoucnost)-/.test(window.location?.hash))||page!=='exercise'&&['#vydej','#obsluha','#po-smene','#moje-portfolio','#listek-kuchyne','#listek-obsluha'].includes(window.location?.hash))window.history.replaceState(null,'',window.location.pathname+window.location.search);view=page;quizError=false;render(true)}
 function scenes(p){const folder=p.full&&p.id!=='ema'?'assets/':'photos/';const n=p.full?6:3;return Array.from({length:n},(_,i)=>folder+p.photo+'-'+i+'.webp')}
 function picture(p,phase){const images=scenes(p);const idx=p.full?[0,1,2,3,4,5,3,5][phase]:[0,0,1,1,2,2,1,2][phase];return images[idx]}
 function face(p){return scenes(p)[0]}
@@ -53,7 +53,7 @@ const photo=(path,alt,cls='')=>'<img class="'+cls+'" src="'+html(path)+'" alt="'
 const action=(name,label,value='',cls='button',attrs='')=>'<button type="button" class="'+cls+'" data-do="'+name+'" data-value="'+html(value)+'" '+attrs+'>'+html(label)+'</button>';
 const goBtn=(v,label,cls='button')=>action('go',label,v,cls);
 const pill=(label,cls='')=>'<span class="pill '+cls+'">'+html(label)+'</span>';
-const labelsNav=()=>({day:t('Směna','Zmena'),path:t('Dovednosti','Zručnosti'),journal:t('Deník','Denník'),portfolio:t('Portfolio','Portfólio'),group:t('Moje skupina','Moja skupina'),overview:t('Přehled výcviku','Prehľad výcviku'),admin:t('Správa ukázky','Správa ukážky')});
+const labelsNav=()=>({day:t('Směna','Zmena'),path:t('Moje cesta','Moja cesta'),journal:t('Deník','Denník'),portfolio:t('Portfolio','Portfólio'),group:t('Moje skupina','Moja skupina'),overview:t('Přehled výcviku','Prehľad výcviku'),admin:t('Správa ukázky','Správa ukážky')});
 const primary=(label,act,val='')=>action(act,label,val,'button primary arrow');
 const title=(tag,name,desc='')=>'<div class="page-title"><span class="ey">'+html(tag)+'</span><h1>'+html(name)+'</h1>'+(desc?'<p>'+html(desc)+'</p>':'')+'</div>';
 function courseTitle(p,s){if(s.code!==DEFAULT_CODE[p.track])return competency(s.code).name;return p.track==='cook'?t('Dvě porce pečené mrkve','Dve porcie pečenej mrkvy'):t('Oběd pro dva hosty','Obed pre dvoch hostí');}
@@ -74,7 +74,7 @@ function heroText(p,s){
 function sectionHead(h,sub=''){return '<div class="section-head"><h2>'+html(h)+'</h2>'+(sub?'<small>'+html(sub)+'</small>':'')+'</div>'}
 function nav(){
  const items=role==='student'?['path','day','journal','portfolio']:role==='teacher'?['group']:role==='leader'?['overview']:['admin'];
- const active=['prepare','reflect','tip','during','exercise','summary'].includes(view)?'day':view==='employer'?'portfolio':view==='menu-study'?'path':view==='inspect'?'group':view;
+ const active=['prepare','reflect','tip','during','exercise','summary'].includes(view)?'day':view==='employer'?'portfolio':['menu-study','future'].includes(view)?'path':view==='inspect'?'group':view;
  return '<header class="bar"><div class="shell bar-inner">'+'<button type="button" class="wordmark" data-do="home"><span>MISTR SVĚTA<span aria-hidden="true">.</span></span><small>'+t('Průvodce odborným výcvikem','Sprievodca odborným výcvikom')+'</small></button>'+'<nav aria-label="'+t('Hlavní navigace','Hlavná navigácia')+'">'+items.map(k=>action('go',labelsNav()[k],k,'nav-link',active===k?'aria-current="page"':'')).join('')+'</nav><div class="bar-tools">'+action('lang',language==='cs'?'SK':'CZ','','language','aria-label="'+t('Přepnout do slovenštiny','Prepnúť do češtiny')+'"')+'<button class="profile-btn" data-do="accounts" aria-haspopup="dialog">'+(role==='student'?photo(face(person()),'','avatar'):'')+'<span>'+html(role==='student'?person().name:roleLabel(role))+'</span><b aria-hidden="true">⌄</b></button></div></div></header>';
 }
 function footer(){return '<footer class="shell footer"><span>'+t('Fiktivní skupina · údaje v tomto prohlížeči','Fiktívna skupina · údaje v tomto prehliadači')+'</span><div>'+action('accounts',t('Přepnout roli','Prepnúť rolu'),'','text-link')+' · '+action('about',t('O aplikaci a zdrojích','O aplikácii a zdrojoch'),'','text-link')+'</div></footer>'}
@@ -165,9 +165,11 @@ function pastJournal(p,m){
 function reviewHistory(s){return (s.reviews||[]).map(r=>'<div class="entry review"><b>'+t('Pedagog','Pedagóg')+' · '+html(r.result==='approved'?t('potvrzeno','potvrdené'):t('k doplnění','na doplnenie'))+'</b><p>'+html(feedbackText(r))+'</p>'+mediaMarkup({audio:r.audio})+'</div>').join('')}
 function portfolio(){
  const p=person(),m=data();
- return title(p.name+' · '+profession(p),t('Moje portfolio','Moje portfólio'),t('Práce, u kterých pedagog potvrdil konkrétní úroveň dovednosti.','Práce, pri ktorých pedagóg potvrdil konkrétnu úroveň zručnosti.'))+(m.shift.phase>=4&&m.shift.phase!==6?'<div class="practice-record no-print"><span class="ey">'+html(progressState(m.shift))+'</span><p>'+html(courseTitle(p,m.shift))+'</p>'+goBtn('summary',t('Moje rozpracovaná směna','Moja rozpracovaná zmena'),'text-link')+'</div>':'')+'<div class="actions no-print">'+goBtn('employer',t('Pro zaměstnavatele','Pre zamestnávateľa'),'button primary')+action('print',t('Tisk / uložit PDF','Tlač / uložiť PDF'),'','button primary')+action('export',t('Stáhnout záznamy','Stiahnuť záznamy'))+'</div><div class="portfolio-list">'+m.history.slice().reverse().map(a=>{
+ return '<div class="my-portfolio"><header class="evidence-title"><span class="passport-kicker">' + t('Moje portfolio','Moje portfólio') +
+   '</span><h1>' + html(p.name) + '</h1><p>' + html(profession(p)) + ' · ' + p.year + '. ' + t('ročník') +
+   '</p></header>' + marketValue(p,m) + '<h2 class="evidence-heading">' + t('Moje potvrzené práce','Moje potvrdené práce') + '</h2>'+(m.shift.phase>=4&&m.shift.phase!==6?'<div class="practice-record no-print"><span class="ey">'+html(progressState(m.shift))+'</span><p>'+html(courseTitle(p,m.shift))+'</p>'+goBtn('summary',t('Moje rozpracovaná směna','Moja rozpracovaná zmena'),'text-link')+'</div>':'')+'<div class="actions no-print">'+goBtn('employer',t('Pro zaměstnavatele','Pre zamestnávateľa'),'button primary')+action('print',t('Tisk / uložit PDF','Tlač / uložiť PDF'),'','button primary')+action('export',t('Stáhnout záznamy','Stiahnuť záznamy'))+'</div><div class="portfolio-list">'+m.history.slice().reverse().map(a=>{
  const c=competency(a.code);return '<article class="portfolio-entry" data-code="'+html(a.code)+'" tabindex="-1"><div class="ey">'+html(dateLabel(a.day))+' · '+t('Úroveň ')+a.level+'</div><h2>'+html(c.name)+'</h2><p>'+html(c.levels[a.level-1])+'</p><p class="teacher-note">'+html(feedbackText(a))+'</p><small>'+html(a.author)+' · '+t('osobně potvrzeno','osobne potvrdené')+'</small>'+mediaMarkup(a.notes?.after)+mediaMarkup({audio:a.audio})+(a.examplePhoto?'<figure class="sample-evidence">'+photo(a.examplePhoto,t('Modelový doklad práce fiktivního žáka','Modelový doklad práce fiktívneho žiaka'))+'<figcaption>'+t('Modelový doklad práce · ilustrační fotografie','Modelový doklad práce · ilustračná fotografia')+'</figcaption></figure>':'')+'<details><summary>'+t('Kritéria a žákovská reflexe','Kritériá a žiacka reflexia')+'</summary><ul>'+c.checks.map(x=>'<li>'+html(x)+'</li>').join('')+'</ul>'+noteRead(p,a,'after')+'</details></article>';
- }).join('')+'</div>';
+ }).join('')+'</div>'+portfolioMap(p,m)+'</div>';
 }
 function asksForHelp(s){return s.phase===3&&s.notes.during.choice===2&&!s.helpSeen}
 function group(){
@@ -208,7 +210,7 @@ function accountModal(){
 }
 const homeFor=()=>({student:'path',teacher:'group',leader:'overview',admin:'admin'})[role];
 function render(scroll=false){
- const pages=role==='student'?{day:dayPage,summary:summaryPage,employer:employerPage,prepare:morningPage,exercise:exercisePage,during:()=>noteForm('during'),reflect:()=>noteForm('after'),journal:journalPage,path:pathPage,'menu-study':menuStudyPage,portfolio,tip:tipPage}:role==='teacher'?{group,inspect}:role==='admin'?{admin}:{overview};
+ const pages=role==='student'?{day:dayPage,summary:summaryPage,employer:employerPage,prepare:morningPage,exercise:exercisePage,during:()=>noteForm('during'),reflect:()=>noteForm('after'),journal:journalPage,path:pathPage,future:futurePage,'menu-study':menuStudyPage,portfolio,tip:tipPage}:role==='teacher'?{group,inspect}:role==='admin'?{admin}:{overview};
  if(!pages[view])view=homeFor();
  const s=data().shift;
  if(role==='student'&&((view==='prepare'&&s.phase!==0)||(view==='during'&&s.phase!==3)||(view==='reflect'&&![4,7].includes(s.phase))))view='day';
@@ -321,6 +323,7 @@ function handle(act,val){
  case 'step':guard(role==='student');navigateStage(val);break;
  case 'detail':openMenuSkill(val);break;
  case 'menu-filter':menuFilterAction(val);break;
+ case 'map-result':openConfirmedMap(val);break;
  case 'station-try':handleStationTry(val);break;
  case 'menu-study':case 'menu-study-save':menuStudyAction(act,val);break;
  case 'menu-proof':{
@@ -374,6 +377,11 @@ function openSharedExercise(){
  view=hash.startsWith('#listek-')?'path':hash==='#moje-portfolio'?'employer':hash==='#po-smene'?(data().shift.phase>=4?'summary':'day'):serviceExercise(person(),data().shift)?'exercise':'day';
 }
 function renderSharedEntry(scroll=false){
+ const futureProfile = window.location?.hash?.match(/^#budoucnost-([a-z]+)$/)?.[1];
+ if (PEOPLE.some(p => p.id === futureProfile) && !busy && !audioSession) {
+   if (dialog.open) dialog.close();
+   switchPerson(futureProfile);role='student';view='future';render(scroll);return;
+ }
  const code = window.location?.hash?.match(/^#dovednost-(K\d{2}\.\d+)$/)?.[1];
  const skill = code && competency(code);
  if (skill && !busy && !audioSession) {
