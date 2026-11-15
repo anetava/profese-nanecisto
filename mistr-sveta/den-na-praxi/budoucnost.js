@@ -23,9 +23,7 @@ function portfolioMap(p, model, forecast = false) {
   const levelLabel = t('Úroveň ');
   const groups = chapters.map(chapter => {
     const markers = chapter.skills.map(({level}) => '<i class="map-tile" data-level="' + level + '"></i>').join('');
-    const entries = chapter.skills.map(({skill,level}) => '<li>' +
-      action('detail',menuSkillName(skill),skill.code,'map-skill-link') +
-      '<span>' + (forecast ? t('Cíl 3/3','Cieľ 3/3') : level ? levelLabel + level + '/3' : t('K nácviku','Na nácvik')) + '</span></li>').join('');
+    const entries = chapter.skills.map(({skill,level}) => '<li data-level="'+level+'"><button type="button" class="map-skill-link" data-do="detail" data-value="'+html(skill.code)+'"><strong>'+html(menuSkillName(skill))+'</strong><span>' + (forecast ? t('Cíl 3/3','Cieľ 3/3') : level ? levelLabel + level + '/3' : t('K nácviku','Na nácvik')) + '</span></button></li>').join('');
     return '<details class="map-group" data-chapter="' + chapter.id + '"><summary><span class="map-group-name">' + html(chapter.name) +
       '</span><span class="map-caret" aria-hidden="true">⌄</span><span class="map-track" aria-hidden="true">' + markers + '</span></summary>' +
       '<ul>' + entries + '</ul></details>';
@@ -40,8 +38,8 @@ function portfolioMap(p, model, forecast = false) {
   const help = forecast
     ? t('Takhle bude moje mapa vypadat, až u každé dovednosti předvedu práci na úrovni 3 a pedagog mi ji potvrdí.',
         'Takto bude moja mapa vyzerať, keď pri každej zručnosti predvediem prácu na úrovni 3 a pedagóg mi ju potvrdí.')
-    : t('Jedno políčko je jedna dovednost. Za každou úroveň potvrzenou pedagogem se vybarví třetina.',
-        'Jedno políčko je jedna zručnosť. Za každú úroveň potvrdenú pedagógom sa vyfarbí tretina.');
+    : t('Vyberte oblast a pak dovednost. Tyrkysová ukazuje, kolik úrovní už pedagog potvrdil.',
+        'Vyberte oblasť a potom zručnosť. Tyrkysová ukazuje, koľko úrovní už pedagóg potvrdil.');
   const modes = [['now',t('Moje práce dnes','Moja práca dnes')],['goal',t('Cíl za tři roky','Cieľ o tri roky')]];
   const switcher = '<div class="map-switch" role="group" aria-label="' + t('Porovnat mapu','Porovnať mapu') + '">' +
     modes.map(([value,label]) => action('map-mode',label,value,'map-mode',
