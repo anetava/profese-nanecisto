@@ -18,7 +18,7 @@
 
 .ms-patch{width:3%;aspect-ratio:240/150}
 
-:root{--pink:#f878aa;--mint:#62d6c5;--pink-hover:#f994bb;--mint-wash:#d5faf4;--pink-wash:#ffdfed;--berry:#922247;--teal:#005d56}
+:root{--pink:#f62a86;--mint:#19c7b8;--pink-hover:#fa539d;--mint-wash:#d5faf4;--pink-wash:#ffdfed;--berry:#922247;--teal:#005d56}
 .primary,.menu-hero,.master-guide footer .primary{color:#080b0b}
 .nav-link[aria-current="page"]{border-color:var(--pink)}
 
