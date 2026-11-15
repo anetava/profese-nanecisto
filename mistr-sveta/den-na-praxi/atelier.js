@@ -53,7 +53,7 @@ function mutate(fn,p=person()){
 }
 function setPref(k,value){try{localStorage.setItem(scopedKey(k),value)}catch{}}
 function tell(message){outlet.textContent=message;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>outlet.textContent='',5500)}
-function go(page){if(busy||audioSession){tell(t('Nejdřív dokončete záznam.','Najskôr dokončite záznam.'));return}window.speechSynthesis?.cancel();if((/^#(?:dovednost|budoucnost|stul|ukazka)-/.test(window.location?.hash))||page!=='exercise'&&['#mistr','#planovac','#karierni-mapa','#denik','#vydej','#obsluha','#po-smene','#moje-portfolio','#listek-kuchyne','#listek-obsluha'].includes(window.location?.hash))window.history.replaceState(null,'',window.location.pathname+window.location.search);if(page==='planner')window.history.replaceState(null,'','#planovac');if(page==='career')window.history.replaceState(null,'','#karierni-mapa');view=page;quizError=false;render(true)}
+function go(page){if(busy||audioSession){tell(t('Nejdřív dokončete záznam.','Najskôr dokončite záznam.'));return}window.speechSynthesis?.cancel();if((/^#(?:dovednost|budoucnost|stul|ukazka)-/.test(window.location?.hash))||page!=='exercise'&&['#slovnik','#mistr','#planovac','#karierni-mapa','#denik','#vydej','#obsluha','#po-smene','#moje-portfolio','#listek-kuchyne','#listek-obsluha'].includes(window.location?.hash))window.history.replaceState(null,'',window.location.pathname+window.location.search);if(page==='guide')window.history.replaceState(null,'','#slovnik');if(page==='planner')window.history.replaceState(null,'','#planovac');if(page==='career')window.history.replaceState(null,'','#karierni-mapa');view=page;quizError=false;render(true)}
 function scenes(p){const folder=p.full&&p.id!=='ema'?'assets/':'photos/';const n=p.full?6:3;return Array.from({length:n},(_,i)=>folder+p.photo+'-'+i+'.webp')}
 function picture(p,phase){const images=scenes(p);const idx=p.full?[0,1,2,3,4,5,3,5][phase]:[0,0,1,1,2,2,1,2][phase];return images[idx]}
 function face(p){return scenes(p)[0]}
@@ -63,7 +63,7 @@ const goBtn=(v,label,cls='button')=>action('go',label,v,cls);
 const pill=(label,cls='')=>'<span class="pill '+cls+'">'+html(label)+'</span>';
 const careerLabel=()=>t('Kariérní mapa','Kariérna mapa');
 function careerPage(){return '<section class="career-poster" id="karierni-mapa"><h2>'+t('Kam mě může dovést praxe?', 'Kam ma môže priviesť prax?')+'</h2><a href="photos/karierni-mapa.webp"><img src="photos/karierni-mapa.webp" width="1086" height="1448" alt="'+t('Od úkolu na směně přes potvrzení pedagogem a vlastní portfolio až k vedení kuchyně nebo restaurace.', 'Od úlohy na zmene cez potvrdenie pedagógom a vlastné portfólio až k vedeniu kuchyne alebo reštaurácie.')+'"></a></section>'}
-const labelsNav=()=>({planner:t('Plánovač'),career:careerLabel(),day:t('Směna','Zmena'),path:t('Moje cesta','Moja cesta'),journal:t('Deník','Denník'),portfolio:t('Portfolio','Portfólio'),group:t('Moje skupina','Moja skupina'),overview:t('Přehled výcviku','Prehľad výcviku'),admin:t('Správa ukázky','Správa ukážky')});
+const labelsNav=()=>({guide:t('Slovník'),planner:t('Plánovač'),career:careerLabel(),day:t('Směna','Zmena'),path:t('Moje cesta','Moja cesta'),journal:t('Deník','Denník'),portfolio:t('Portfolio','Portfólio'),group:t('Moje skupina','Moja skupina'),overview:t('Přehled výcviku','Prehľad výcviku'),admin:t('Správa ukázky','Správa ukážky')});
 const primary=(label,act,val='')=>action(act,label,val,'button primary arrow');
 const title=(tag,name,desc='')=>'<div class="page-title"><span class="ey">'+html(tag)+'</span><h1>'+html(name)+'</h1>'+(desc?'<p>'+html(desc)+'</p>':'')+'</div>';
 function courseTitle(p,s){if(s.code!==DEFAULT_CODE[p.track])return competency(s.code).name;return p.track==='cook'?t('Dvě porce pečené mrkve','Dve porcie pečenej mrkvy'):t('Oběd pro dva hosty','Obed pre dvoch hostí');}
@@ -83,7 +83,7 @@ function heroText(p,s){
 }
 function sectionHead(h,sub=''){return '<div class="section-head"><h2>'+html(h)+'</h2>'+(sub?'<small>'+html(sub)+'</small>':'')+'</div>'}
 function nav(){
- const items=role==='student'?['path','day','planner','journal','portfolio','career']:role==='teacher'?['group']:role==='leader'?['overview']:['admin'];
+ const items=role==='student'?['path','day','planner','journal','portfolio','career','guide']:role==='teacher'?['group']:role==='leader'?['overview']:['admin'];
  const active=['prepare','reflect','tip','during','exercise','summary'].includes(view)?'day':view==='employer'?'portfolio':['menu-study','future','table'].includes(view)?'path':view==='inspect'?'group':view;
  return '<header class="bar"><div class="shell bar-inner">'+'<button type="button" class="wordmark" data-do="home"><span>MISTR SVĚTA<span aria-hidden="true">.</span></span><small>'+t('Průvodce odborným výcvikem','Sprievodca odborným výcvikom')+'</small></button>'+'<nav aria-label="'+t('Hlavní navigace','Hlavná navigácia')+'">'+items.map(k=>k==='career'?'<a class="nav-link career-link" href="#karierni-mapa" data-do="go" data-value="career" '+(active===k?'aria-current="page"':'')+'>'+careerLabel()+'</a>':action('go',labelsNav()[k],k,'nav-link',active===k?'aria-current="page"':'')).join('')+ '</nav><div class="bar-tools">'+action('journal-search',t('Hledat','Hľadať'),'','text-link')+action('lang',language==='cs'?'SK':'CZ','','language','aria-label="'+t('Přepnout do slovenštiny','Prepnúť do češtiny')+'"')+(role==='student'?action('tone','Gen Z','','tone-btn','aria-pressed="'+studentStyle+'"'):'')+'<button class="profile-btn" data-do="accounts" aria-haspopup="dialog">'+(role==='student'?photo(face(person()),'','avatar'):'')+'<span>'+html(role==='student'?person().name:roleLabel(role))+'</span><b aria-hidden="true">⌄</b></button>'+(role==='student'?'<a class="career-thumb" href="#karierni-mapa" data-do="go" data-value="career" aria-label="'+careerLabel()+'" title="'+careerLabel()+'"><img src="photos/karierni-mapa.webp" alt="" width="34" height="44"></a>':'')+'</div></div></header>';
 }
@@ -279,7 +279,7 @@ function accountModal(){
 }
 const homeFor=()=>({student:'path',teacher:'group',leader:'overview',admin:'admin'})[role];
 function render(scroll=false){
- const pages=role==='student'?{planner:planPage,career:careerPage,day:dayPage,summary:summaryPage,employer:employerPage,prepare:morningPage,exercise:exercisePage,during:()=>noteForm('during'),reflect:()=>noteForm('after'),journal:journalPage,path:pathPage,future:futurePage,table:tablePage,'menu-study':menuStudyPage,portfolio,tip:tipPage}:role==='teacher'?{group,inspect}:role==='admin'?{admin}:{overview};
+ const pages=role==='student'?{guide:fieldGuide,planner:planPage,career:careerPage,day:dayPage,summary:summaryPage,employer:employerPage,prepare:morningPage,exercise:exercisePage,during:()=>noteForm('during'),reflect:()=>noteForm('after'),journal:journalPage,path:pathPage,future:futurePage,table:tablePage,'menu-study':menuStudyPage,portfolio,tip:tipPage}:role==='teacher'?{group,inspect}:role==='admin'?{admin}:{overview};
  if(!pages[view])view=homeFor();
  const s=data().shift;
  if(role==='student'&&((view==='prepare'&&s.phase!==0)||(view==='during'&&s.phase!==3)||(view==='reflect'&&![4,7].includes(s.phase))))view='day';
@@ -461,6 +461,7 @@ function openSharedExercise(){
  view=hash.startsWith('#listek-')?'path':hash==='#moje-portfolio'?'employer':hash==='#po-smene'?(data().shift.phase>=4?'summary':'day'):serviceExercise(person(),data().shift)?'exercise':'day';
 }
 function renderSharedEntry(scroll=false){
+ if(location.hash==='#slovnik'&&!busy&&!audioSession){role='student';view='guide';render(scroll);return;}
  if(location.hash==='#mistr'&&!busy&&!audioSession){role='teacher';view='group';rosterFilter='all';render(scroll);return;}
  if(location.hash==='#planovac'&&!busy&&!audioSession){role='student';view='planner';render(scroll);return;}
  if(location.hash==='#karierni-mapa'&&!busy&&!audioSession){role='student';view='career';render(true);return;}
@@ -521,6 +522,36 @@ function planJournal(m,p,add){
   if(e.saved||e.note?.trim())add(day,planName(e.type),'<p>'+html([...(e.activities||[]).map(i=>taskOptions()[i]),e.note].filter(Boolean).join(' · ')||t('Deník založen. Zápis doplníte v plánovači.','Denník založený. Zápis doplníte v plánovači.'))+'</p>');
  }
 }
+const fieldSources=[
+ ['Professional Cooking · Mise en place','https://resources.escoffier.edu/textbooks/gisslen/professional_cooking_07.pdf'],
+ ['Professional Cooking · Sauces','https://resources.escoffier.edu/textbooks/gisslen/professional_cooking_09.pdf'],
+ ['Cambridge Dictionary · à la carte','https://dictionary.cambridge.org/dictionary/english/a-la-carte'],
+ ["Cambridge Dictionary · table d’hôte",'https://dictionary.cambridge.org/dictionary/english/table-d-hote'],
+ ['Escoffier · Culinary glossary','https://www.escoffier.edu/blog/culinary-arts/the-essential-glossary-of-cooking-terms-for-the-culinary-arts/']
+];
+const fieldTerms=[
+ ['Mise en place','K05.1',0,'Příprava surovin, inventáře a pracoviště před zahájením práce.','Príprava surovín, inventára a pracoviska pred začiatkom práce.','Před výdejem si rozmístěte talíře a kleště v pořadí použití.','Pred výdajom si rozložte taniere a kliešte v poradí použitia.'],
+ ['Julienne','K03.1',0,'Řez na tenké stejnoměrné nudličky.','Rez na tenké rovnomerné rezančeky.','Položte vedle sebe tři nudličky mrkve a porovnejte jejich tloušťku.','Položte vedľa seba tri rezančeky mrkvy a porovnajte ich hrúbku.'],
+ ['Chiffonade','K03.1',0,'Listy bylinek nebo zeleniny nakrájené na tenké proužky.','Listy bylín alebo zeleniny nakrájané na tenké pásiky.','Na ozdobení rajčat připravte proužky bazalky.','Na ozdobenie paradajok pripravte pásiky bazalky.'],
+ ['Roux','K04.2',1,'Jíška připravená z mouky a tuku k zahuštění.','Zápražka pripravená z múky a tuku na zahustenie.','Podle receptury zvolte světlou nebo tmavší jíšku.','Podľa receptúry zvoľte svetlú alebo tmavšiu zápražku.'],
+ ['Déglacer','K03.3',1,'Přidáním tekutiny rozpustit přípečky ze dna nádoby.','Pridaním tekutiny rozpustiť výpek na dne nádoby.','Po opečení masa použijte vývar jako základ omáčky.','Po opečení mäsa použite vývar ako základ omáčky.'],
+ ['Dashi','K04.2',4,'Japonský vývar, často z řasy kombu a sušených rybích vloček.','Japonský vývar, často z riasy kombu a sušených rybích vločiek.','U polévky miso určete, co tvoří základ její chuti.','Pri polievke miso určte, čo tvorí základ jej chuti.'],
+ ['À la carte','K08.1',2,'Host si vybírá jednotlivá jídla, každé má vlastní cenu.','Hosť si vyberá jednotlivé jedlá, každé má vlastnú cenu.','Host chce jen předkrm. Ukažte mu jeho cenu v nabídce.','Hosť chce iba predjedlo. Ukážte mu jeho cenu v ponuke.'],
+ ['Table d’hôte','K08.1',3,'Sestavené menu za pevnou cenu s omezeným výběrem jídel.','Zostavené menu za pevnú cenu s obmedzeným výberom jedál.','Před objednáním vysvětlete, které chody cena zahrnuje.','Pred objednaním vysvetlite, ktoré chody cena zahŕňa.']
+];
+function fieldGuide(){
+ const p=person(),codes=skillSet(p).map(c=>c.code);
+ return title(p.name,t('Slovník ze směny','Slovník zo zmeny'),t('Vyhledejte výraz, který zazněl na praxi.','Vyhľadajte výraz, ktorý zaznel na praxi.'))+
+ '<label>'+t('Najít pojem','Nájsť pojem')+'<input id="field-find" type="search" placeholder="Julienne, menu, dashi…"></label><div class="field-terms">'+fieldTerms.map(([name,code,src,cs,sk,ex,sx])=>'<details><summary>'+html(name)+'</summary><p>'+html(t(cs,sk))+'</p><p><b>'+t('Na směně','Na zmene')+'</b> · '+html(t(ex,sx))+'</p>'+(codes.includes(code)?action('detail',menuSkillName(competency(code))+' →',code,'button'):'<p>'+html(competency(code).name)+'</p>')+'<p><a href="'+fieldSources[src][1]+'" target="_blank" rel="noopener">'+t('Zdroj')+' · '+html(fieldSources[src][0])+'</a></p></details>').join('')+'</div><p id="field-empty" hidden>'+t('Žádný odpovídající pojem.','Žiadny zodpovedajúci pojem.')+'</p>'+learningModel(p);
+}
+document.addEventListener('input',e=>{if(e.target.id!=='field-find')return;const norm=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');let hits=0;document.querySelectorAll('.field-terms details').forEach(el=>{el.hidden=!norm(el.textContent).includes(norm(e.target.value.trim()));if(!el.hidden)hits++});document.querySelector('#field-empty').hidden=hits>0});
+function learningModel(p){
+ const s=data(p).shift,c=competency(s.code);
+ return '<details class="learning-model"><summary>'+t('Jak získám potvrzenou kompetenci?','Ako získam potvrdenú kompetenciu?')+'</summary><h3>'+html(menuSkillName(c))+'</h3><ol>'+
+ [t('Před směnou si projdu zadání.','Pred zmenou si prejdem zadanie.')+' '+c.tasks[s.level-1],t('Mistr předvede postup. Při samostatné práci sleduje','Majster predvedie postup. Pri samostatnej práci sleduje')+' · '+c.checks.join(', '),t('Po směně popíšu výsledek. Co bych příště udělal/a jinak a proč?','Po zmene opíšem výsledok. Čo by som nabudúce urobil/a inak a prečo?'),t('Pedagog potvrdí úroveň podle pozorované práce, nebo vrátí úkol k doplnění.','Pedagóg potvrdí úroveň podľa pozorovanej práce alebo vráti úlohu na doplnenie.')].map(v=>'<li>'+html(v)+'</li>').join('')+
+ '</ol>'+menuLevelList(c,maxLevel(data(p),c.code),s.level)+goBtn('day',t('Otevřít svoji směnu','Otvoriť svoju zmenu'),'button primary')+'</details>';
+}
+
 function planPage(){
  const p=person(),m=data(),entries=yearPlan(m,p,planYear);
  const months=Array.from({length:12},(_,i)=>{
@@ -535,8 +566,10 @@ function planPage(){
   }).join('');
   return '<details class="cal-month" '+(dayStamp().startsWith(stampDate(planYear,8+i,1).slice(0,7))?'open':'')+'><summary>'+html(label)+'</summary><div class="cal-grid">'+(language==='sk'?['Po','Ut','St','Št','Pi','So','Ne']:['Po','Út','St','Čt','Pá','So','Ne']).map(x=>'<small>'+x+'</small>').join('')+blanks+cells+'</div></details>';
  }).join('');
- return title(p.name,t('Plánovač praxe','Plánovač praxe'),t('Barevné dny mají praxi. Otevřete den pro zadání nebo zápis. Směnu můžete přetáhnout na volný den.','Farebné dni majú prax. Otvorte deň pre zadanie alebo zápis. Zmenu môžete pretiahnuť na voľný deň.'))+
- mySkillShelf(p,m)+'<div class="plan-head"><img src="'+html(picture(p,3))+'" alt=""><div><b>'+t('Modelový školní rozpis','Modelový školský rozpis')+'</b><p>'+t('Výchozí termíny slouží k vyzkoušení. Upravte je podle rozvrhu školy.','Východiskové termíny slúžia na vyskúšanie. Upravte ich podľa rozvrhu školy.')+'</p><label>'+t('Školní rok','Školský rok')+' <select id="plan-year">'+[...new Set([planYear-1,planYear,planYear+1,...Object.keys(m.schoolPlans||{}).map(Number)])].sort().map(y=>'<option '+(y===planYear?'selected':'')+'>'+y+'</option>').join('')+'</select> / '+(planYear+1)+'</label></div></div><div class="cal-year">'+months+'</div>';
+ const upcoming=Object.keys(entries).filter(d=>d>=dayStamp()).sort(),next=upcoming[0];
+ const yearChoice='<label>'+t('Školní rok','Školský rok')+' <select id="plan-year">'+[...new Set([planYear-1,planYear,planYear+1,...Object.keys(m.schoolPlans||{}).map(Number)])].sort().map(y=>'<option value="'+y+'" '+(y===planYear?'selected':'')+'>'+y+' / '+(y+1)+'</option>').join('')+'</select></label>';
+ return '<section class="shift-spot"><div><small>'+html(p.name)+' · '+t('Plánovač praxe','Plánovač praxe')+'</small><h1>'+t('Moje příští směna','Moja ďalšia zmena')+'</h1><h2>'+(next?html(dateLabel(next)+' · '+planName(entries[next].type)):t('Zatím bez termínu','Zatiaľ bez termínu'))+'</h2>'+(next?action('day-book',t('Otevřít deník směny','Otvoriť denník zmeny'),next,'button primary'):'')+' '+goBtn('guide',t('Slovník na praxi','Slovník na prax'),'button')+'</div><img src="'+html(next&&entries[next].type==='service'?'photos/service-mentor.webp':next&&entries[next].type==='kitchen'?'photos/chef-mentor.webp':picture(p,3))+'" alt=""></section>'+
+ '<div class="shift-ribbon">'+upcoming.slice(1,4).map(d=>'<button type="button" data-cal-day="'+d+'"><small>'+html(new Date(d+'T12:00:00').toLocaleDateString(language,{weekday:'long'}))+'</small><b>'+html(dateLabel(d))+'</b><span>'+html(planName(entries[d].type))+'</span></button>').join('')+'</div><details class="season-plan"><summary>'+t('Celý školní rok · plánovat nebo přesunout směnu','Celý školský rok · plánovať alebo presunúť zmenu')+'</summary>'+yearChoice+'<p>'+t('Vyberte měsíc a den. Barevnou směnu můžete přetáhnout na volný den. Výchozí termíny jsou modelové.','Vyberte mesiac a deň. Farebnú zmenu môžete pretiahnuť na voľný deň. Východiskové termíny sú modelové.')+'</p><div class="cal-year">'+months+'</div></details>'+mySkillShelf(p,m)+learningModel(p);
 }
 function taskOptions(){
  return [t('Příprava pracoviště','Príprava pracoviska'),t('Příprava porcí','Príprava porcií'),t('Obsluha hostů','Obsluha hostí'),t('Spolupráce při výdeji','Spolupráca pri výdaji'),t('Závěrečná kontrola','Záverečná kontrola')];
@@ -555,7 +588,7 @@ function openPlanDay(d){
 
 }
 document.addEventListener('click',e=>{if(e.target.closest('[data-plan-close]'))dialog.close();const b=e.target.closest('[data-cal-day]');if(b&&role==='student'&&Date.now()>ignoreTapUntil)openPlanDay(b.dataset.calDay)});
-document.addEventListener('change',e=>{if(e.target.id==='plan-year'){planYear=Number(e.target.value);render()}});
+document.addEventListener('change',e=>{if(e.target.id==='plan-year'){planYear=Number(e.target.value);render();document.querySelector('.season-plan').open=true}});
 document.addEventListener('dragstart',e=>{draggedDay=e.target.closest('.booked')?.dataset.calDay||'';if(draggedDay)e.dataTransfer.setData('text/plain',draggedDay)});
 document.addEventListener('dragend',()=>draggedDay='');
 document.addEventListener('dragover',e=>{if(draggedDay&&e.target.closest('[data-cal-day]'))e.preventDefault()});
