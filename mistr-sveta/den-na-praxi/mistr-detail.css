@@ -29,3 +29,8 @@
 @media(max-width:700px){.wordmark{column-gap:6px}.wordmark::before{width:43px;height:34px}}
 
 .journal-days{max-width:58rem;margin-block:1.5rem 2rem}.journal-days .journal-day{border:1px solid var(--rule);border-left:5px solid var(--mint);margin:10px 0;padding:0}.journal-day summary{padding:14px;cursor:pointer}.journal-day summary strong,.journal-day summary span span{display:block}.journal-day summary>span{display:inline-block;vertical-align:middle}.journal-day summary strong{font-size:1.2rem}.journal-day article{padding:0 16px 12px}.journal-day[open] summary{background:var(--mint-wash)}
+
+.phone-preview{padding:12px 16px;background:var(--mint-wash);border-left:4px solid var(--mint)}
+.phone-preview summary{font-weight:700;cursor:pointer}
+.phone-preview iframe{box-sizing:content-box;display:block;width:390px;height:min(720px,72vh);margin:14px auto;border:8px solid #202628;border-radius:24px;background:white}
+@media(max-width:700px){.phone-preview{display:none}}
