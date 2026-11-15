@@ -53,7 +53,7 @@ function mutate(fn,p=person()){
 }
 function setPref(k,value){try{localStorage.setItem(scopedKey(k),value)}catch{}}
 function tell(message){outlet.textContent=message;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>outlet.textContent='',5500)}
-function go(page){if(busy||audioSession){tell(t('Nejdřív dokončete záznam.','Najskôr dokončite záznam.'));return}window.speechSynthesis?.cancel();if((/^#(?:dovednost|budoucnost|stul|ukazka)-/.test(window.location?.hash))||page!=='exercise'&&['#planovac','#karierni-mapa','#denik','#vydej','#obsluha','#po-smene','#moje-portfolio','#listek-kuchyne','#listek-obsluha'].includes(window.location?.hash))window.history.replaceState(null,'',window.location.pathname+window.location.search);if(page==='planner')window.history.replaceState(null,'','#planovac');if(page==='career')window.history.replaceState(null,'','#karierni-mapa');view=page;quizError=false;render(true)}
+function go(page){if(busy||audioSession){tell(t('Nejdřív dokončete záznam.','Najskôr dokončite záznam.'));return}window.speechSynthesis?.cancel();if((/^#(?:dovednost|budoucnost|stul|ukazka)-/.test(window.location?.hash))||page!=='exercise'&&['#mistr','#planovac','#karierni-mapa','#denik','#vydej','#obsluha','#po-smene','#moje-portfolio','#listek-kuchyne','#listek-obsluha'].includes(window.location?.hash))window.history.replaceState(null,'',window.location.pathname+window.location.search);if(page==='planner')window.history.replaceState(null,'','#planovac');if(page==='career')window.history.replaceState(null,'','#karierni-mapa');view=page;quizError=false;render(true)}
 function scenes(p){const folder=p.full&&p.id!=='ema'?'assets/':'photos/';const n=p.full?6:3;return Array.from({length:n},(_,i)=>folder+p.photo+'-'+i+'.webp')}
 function picture(p,phase){const images=scenes(p);const idx=p.full?[0,1,2,3,4,5,3,5][phase]:[0,0,1,1,2,2,1,2][phase];return images[idx]}
 function face(p){return scenes(p)[0]}
@@ -233,15 +233,23 @@ function portfolio(){
  }).join('')+'</div>'+portfolioMap(p,m)+'</div>';
 }
 function asksForHelp(s){return s.phase===3&&s.notes.during.choice===2&&!s.helpSeen}
+const bookMark='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 6Q7 3 2 5v14q5-2 10 1 5-3 10-1V5q-5-2-10 1v14"/></svg>';
+function showDayBook(d){
+ guard(role==='student');const p=person(),m=data(),entries=collectJournal(p,m).get(d)||[];
+ newModal(()=>'<h2 id="dialogtitle">'+t('Deník','Denník')+' · '+html(dateLabel(d))+'</h2>'+
+ (entries.length?entries.map(e=>'<article><h3>'+html(e.label)+'</h3>'+e.body+'</article>').join(''):'<p>'+t('Tato praxe je naplánovaná. Vyberte, čemu jste se věnovali.','Táto prax je naplánovaná. Vyberte, čomu ste sa venovali.')+'</p>')+
+ action('book-edit',t('Vybrat činnosti','Vybrať činnosti'),d,'button primary')+action('day-reflect',t('Moje reflexe','Moja reflexia'),d,'button')+'<button class="button" data-plan-close>'+t('Zavřít','Zavrieť')+'</button>');
+}
 function group(){
- const waiting=PEOPLE.filter(p=>data(p).shift.phase===5).length;
- const entries=PEOPLE.filter(p=>rosterFilter==='all'||data(p).shift.phase===5).sort((a,b)=>(data(b).shift.phase===5?2:asksForHelp(data(b).shift)?1:0)-(data(a).shift.phase===5?2:asksForHelp(data(a).shift)?1:0));
- return title(classroomSettings.title,t('Moje skupina','Moja skupina'),t('Otevřete žáka a uvidíte jeho zadání, vlastní postřehy i hodnocení.','Otvorte žiaka a uvidíte jeho zadanie, vlastné postrehy aj hodnotenie.'))+
- '<div class="choices filters">'+action('filter',t('Všichni','Všetci')+' · '+PEOPLE.length,'all','choice','aria-pressed="'+(rosterFilter==='all')+'"')+action('filter',t('K posouzení','Na posúdenie')+' · '+waiting,'waiting','choice','aria-pressed="'+(rosterFilter==='waiting')+'"')+'</div><div class="roster">'+entries.map(p=>{const m=data(p),s=m.shift;return '<button class="person-row" data-do="inspect" data-value="'+p.id+'">'+photo(face(p),'','portrait')+'<span class="who"><b>'+p.name+'</b><small>'+profession(p)+' · '+p.year+'. '+t('ročník')+'</small></span><span class="roster-course">'+html(courseTitle(p,s))+'</span>'+pill(asksForHelp(s)?t('Prosí o ukázku','Prosí o ukážku'):shortStages()[s.phase],s.phase===5||asksForHelp(s)?'amber':s.phase===6?'green':'')+'<i>›</i></button>'}).join('')+(!entries.length?'<p>'+t('Všechny odevzdané práce jsou vyřízené.','Všetky odovzdané práce sú vybavené.')+'</p>':'')+'</div>';
+ const states=[['all',t('Celá skupina','Celá skupina')],['waiting',t('K posouzení','Na posúdenie')],['help',t('Prosí o ukázku','Prosí o ukážku')],['back',t('K doplnění','Na doplnenie')],['done',t('Potvrzeno','Potvrdené')]];
+ const pupils=PEOPLE.map(p=>{const s=data(p).shift;return {p,s,state:s.phase===5?'waiting':asksForHelp(s)?'help':s.phase===7?'back':s.phase===6?'done':'active'}});
+ const entries=pupils.filter(x=>rosterFilter==='all'||x.state===rosterFilter).sort((a,b)=>['waiting','help','back','active','done'].indexOf(a.state)-['waiting','help','back','active','done'].indexOf(b.state));
+ return title(classroomSettings.title,t('Moje skupina','Moja skupina'),t('Vyberte stav, nebo otevřete deník přímo u jména žáka.','Vyberte stav alebo otvorte denník priamo pri mene žiaka.'))+
+ '<div class="master-filters">'+states.map(([id,label])=>action('filter',label+' · '+pupils.filter(x=>id==='all'||x.state===id).length,id,'master-filter '+id,'aria-pressed="'+(rosterFilter===id)+'"')).join('')+'</div><div class="master-roster">'+entries.map(({p,s,state})=>'<article data-state="'+state+'">'+photo(face(p),'','portrait')+'<div><b>'+html(p.name)+'</b><small>'+html(profession(p)+' · '+courseTitle(p,s))+'</small><strong>'+html(states.find(x=>x[0]===state)?.[1]||shortStages()[s.phase])+'</strong></div><footer>'+action('master-journal',t('Deník','Denník'),p.id,'button')+(state==='waiting'?action('master-review',t('Posoudit výkon','Posúdiť výkon'),p.id,'button primary'):action('inspect',t('Otevřít směnu','Otvoriť zmenu'),p.id,'button'))+'</footer></article>').join('')+(!entries.length?'<p>'+t('V této skupině teď nikdo není.','V tejto skupine teraz nikto nie je.')+'</p>':'')+'</div>';
 }
 function inspect(){
  const p=person(),m=data(),s=m.shift,c=competency(s.code),pictures=scenes(p);
- const journal='<details '+(s.phase===5?'open':'')+'><summary>'+t('Deník a sebereflexe','Denník a sebareflexia')+'</summary>'+notesFor(p,s)+tableJournal(p,m,true)+pastJournal(p,m)+teacherPlanNotes(m,p)+menuStudyJournal(m)+'</details>';
+ const journal='<details id="master-journal" '+(s.phase===5?'open':'')+'><summary>'+t('Deník a sebereflexe','Denník a sebareflexia')+'</summary>'+notesFor(p,s)+tableJournal(p,m,true)+pastJournal(p,m)+teacherPlanNotes(m,p)+menuStudyJournal(m)+'</details>';
  return back('group')+title(profession(p)+' · '+p.year+'. '+t('ročník'),p.name)+'<div class="inspect-grid"><div class="inspect-main"><span class="ey">'+html(stageLabels()[s.phase])+'</span><h2>'+html(courseTitle(p,s))+'</h2><p>'+html(c.name)+' · '+t('úroveň ')+s.level+'</p><p>'+html(c.levels[s.level-1])+'</p>'+(asksForHelp(s)?'<div class="callout"><b>'+t('Žádost o další ukázku','Žiadosť o ďalšiu ukážku')+'</b><p>'+html(loc(s.notes.during.text))+'</p>'+action('help-seen',t('Ukázka proběhla','Ukážka prebehla'))+'</div>':'')+journal+reviewHistory(s)+
  (s.phase===5?'<form id="reviewForm" class="review-form"><h2>'+t('Ověření výkonu','Overenie výkonu')+'</h2><p>'+t('Zaškrtněte jen to, co jste přímo pozorovali při práci.','Zaškrtnite iba to, čo ste priamo pozorovali pri práci.')+'</p>'+c.checks.map((x,i)=>'<label class="check"><input type="checkbox" name="criterion" data-check="'+i+'" '+(s.checks[i]?'checked':'')+'>'+html(x)+'</label>').join('')+'<label class="check"><input type="checkbox" name="safe" '+(s.safe?'checked':'')+'>'+t('Ověřil/a jsem bezpečný postup','Overil/a som bezpečný postup')+'</label><label>'+t('Zpětná vazba žákovi','Spätná väzba žiakovi')+'<textarea data-review-note maxlength="800">'+html(s.reviewDraft||'')+'</textarea></label>'+recordingControl('teacher',{audio:s.reviewAudio||''})+mediaMarkup({audio:s.reviewAudio})+'<div class="actions">'+action('approve',t('Osobně potvrdit úroveň ','Osobne potvrdiť úroveň ')+s.level,'','button primary',(s.checks.filter(Boolean).length===3&&s.safe)?'':'disabled')+action('return',t('Vrátit k doplnění','Vrátiť na doplnenie'),'','button',(s.reviewDraft?.trim()||s.reviewAudio)?'':'disabled')+'</div></form>':'')+
  (s.phase===0?'<details><summary>'+t('Přidat pokyn k dnešní směně','Pridať pokyn k dnešnej zmene')+'</summary><label>'+t('Pokyn pro žáka','Pokyn pre žiaka')+'<textarea data-hint maxlength="400">'+html(s.hint)+'</textarea></label>'+action('save-hint',t('Uložit pokyn','Uložiť pokyn'))+'</details>':'')+
@@ -364,6 +372,9 @@ function handle(act,val){
  case 'fav-skill':guard(role==='student'&&skillSet(person()).some(c=>c.code===val));mutate(m=>{const ids=new Set(m.favourites||[]);if(ids.has(val))ids.delete(val);else ids.add(val);m.favourites=[...ids]});menuOpenCode=val;render();focusMenuRow(val);break;
  case 'journal-search':journalSearch();break;
  case 'day-reflect':reflectDay(val);break;
+ case 'day-book':showDayBook(val);break;
+ case 'book-edit':guard(role==='student');openPlanDay(val);break;
+ case 'master-journal':case 'master-review':guard(role==='teacher');switchPerson(val);go('inspect');{const target=document.querySelector(act==='master-journal'?'#master-journal':'#reviewForm');if(target){if(act==='master-journal')target.open=true;target.scrollIntoView({block:'start'});target.querySelector('summary,input')?.focus({preventScroll:true})}}break;
  case 'plan-day':guard(role==='student');planYear=schoolStart(val);go('planner');openPlanDay(val);break;
  case 'go':go(val);break;
  case 'exercise':{
@@ -450,6 +461,7 @@ function openSharedExercise(){
  view=hash.startsWith('#listek-')?'path':hash==='#moje-portfolio'?'employer':hash==='#po-smene'?(data().shift.phase>=4?'summary':'day'):serviceExercise(person(),data().shift)?'exercise':'day';
 }
 function renderSharedEntry(scroll=false){
+ if(location.hash==='#mistr'&&!busy&&!audioSession){role='teacher';view='group';rosterFilter='all';render(scroll);return;}
  if(location.hash==='#planovac'&&!busy&&!audioSession){role='student';view='planner';render(scroll);return;}
  if(location.hash==='#karierni-mapa'&&!busy&&!audioSession){role='student';view='career';render(true);return;}
  if(/^#denik(?:-[a-z]+)?$/.test(window.location.hash)&&!busy&&!audioSession){const requested=window.location.hash.slice(7);if(requested&&PEOPLE.some(p=>p.id===requested))switchPerson(requested);role='student';view='journal';render(scroll);return;}
@@ -517,7 +529,9 @@ function planPage(){
   const blanks='<i></i>'.repeat((first.getDay()+6)%7);
   const cells=Array.from({length:count},(_,j)=>{
    const d=stampDate(planYear,8+i,j+1),e=entries[d],label=dateLabel(d)+(e?' · '+planName(e.type):'');
-   return '<button type="button" data-cal-day="'+d+'" aria-label="'+html(label)+'" title="'+html(label)+'" '+(e?'draggable="true" class="booked"':'')+'>'+ (j+1)+(e?'<span>'+html(planName(e.type))+'</span><b class="drag-grip" aria-hidden="true">⠿</b>':'')+'</button>';
+   const dayButton='<button type="button" data-cal-day="'+d+'" aria-label="'+html(label)+'" title="'+html(label)+'" '+(e?'draggable="true" class="booked"':'')+'>'+ (j+1)+(e?'<span>'+html(planName(e.type))+'</span>'+(e.activities||[]).map(i=>'<small class="activity-chip ac-'+Number(i)+'">'+html(taskOptions()[i])+'</small>').join('')+'<b class="drag-grip" aria-hidden="true">⠿</b>':'')+'</button>';
+   if(!e)return dayButton;
+   return '<div class="shift-cell" data-kind="'+html(e.type)+'">'+dayButton+'<button type="button" class="day-book" data-do="day-book" data-value="'+d+'" title="'+html(t('Deník','Denník')+' · '+dateLabel(d))+'" aria-label="'+html(t('Otevřít deník','Otvoriť denník')+' · '+dateLabel(d))+'">'+bookMark+'</button></div>';
   }).join('');
   return '<details class="cal-month" '+(dayStamp().startsWith(stampDate(planYear,8+i,1).slice(0,7))?'open':'')+'><summary>'+html(label)+'</summary><div class="cal-grid">'+(language==='sk'?['Po','Ut','St','Št','Pi','So','Ne']:['Po','Út','St','Čt','Pá','So','Ne']).map(x=>'<small>'+x+'</small>').join('')+blanks+cells+'</div></details>';
  }).join('');
