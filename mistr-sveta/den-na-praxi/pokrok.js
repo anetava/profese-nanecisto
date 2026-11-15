@@ -25,6 +25,12 @@ function progressState(s) {
   return t('Příprava','Príprava');
 }
 
+function progressTone(phase) {
+  if(phase===6)return 'approved';
+  if(phase===7)return 'revision';
+  return 'neutral';
+}
+
 function personalEvidence(s){
   const p=person(), opts=options(p,s), rows=[];
   for(const moment of ['before','during','after']){
@@ -38,7 +44,7 @@ function personalEvidence(s){
 
 function progressPanel(s){
   const c=competency(s.code);
-  return '<section class="skill-strip"><div><span class="ey">'+t('Co se dnes učím','Čo sa dnes učím')+'</span><h2>'+html(learnerOutcome(s))+'</h2></div><div class="skill-strip-end"><span class="live-state">'+html(progressState(s))+'</span>'+action('detail',t('Moje kompetence','Moja kompetencia')+' →',c.code,'text-link')+'</div></section>';
+  return '<section class="skill-strip"><div><span class="ey">'+t('Co se dnes učím','Čo sa dnes učím')+'</span><h2>'+html(learnerOutcome(s))+'</h2></div><div class="skill-strip-end"><span class="live-state" data-status="'+progressTone(s.phase)+'">'+html(progressState(s))+'</span>'+action('detail',t('Moje kompetence','Moja kompetencia')+' →',c.code,'text-link')+'</div></section>';
 }
 
 function summaryPage(){
@@ -47,7 +53,7 @@ function summaryPage(){
   const result=approved?feedbackText(approved):s.phase===7?loc(s.feedback):'';
   const heroImage=scenes(p).at(-1);
   return back()+ '<div class="ride-title"><span class="ey">'+html(p.name)+' · '+html(relativeDate(s.day))+' · '+html(profession(p))+'</span><h1>'+t('Co si ze směny odnáším','Čo si zo zmeny odnášam')+'</h1></div>'+
-    '<section class="ride-cover"><div class="ride-copy"><span class="ey">'+t('Moje dovednost','Moja zručnosť')+'</span><h2>'+html(learnerOutcome(s))+'</h2><p>'+html(c.name)+' · '+t('úroveň ')+s.level+'</p><strong class="live-state">'+html(progressState(s))+'</strong></div>'+photo(heroImage,p.name+' · '+period('after'))+'</section>'+
+    '<section class="ride-cover"><div class="ride-copy"><span class="ey">'+t('Moje dovednost','Moja zručnosť')+'</span><h2>'+html(learnerOutcome(s))+'</h2><p>'+html(c.name)+' · '+t('úroveň ')+s.level+'</p><strong class="live-state" data-status="'+progressTone(s.phase)+'">'+html(progressState(s))+'</strong></div>'+photo(heroImage,p.name+' · '+period('after'))+'</section>'+
     '<div class="ride-grid"><section><h2>'+html(courseTitle(p,s))+'</h2>'+personalEvidence(s)+
       (s.notes.after.next!==null?'<p class="next-practice"><b>'+t('Příště','Nabudúce')+'</b> '+html(loc(options(p,s).next[s.notes.after.next]))+'</p>':'')+'</section>'+
     '<section class="ride-review"><span class="ey">'+t('Očima mistra','Očami majstra')+'</span><h2>'+html(progressState(s))+'</h2>'+
