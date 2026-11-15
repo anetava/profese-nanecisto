@@ -12,8 +12,8 @@
 .master-guide footer{background:#172f32;color:white;padding:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}.master-guide footer details{background:transparent;color:white;margin:0;max-width:58ch}.master-guide footer summary{color:white}.master-guide footer .primary{background:#ff94b8;color:#172f32}
 @media(max-width:700px){.master-grid{grid-template-columns:1fr}.master-guide li p{font-size:1.04rem}.master-guide footer .primary{width:100%}}
 
-.ms-patch,.wordmark>span:before{background:transparent url("gastro-znak.svg") center/contain no-repeat;border:0;border-radius:0;padding:0;aspect-ratio:1;color:transparent}
+.ms-patch,.wordmark>span:before{background:transparent url("gastro-znak.svg?v=rondon13") center/contain no-repeat;border:0;border-radius:0;padding:0;aspect-ratio:1;color:transparent}
 .wordmark>span:before{content:"";width:1.04em;height:1.04em;margin-right:.21em;vertical-align:-.12em}
 .ms-patch{display:block;width:6.5%;height:auto;font-size:0}
 
-.ms-patch{width:2.2%;aspect-ratio:28/24;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2028%2024%22%3E%3Cg%20fill%3D%22none%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20stroke%3D%22%2300888b%22%20d%3D%22M3%2021V3l11%2010L25%203%22%2F%3E%3Cpath%20stroke%3D%22%23e53e82%22%20d%3D%22M25%204v17%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")}
+.ms-patch{width:3%;aspect-ratio:80/64}
