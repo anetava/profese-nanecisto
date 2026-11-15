@@ -91,7 +91,7 @@ function todayTutor(){
     (studentStyle?'<small class="peer-line">'+(p.track==='cook'?t('Výdej máte v rukou.','Výdaj máte v rukách.'):t('Dobrý servis začíná u vás.','Dobrý servis sa začína pri vás.'))+'</small>':'')+
     '<div class="shift-action">'+primary(brief.cta,brief.act,brief.val)+(brief.duration?'<small>'+html(brief.duration)+'</small>':'')+'</div></div>'+
     '<figure class="shift-visual">'+photo(img,p.name+' · '+photoCaption(p,n))+'<figcaption>'+html(photoCaption(p,n))+'</figcaption>'+inset+'</figure></section>'+
-    progressPanel(s)+shiftRibbon(n)+
+    tableShiftPlan(p,data())+progressPanel(s)+shiftRibbon(n)+
     '<div class="shift-tools"><div>'+sectionHead(t('Po ruce na směně','Poruke na zmene'))+'</div>'+support+'</div>'+
     trail(p,s)+
     photoWay(p,s);

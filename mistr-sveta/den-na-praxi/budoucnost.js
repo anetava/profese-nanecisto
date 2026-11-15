@@ -171,9 +171,9 @@ function passportIntro(p, model) {
     '</div><figure class="passport-photo">' + photo('photos/future-'+p.id+'.webp',p.name+' · '+scene.alt) +
     '<figcaption><button type="button" class="future-link" data-do="go" data-value="future"><span>' +
     t('Já za tři roky','Ja o tri roky') + '</span><b aria-hidden="true"></b></button></figcaption></figure></header>' +
-    '<section class="next-shift"><div><span class="passport-kicker">' + html(relativeDate(s.day)) + ' · ' + html(stageLabels()[s.phase]) +
+    (s.phase===0 ? tableInvitation(p,model) : '') + '<section class="next-shift"><div><span class="passport-kicker">' + html(relativeDate(s.day)) + ' · ' + html(stageLabels()[s.phase]) +
      '</span><h2>'+html(courseTitle(p,s))+'</h2><p>'+html(menuSkillWhy(competency(s.code),p))+'</p></div>'+shiftAction+'</section>' +
-    personalGoalCard(p, model);
+    (s.phase===0 ? '' : tableInvitation(p,model)) + personalGoalCard(p, model);
 }
 
 function personalGoalCard(p, model) {
