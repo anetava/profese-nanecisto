@@ -91,3 +91,6 @@ label:has(>#field-find){display:block;color:#124540}#field-find{border:2px solid
 .field-terms>details summary{font-size:1.25rem;cursor:pointer;line-height:1.25}.field-terms>details[hidden]{display:none}.field-terms a{overflow-wrap:anywhere}
 @media(max-width:850px){.field-terms{columns:2}}
 @media(max-width:600px){.field-terms{columns:1}.page-title:has(+ label #field-find) h1{font-size:clamp(2rem,9vw,3rem)}.page-title:has(+ label #field-find)::after{background-size:80% auto}}
+
+/* The garment photos carry their own embroidery. */
+.uniform .ms-patch{display:none}
