@@ -2,7 +2,7 @@
 const root=document.querySelector('#app'), dialog=document.querySelector('#picker'), outlet=document.querySelector('#message');
 const scopedKey=id=>'mistr-sveta.atelier.1.'+id;
 const sessionCache=new Map();
-let language='cs', studentId='ema', role='student', view='day', hintStage='', rosterFilter='all', selectedCode='';
+let language='cs', studentId='ema', role='student', view='path', hintStage='', rosterFilter='all';
 let studentStyle=false;
 let audioSession=null, busy=false, noticeTimer=0, classroomSettings={title:'Gastro ateliér',lang:'cs'}, hasStorage=true, quizError=false;
 const allRoles=['student','teacher','leader','admin'];
@@ -45,7 +45,7 @@ function mutate(fn,p=person()){
 }
 function setPref(k,value){try{localStorage.setItem(scopedKey(k),value)}catch{}}
 function tell(message){outlet.textContent=message;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>outlet.textContent='',5500)}
-function go(page){if(busy||audioSession){tell(t('Nejdřív dokončete záznam.','Najskôr dokončite záznam.'));return}window.speechSynthesis?.cancel();if(page!=='exercise'&&['#vydej','#obsluha','#po-smene','#moje-portfolio'].includes(window.location?.hash))window.history.replaceState(null,'',window.location.pathname+window.location.search);view=page;quizError=false;render(true)}
+function go(page){if(busy||audioSession){tell(t('Nejdřív dokončete záznam.','Najskôr dokončite záznam.'));return}window.speechSynthesis?.cancel();if(page!=='exercise'&&['#vydej','#obsluha','#po-smene','#moje-portfolio','#listek-kuchyne','#listek-obsluha'].includes(window.location?.hash))window.history.replaceState(null,'',window.location.pathname+window.location.search);view=page;quizError=false;render(true)}
 function scenes(p){const folder=p.full&&p.id!=='ema'?'assets/':'photos/';const n=p.full?6:3;return Array.from({length:n},(_,i)=>folder+p.photo+'-'+i+'.webp')}
 function picture(p,phase){const images=scenes(p);const idx=p.full?[0,1,2,3,4,5,3,5][phase]:[0,0,1,1,2,2,1,2][phase];return images[idx]}
 function face(p){return scenes(p)[0]}
@@ -53,7 +53,7 @@ const photo=(path,alt,cls='')=>'<img class="'+cls+'" src="'+html(path)+'" alt="'
 const action=(name,label,value='',cls='button',attrs='')=>'<button type="button" class="'+cls+'" data-do="'+name+'" data-value="'+html(value)+'" '+attrs+'>'+html(label)+'</button>';
 const goBtn=(v,label,cls='button')=>action('go',label,v,cls);
 const pill=(label,cls='')=>'<span class="pill '+cls+'">'+html(label)+'</span>';
-const labelsNav=()=>({day:t('Dnes'),path:t('Moje cesta','Moja cesta'),journal:t('Deník','Denník'),portfolio:t('Portfolio','Portfólio'),group:t('Moje skupina','Moja skupina'),overview:t('Přehled výcviku','Prehľad výcviku'),admin:t('Správa ukázky','Správa ukážky')});
+const labelsNav=()=>({day:t('Směna','Zmena'),path:t('Dovednosti','Zručnosti'),journal:t('Deník','Denník'),portfolio:t('Portfolio','Portfólio'),group:t('Moje skupina','Moja skupina'),overview:t('Přehled výcviku','Prehľad výcviku'),admin:t('Správa ukázky','Správa ukážky')});
 const primary=(label,act,val='')=>action(act,label,val,'button primary arrow');
 const title=(tag,name,desc='')=>'<div class="page-title"><span class="ey">'+html(tag)+'</span><h1>'+html(name)+'</h1>'+(desc?'<p>'+html(desc)+'</p>':'')+'</div>';
 function courseTitle(p,s){if(s.code!==DEFAULT_CODE[p.track])return competency(s.code).name;return p.track==='cook'?t('Dvě porce pečené mrkve','Dve porcie pečenej mrkvy'):t('Oběd pro dva hosty','Obed pre dvoch hostí');}
@@ -73,8 +73,8 @@ function heroText(p,s){
 }
 function sectionHead(h,sub=''){return '<div class="section-head"><h2>'+html(h)+'</h2>'+(sub?'<small>'+html(sub)+'</small>':'')+'</div>'}
 function nav(){
- const items=role==='student'?['day','path','journal','portfolio']:role==='teacher'?['group']:role==='leader'?['overview']:['admin'];
- const active=['prepare','reflect','tip','during','exercise','summary'].includes(view)?'day':view==='employer'?'portfolio':view==='skill'?'path':view==='inspect'?'group':view;
+ const items=role==='student'?['path','day','journal','portfolio']:role==='teacher'?['group']:role==='leader'?['overview']:['admin'];
+ const active=['prepare','reflect','tip','during','exercise','summary'].includes(view)?'day':view==='employer'?'portfolio':view==='menu-study'?'path':view==='inspect'?'group':view;
  return '<header class="bar"><div class="shell bar-inner">'+'<button type="button" class="wordmark" data-do="home"><span>MISTR SVĚTA<span aria-hidden="true">.</span></span><small>'+t('Průvodce odborným výcvikem','Sprievodca odborným výcvikom')+'</small></button>'+'<nav aria-label="'+t('Hlavní navigace','Hlavná navigácia')+'">'+items.map(k=>action('go',labelsNav()[k],k,'nav-link',active===k?'aria-current="page"':'')).join('')+'</nav><div class="bar-tools">'+action('lang',language==='cs'?'SK':'CZ','','language','aria-label="'+t('Přepnout do slovenštiny','Prepnúť do češtiny')+'"')+'<button class="profile-btn" data-do="accounts" aria-haspopup="dialog">'+(role==='student'?photo(face(person()),'','avatar'):'')+'<span>'+html(role==='student'?person().name:roleLabel(role))+'</span><b aria-hidden="true">⌄</b></button></div></div></header>';
 }
 function footer(){return '<footer class="shell footer"><span>'+t('Fiktivní skupina · údaje v tomto prohlížeči','Fiktívna skupina · údaje v tomto prehliadači')+'</span><div>'+action('accounts',t('Přepnout roli','Prepnúť rolu'),'','text-link')+' · '+action('about',t('O aplikaci a zdrojích','O aplikácii a zdrojoch'),'','text-link')+'</div></footer>'}
@@ -155,7 +155,7 @@ function journalPage(){
  const p=person(),m=data(),s=m.shift;
  return title(p.name,t('Můj deník','Môj denník'),t('Vaše postřehy před prací, během ní a po ní.','Vaše postrehy pred prácou, počas nej a po nej.'))+
  '<div class="journal-layout"><div><h2>'+html(courseTitle(p,s))+'</h2><p class="meta">'+relativeDate(s.day)+' · '+html(stageLabels()[s.phase])+'</p>'+notesFor(p,s)+reviewHistory(s)+(s.phase===3?goBtn('during',t('Přidat postřeh','Pridať postreh')):'')+(s.phase===4||s.phase===7?goBtn('reflect',t('Otevřít reflexi','Otvoriť reflexiu')):'')+
- pastJournal(p,m)+'</div>'+photo(scenes(p).at(-1),p.name+' · '+period('after'),'journal-photo')+'</div>';
+ pastJournal(p,m)+menuStudyJournal(m)+'</div>'+photo(scenes(p).at(-1),p.name+' · '+period('after'),'journal-photo')+'</div>';
 }
 function pastJournal(p,m){
  const seen=new Set([m.shift.id]);
@@ -163,23 +163,10 @@ function pastJournal(p,m){
  return arr.length?sectionHead(t('Předchozí směny','Predchádzajúce zmeny'))+arr.map(s=>'<details><summary>'+html(dateLabel(s.day)+' · '+competency(s.code).name)+'</summary>'+notesFor(p,s)+(s.reviews?reviewHistory(s):'<p>'+html(feedbackText(s))+'</p>')+'</details>').join(''):'';
 }
 function reviewHistory(s){return (s.reviews||[]).map(r=>'<div class="entry review"><b>'+t('Pedagog','Pedagóg')+' · '+html(r.result==='approved'?t('potvrzeno','potvrdené'):t('k doplnění','na doplnenie'))+'</b><p>'+html(feedbackText(r))+'</p>'+mediaMarkup({audio:r.audio})+'</div>').join('')}
-function skillRow(c,m){const n=maxLevel(m,c.code);return '<button class="skill-row" data-do="detail" data-value="'+c.code+'"><span><b>'+html(c.name)+'</b><small>'+html(c.domain)+'</small></span><strong>'+(n?n+' / 3':t('K nácviku','Na nácvik'))+' <i>›</i></strong></button>'}
-function pathPage(){
- const p=person(),m=data(),s=m.shift,skills=skillSet(p);
- return title(p.name+' · '+profession(p),t('Moje cesta k profesi','Moja cesta k profesii'))+'<div class="path-top"><div><span class="ey">'+t('Profil absolventa','Profil absolventa')+'</span><h2>'+html(p.track==='cook'?t('Od přípravy surovin k samostatnému výdeji','Od prípravy surovín k samostatnému výdaju'):t('Od prvního prostření k samostatné obsluze','Od prvého prestierania k samostatnej obsluhe'))+'</h2><p>'+t('Pedagog potvrzuje úroveň podle práce, kterou jste předvedli. Každé potvrzení najdete ve svém portfoliu.','Pedagóg potvrdzuje úroveň podľa práce, ktorú ste predviedli. Každé potvrdenie nájdete vo svojom portfóliu.')+'</p><b>'+earned(m)+' / '+skills.length+' '+t('potvrzených dovedností','potvrdených zručností')+'</b><progress value="'+earned(m)+'" max="'+skills.length+'"></progress></div>'+photo(picture(p,3),p.name+' · '+profession(p))+'</div>'+
- sectionHead(t('Na čem právě pracujete','Na čom práve pracujete'))+skillRow(competency(s.code),m)+
- '<details><summary>'+t('Otevřít všechny dovednosti mého oboru','Otvoriť všetky zručnosti môjho odboru')+' ('+skills.length+')</summary>'+skills.map(c=>skillRow(c,m)).join('')+'</details>'+
- '<details><summary>'+t('Výukové moduly a profil celého oboru','Výučbové moduly a profil celého odboru')+'</summary>'+cat().modules.map(mod=>'<details><summary>'+html(mod.id+' · '+mod.title)+'</summary><p>'+html(mod.description)+'</p>'+cat().competencies.filter(c=>c.module===mod.id).map(c=>skillRow(c,m)).join('')+'</details>').join('')+'<a href="archiv.html">'+t('Otevřít další aktivity původní akademie','Otvoriť ďalšie aktivity pôvodnej akadémie')+' ↗</a></details>';
-}
-function skillPage(){
- const p=person(),m=data(),s=m.shift,c=competency(selectedCode)||competency(s.code),mod=moduleInfo(c.code),earnedLevel=maxLevel(m,c.code);
- return back('path')+title(mod.id+' · '+mod.title,c.name,c.goal)+(s.code===c.code?'<section class="practice-record"><span class="ey">'+html(progressState(s))+'</span><h2>'+html(courseTitle(p,s))+'</h2><p>'+html(learnerOutcome(s))+'</p>'+personalEvidence(s)+(s.phase>=4?goBtn('summary',t('Celá směna','Celá zmena')):'')+'</section>':'')+sectionHead(t('Tři úrovně dovednosti','Tri úrovne zručnosti'))+c.levels.map((x,i)=>'<div class="entry"><span class="ey">'+t('Úroveň ')+(i+1)+'</span><h3>'+html(x)+'</h3><p>'+html(c.tasks[i])+'</p>'+(earnedLevel>i?pill(t('Potvrzeno pedagogem','Potvrdené pedagógom'),'green'):s.code===c.code&&s.level===i+1?pill(t('Aktuální cíl','Aktuálny cieľ')):'')+'</div>').join('')+
- '<details><summary>'+t('Co pedagog pozoruje','Čo pedagóg pozoruje')+'</summary><ul>'+c.checks.map(x=>'<li>'+html(x)+'</li>').join('')+'</ul></details>'+ (s.code===c.code?goBtn('day',t('Zpět na moji směnu','Späť na moju zmenu'),'button primary'):'');
-}
 function portfolio(){
  const p=person(),m=data();
  return title(p.name+' · '+profession(p),t('Moje portfolio','Moje portfólio'),t('Práce, u kterých pedagog potvrdil konkrétní úroveň dovednosti.','Práce, pri ktorých pedagóg potvrdil konkrétnu úroveň zručnosti.'))+(m.shift.phase>=4&&m.shift.phase!==6?'<div class="practice-record no-print"><span class="ey">'+html(progressState(m.shift))+'</span><p>'+html(courseTitle(p,m.shift))+'</p>'+goBtn('summary',t('Moje rozpracovaná směna','Moja rozpracovaná zmena'),'text-link')+'</div>':'')+'<div class="actions no-print">'+goBtn('employer',t('Pro zaměstnavatele','Pre zamestnávateľa'),'button primary')+action('print',t('Tisk / uložit PDF','Tlač / uložiť PDF'),'','button primary')+action('export',t('Stáhnout záznamy','Stiahnuť záznamy'))+'</div><div class="portfolio-list">'+m.history.slice().reverse().map(a=>{
- const c=competency(a.code);return '<article class="portfolio-entry"><div class="ey">'+html(dateLabel(a.day))+' · '+t('Úroveň ')+a.level+'</div><h2>'+html(c.name)+'</h2><p>'+html(c.levels[a.level-1])+'</p><p class="teacher-note">'+html(feedbackText(a))+'</p><small>'+html(a.author)+' · '+t('osobně potvrzeno','osobne potvrdené')+'</small>'+mediaMarkup(a.notes?.after)+mediaMarkup({audio:a.audio})+(a.examplePhoto?'<figure class="sample-evidence">'+photo(a.examplePhoto,t('Modelový doklad práce fiktivního žáka','Modelový doklad práce fiktívneho žiaka'))+'<figcaption>'+t('Modelový doklad práce · ilustrační fotografie','Modelový doklad práce · ilustračná fotografia')+'</figcaption></figure>':'')+'<details><summary>'+t('Kritéria a žákovská reflexe','Kritériá a žiacka reflexia')+'</summary><ul>'+c.checks.map(x=>'<li>'+html(x)+'</li>').join('')+'</ul>'+noteRead(p,a,'after')+'</details></article>';
+ const c=competency(a.code);return '<article class="portfolio-entry" data-code="'+html(a.code)+'" tabindex="-1"><div class="ey">'+html(dateLabel(a.day))+' · '+t('Úroveň ')+a.level+'</div><h2>'+html(c.name)+'</h2><p>'+html(c.levels[a.level-1])+'</p><p class="teacher-note">'+html(feedbackText(a))+'</p><small>'+html(a.author)+' · '+t('osobně potvrzeno','osobne potvrdené')+'</small>'+mediaMarkup(a.notes?.after)+mediaMarkup({audio:a.audio})+(a.examplePhoto?'<figure class="sample-evidence">'+photo(a.examplePhoto,t('Modelový doklad práce fiktivního žáka','Modelový doklad práce fiktívneho žiaka'))+'<figcaption>'+t('Modelový doklad práce · ilustrační fotografie','Modelový doklad práce · ilustračná fotografia')+'</figcaption></figure>':'')+'<details><summary>'+t('Kritéria a žákovská reflexe','Kritériá a žiacka reflexia')+'</summary><ul>'+c.checks.map(x=>'<li>'+html(x)+'</li>').join('')+'</ul>'+noteRead(p,a,'after')+'</details></article>';
  }).join('')+'</div>';
 }
 function asksForHelp(s){return s.phase===3&&s.notes.during.choice===2&&!s.helpSeen}
@@ -191,7 +178,7 @@ function group(){
 }
 function inspect(){
  const p=person(),m=data(),s=m.shift,c=competency(s.code),pictures=scenes(p);
- const journal='<details '+(s.phase===5?'open':'')+'><summary>'+t('Deník a sebereflexe','Denník a sebareflexia')+'</summary>'+notesFor(p,s)+pastJournal(p,m)+'</details>';
+ const journal='<details '+(s.phase===5?'open':'')+'><summary>'+t('Deník a sebereflexe','Denník a sebareflexia')+'</summary>'+notesFor(p,s)+pastJournal(p,m)+menuStudyJournal(m)+'</details>';
  return back('group')+title(profession(p)+' · '+p.year+'. '+t('ročník'),p.name)+'<div class="inspect-grid"><div class="inspect-main"><span class="ey">'+html(stageLabels()[s.phase])+'</span><h2>'+html(courseTitle(p,s))+'</h2><p>'+html(c.name)+' · '+t('úroveň ')+s.level+'</p><p>'+html(c.levels[s.level-1])+'</p>'+(asksForHelp(s)?'<div class="callout"><b>'+t('Žádost o další ukázku','Žiadosť o ďalšiu ukážku')+'</b><p>'+html(loc(s.notes.during.text))+'</p>'+action('help-seen',t('Ukázka proběhla','Ukážka prebehla'))+'</div>':'')+journal+reviewHistory(s)+
  (s.phase===5?'<form id="reviewForm" class="review-form"><h2>'+t('Ověření výkonu','Overenie výkonu')+'</h2><p>'+t('Zaškrtněte jen to, co jste přímo pozorovali při práci.','Zaškrtnite iba to, čo ste priamo pozorovali pri práci.')+'</p>'+c.checks.map((x,i)=>'<label class="check"><input type="checkbox" name="criterion" data-check="'+i+'" '+(s.checks[i]?'checked':'')+'>'+html(x)+'</label>').join('')+'<label class="check"><input type="checkbox" name="safe" '+(s.safe?'checked':'')+'>'+t('Ověřil/a jsem bezpečný postup','Overil/a som bezpečný postup')+'</label><label>'+t('Zpětná vazba žákovi','Spätná väzba žiakovi')+'<textarea data-review-note maxlength="800">'+html(s.reviewDraft||'')+'</textarea></label>'+recordingControl('teacher',{audio:s.reviewAudio||''})+mediaMarkup({audio:s.reviewAudio})+'<div class="actions">'+action('approve',t('Osobně potvrdit úroveň ','Osobne potvrdiť úroveň ')+s.level,'','button primary',(s.checks.filter(Boolean).length===3&&s.safe)?'':'disabled')+action('return',t('Vrátit k doplnění','Vrátiť na doplnenie'),'','button',(s.reviewDraft?.trim()||s.reviewAudio)?'':'disabled')+'</div></form>':'')+
  (s.phase===0?'<details><summary>'+t('Přidat pokyn k dnešní směně','Pridať pokyn k dnešnej zmene')+'</summary><label>'+t('Pokyn pro žáka','Pokyn pre žiaka')+'<textarea data-hint maxlength="400">'+html(s.hint)+'</textarea></label>'+action('save-hint',t('Uložit pokyn','Uložiť pokyn'))+'</details>':'')+
@@ -219,9 +206,9 @@ function accountModal(){
  '<div class="role-options">'+allRoles.map(r=>action('role',roleLabel(r),r,'choice','aria-pressed="'+(role===r)+'"')).join('')+'</div>'+
  '<h3>'+t('Žákovské profily','Žiacke profily')+'</h3><div class="person-options">'+PEOPLE.map(p=>'<button data-do="student" data-value="'+p.id+'">'+photo(face(p),'','portrait')+'<span><b>'+p.name+'</b><small>'+profession(p)+'</small></span></button>').join('')+'</div>'+(role==='student'?'<details><summary>'+t('Moje preference','Moje nastavenia')+'</summary>'+action('tone',t('Studentská povzbuzení','Študentské povzbudenia')+' · '+(studentStyle?t('zapnuta','zapnuté'):t('vypnuta','vypnuté')),'','choice','aria-pressed="'+studentStyle+'"')+'</details>':'');
 }
-const homeFor=()=>({student:'day',teacher:'group',leader:'overview',admin:'admin'})[role];
+const homeFor=()=>({student:'path',teacher:'group',leader:'overview',admin:'admin'})[role];
 function render(scroll=false){
- const pages=role==='student'?{day:dayPage,summary:summaryPage,employer:employerPage,prepare:morningPage,exercise:exercisePage,during:()=>noteForm('during'),reflect:()=>noteForm('after'),journal:journalPage,path:pathPage,skill:skillPage,portfolio,tip:tipPage}:role==='teacher'?{group,inspect}:role==='admin'?{admin}:{overview};
+ const pages=role==='student'?{day:dayPage,summary:summaryPage,employer:employerPage,prepare:morningPage,exercise:exercisePage,during:()=>noteForm('during'),reflect:()=>noteForm('after'),journal:journalPage,path:pathPage,'menu-study':menuStudyPage,portfolio,tip:tipPage}:role==='teacher'?{group,inspect}:role==='admin'?{admin}:{overview};
  if(!pages[view])view=homeFor();
  const s=data().shift;
  if(role==='student'&&((view==='prepare'&&s.phase!==0)||(view==='during'&&s.phase!==3)||(view==='reflect'&&![4,7].includes(s.phase))))view='day';
@@ -296,7 +283,7 @@ async function attachPhoto(file){
  mutate(m=>m.shift.notes.after.photo=canvas.toDataURL('image/jpeg',.73));render();tell(t('Fotka je u záznamu.','Fotka je pri zázname.'))}finally{busy=false}
 }
 function problem(e){tell(e?.name==='QuotaExceededError'?t('Úložiště je plné. Zkraťte nahrávku nebo odeberte fotku a zkuste to znovu.','Úložisko je plné. Skráťte nahrávku alebo odoberte fotku a skúste to znova.'):t('Tento krok se nepodařilo uložit. Ověřte aktuální stav.','Tento krok sa nepodarilo uložiť. Overte aktuálny stav.'))}
-function switchPerson(id){guard(PEOPLE.some(p=>p.id===id));studentId=id;setPref('profile',id)}
+function switchPerson(id){guard(PEOPLE.some(p=>p.id===id));if(id!==studentId){resetMenu()}studentId=id;setPref('profile',id)}
 function newModal(f){dialog.innerHTML=f();if(!dialog.open)dialog.showModal()}
 function handle(act,val){
  if((audioSession||busy)&&act!=='stop'){tell(t('Nejdřív dokončete záznam.','Najskôr dokončite záznam.'));return}
@@ -308,7 +295,7 @@ function handle(act,val){
  case 'about':newModal(about);break;
  case 'close':dialog.close();break;
  case 'role':guard(allRoles.includes(val));role=val;rosterFilter='all';dialog.close();go(homeFor());break;
- case 'student':switchPerson(val);role='student';dialog.close();go('day');break;
+ case 'student':switchPerson(val);role='student';dialog.close();go(homeFor());break;
  case 'lang':language=language==='cs'?'sk':'cs';setPref('language',language);render();break;
  case 'go':go(val);break;
  case 'exercise':{
@@ -332,7 +319,14 @@ function handle(act,val){
  case 'morning-next':checkedNote('before');guard(hasNote(data().shift.notes.before));morningStep='safety';quizError=false;render(true);break;
  case 'morning-back':checkedNote('before');morningStep='focus';render(true);break;
  case 'step':guard(role==='student');navigateStage(val);break;
- case 'detail':guard(role==='student'&&!!competency(val));selectedCode=val;go('skill');break;
+ case 'detail':openMenuSkill(val);break;
+ case 'menu-filter':menuFilterAction(val);break;
+ case 'menu-study':case 'menu-study-save':menuStudyAction(act,val);break;
+ case 'menu-proof':{
+  guard(role==='student'&&skillSet(person()).some(c=>c.code===val)&&maxLevel(data(),val)>0);
+  go('portfolio');const entry=document.querySelector('.portfolio-entry[data-code="'+val+'"]');
+  if(entry){entry.focus({preventScroll:true});entry.scrollIntoView({block:'start'})}break;
+ }
  case 'tip':guard(role==='student');hintStage=val;go('tip');break;
  case 'filter':guard(role==='teacher');rosterFilter=val;render();break;
  case 'inspect':guard(role==='teacher');switchPerson(val);go('inspect');break;
@@ -372,11 +366,11 @@ window.addEventListener('storage',e=>{if(e.key?.startsWith('mistr-sveta.atelier.
 window.addEventListener('pagehide',()=>{if(audioSession){stopVoice();audioSession.stream.getTracks().forEach(x=>x.stop())}});
 function openSharedExercise(){
  const hash=window.location?.hash;
- const profile={'#vydej':'ema','#obsluha':'matej','#po-smene':'tomas','#moje-portfolio':'lea'}[hash];
+ const profile={'#listek-kuchyne':'ema','#listek-obsluha':'matej','#vydej':'ema','#obsluha':'matej','#po-smene':'tomas','#moje-portfolio':'lea'}[hash];
  if(!profile||busy||audioSession)return;
  if(dialog.open)dialog.close();
  switchPerson(profile);role='student';exerciseState.answer=null;
- view=hash==='#moje-portfolio'?'employer':hash==='#po-smene'?(data().shift.phase>=4?'summary':'day'):serviceExercise(person(),data().shift)?'exercise':'day';
+ view=hash.startsWith('#listek-')?'path':hash==='#moje-portfolio'?'employer':hash==='#po-smene'?(data().shift.phase>=4?'summary':'day'):serviceExercise(person(),data().shift)?'exercise':'day';
 }
 window.addEventListener('hashchange',()=>{openSharedExercise();render(true)});
 openSharedExercise();
