@@ -160,3 +160,66 @@ details.map-group { margin:0; padding:0; background:#1d3c3c; border:1px solid #5
 .shift-award p { margin:4px 0; font-size:.95rem; }
 button.map-recorded { padding:6px 0; border:0; background:none; text-align:left; }
 button.map-recorded:hover { text-decoration:underline; text-underline-offset:3px; }
+
+.map-switch {
+  display:inline-flex; flex-wrap:wrap; gap:3px; margin:0 0 14px; padding:3px;
+  border:1px solid #6f918b; border-radius:5px;
+}
+.map-mode {
+  min-height:40px; padding:6px 13px; border:0; border-radius:2px;
+  font-weight:680; font-size:.9rem; color:var(--paper); background:transparent;
+}
+.map-mode[aria-pressed="true"] { color:var(--map-ink); background:var(--mastery); }
+.map-mode[aria-pressed="false"]:hover { background:#294a48; }
+.map-mode:focus-visible { outline:2px solid currentColor; outline-offset:-4px; }
+
+.future-work.career-panel {
+  grid-template-columns:1.03fr 1fr; gap:0; align-items:stretch; padding:0;
+}
+.career-panel > div { min-width:0; padding:clamp(18px,2.7vw,38px); }
+.career-offer blockquote {
+  max-width:37ch; margin:15px 0; padding:0;
+  color:var(--ink); font-size:clamp(1.15rem,1.66vw,1.52rem); font-weight:570; line-height:1.25;
+}
+details.career-fold { padding:0; margin:0; border:0; border-top:1px solid #6d9592; background:transparent; }
+.career-fold > summary {
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  min-height:44px; padding:10px 1px; cursor:pointer; list-style:none; color:var(--ink);
+  font-weight:670; font-size:1rem; line-height:1.2;
+}
+.career-fold summary::marker { content:""; }
+.career-fold summary::-webkit-details-marker { display:none; }
+.career-fold summary::after { content:"+"; font-size:1.12rem; }
+.career-fold[open] summary::after { content:"−"; }
+.career-fold p { max-width:56ch; margin:1px 0 10px; line-height:1.38; }
+.career-fold a { display:inline-block; color:var(--ink); margin:3px 0 14px; text-underline-offset:3px; }
+.career-offer :focus-visible { outline:2px solid var(--ink); outline-offset:-2px; }
+.career-choice { background:var(--map-ink); color:white; }
+.career-choice .passport-kicker { color:var(--mastery); }
+.career-choice > p { max-width:47ch; margin:9px 0 15px; color:var(--map-muted); line-height:1.35; }
+.goal-options { display:grid; gap:6px; }
+.goal-option {
+  display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; min-height:46px;
+  padding:9px 13px; border:1px solid #799d97; border-radius:2px; text-align:start;
+  color:white; background:#214543; font-weight:670; font-size:1rem; line-height:1.2;
+}
+.goal-option::after { content:"→"; flex-shrink:0; color:var(--mastery); }
+.goal-option:hover, .goal-option[data-chosen="true"] { background:var(--mint); color:var(--ink); }
+.goal-option:hover::after, .goal-option[data-chosen="true"]::after { color:var(--ink); }
+.goal-option:focus-visible { outline:2px solid white; outline-offset:1px; }
+.career-choice .clear-goal { color:var(--mint); padding:7px 0; margin-top:8px; }
+.personal-goal {
+  display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px;
+  padding:13px clamp(15px,3.3vw,52px); background:#edf6f3; border-top:1px solid #84aaa5;
+}
+.personal-goal h2 { margin:4px 0 0; font-size:clamp(1.1rem,1.7vw,1.45rem); }
+.personal-goal-actions { display:flex; flex-wrap:wrap; align-items:center; gap:7px 14px; }
+.practice-why { padding:13px var(--menu-gutter,20px); background:var(--mint-wash); color:var(--ink); }
+.practice-why p { margin:4px 0 0; max-width:66ch; line-height:1.36; }
+@media(max-width:650px){
+  .map-switch { margin-bottom:10px; }
+  .map-mode { min-height:44px; }
+  .future-work.career-panel { grid-template-columns:minmax(0,1fr); }
+  .career-panel > div { padding:17px 15px; }
+  .career-offer blockquote { margin:10px 0 14px; }
+}

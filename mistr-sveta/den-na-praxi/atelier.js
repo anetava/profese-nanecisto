@@ -323,7 +323,14 @@ function handle(act,val){
  case 'step':guard(role==='student');navigateStage(val);break;
  case 'detail':openMenuSkill(val);break;
  case 'menu-filter':menuFilterAction(val);break;
+ case 'map-mode':switchPortfolioMap(val);break;
  case 'map-result':openConfirmedMap(val);break;
+ case 'choose-goal':choosePracticeGoal(val);break;
+ case 'clear-goal':
+  guard(role==='student' && view==='future' && data().practiceGoal);
+  mutate(model => {delete model.practiceGoal});
+  render();document.querySelector('.goal-option')?.focus({preventScroll:true});
+  tell(t('Osobní cíl je odebraný.','Osobný cieľ je odstránený.'));break;
  case 'station-try':handleStationTry(val);break;
  case 'menu-study':case 'menu-study-save':menuStudyAction(act,val);break;
  case 'menu-proof':{

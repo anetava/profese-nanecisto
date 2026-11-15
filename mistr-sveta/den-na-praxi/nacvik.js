@@ -188,13 +188,16 @@ function menuStudyPage() {
   const focusChoices = skill.checks.map((label, i) =>
     '<label class="check"><input type="radio" name="practice-focus" value="' + i + '"' +
     (draft.focus === i ? ' checked' : '') + '>' + html(label) + '</label>').join('');
+  const personal = model.practiceGoal === skill.code ? '<div class="practice-why"><span class="passport-kicker">' +
+    t('K čemu mi to bude na směně','Na čo mi to bude na zmene') + '</span><p>' + html(menuSkillWhy(skill,person())) +
+    '</p></div>' : '';
   const caseMarkup = situation ? '<div class="menu-practice-task"><span class="ey">' +
     t('Situace z provozu', 'Situácia z prevádzky') + '</span><h2>' + html(loc(situation[0])) +
     '</h2><details><summary>' + t('Ukázat tip od mistra', 'Ukázať tip od majstra') +
     '</summary><p>' + html(loc(situation[1])) + '</p></details></div>' : '';
 
   return '<section class="menu-practice">' + returnLink +
-    title(moduleInfo(skill.code).title + ' · ' + levelCopy + ' · ' + t('úroveň ') + draft.level, menuSkillName(skill)) +
+    title(moduleInfo(skill.code).title + ' · ' + levelCopy + ' · ' + t('úroveň ') + draft.level, menuSkillName(skill)) + personal +
     (stationChallenge(skill.code, person()) || caseMarkup) + '<details class="menu-practice-proof"><summary>' +
     t('Úkol pro tuto úroveň a způsob ověření', 'Úloha pre túto úroveň a spôsob overenia') + '</summary>' +
     '<p>' + html(skill.name) + '</p><p><strong>' + t('Praktický úkol', 'Praktická úloha') + '</strong> · ' + html(skill.tasks[draft.level - 1]) + '</p>' +
