@@ -112,9 +112,9 @@ details.map-group { margin:0; padding:0; background:#1d3c3c; border:1px solid #5
   .next-shift h2 { font-size:1.45rem; }
   .next-shift .button { min-height:44px; }
   .skill-map { padding:15px 13px; margin:11px 0; }
-  .map-heading { align-items:flex-start; gap:8px; }
+  .map-heading { display:grid; grid-template-columns:minmax(0,1fr) max-content; align-items:start; gap:8px; }
   .map-heading p { font-size:.89rem; }
-  .map-count { min-width:48px; }
+  .map-count { justify-items:end; }
   .map-count strong { font-size:1.75rem; }
   .map-count small { font-size:.68rem; }
   .map-groups { gap:5px; margin-top:12px; }
