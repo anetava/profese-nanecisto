@@ -163,10 +163,39 @@ function noteRead(p,s,k){
 function feedbackText(r){return loc(r.comment||r.feedback||'')}
 function notesFor(p,s){return ['before','during','after'].map(k=>noteRead(p,s,k)).join('')||'<p>'+t('První postřeh přibude po ranní přípravě.','Prvý postreh pribudne po rannej príprave.')+'</p>'}
 function journalPage(){
- const p=person(),m=data(),s=m.shift;
- return title(p.name,t('Můj deník','Môj denník'),t('Vaše postřehy před prací, během ní a po ní.','Vaše postrehy pred prácou, počas nej a po nej.'))+
- '<div class="journal-layout"><div><h2>'+html(courseTitle(p,s))+'</h2><p class="meta">'+relativeDate(s.day)+' · '+html(stageLabels()[s.phase])+'</p>'+notesFor(p,s)+reviewHistory(s)+(s.phase===3?goBtn('during',t('Přidat postřeh','Pridať postreh')):'')+(s.phase===4||s.phase===7?goBtn('reflect',t('Otevřít reflexi','Otvoriť reflexiu')):'')+
- tableJournal(p,m)+pastJournal(p,m)+menuStudyJournal(m)+'</div>'+photo(scenes(p).at(-1),p.name+' · '+period('after'),'journal-photo')+'</div>';
+ const p=person(),m=data(),days=new Map(),seen=new Set();
+ function add(day,label,body){
+  if(!days.has(day))days.set(day,[]);
+  days.get(day).push({label,body});
+ }
+ for(const s of [m.shift,...m.finished,...m.history]){
+  if(seen.has(s.id))continue;
+  seen.add(s.id);
+  const current=s===m.shift;
+  const notes=['before','during','after'].map(k=>noteRead(p,s,k)).join('');
+  if(current&&!notes&&!s.reviews?.length&&s.phase===0)continue;
+  const feedback=reviewHistory(s)||(feedbackText(s)?'<p><b>'+t('Pedagog','Pedagóg')+'</b> · '+html(feedbackText(s))+'</p>':'');
+  const controls=current&&[3,4,7].includes(s.phase)?goBtn(s.phase===3?'during':'reflect',t('Doplnit zápis','Doplniť zápis')):'';
+  add(s.day,courseTitle(p,s),notes+feedback+controls||'<p>'+html(stageLabels()[s.phase]||'')+'</p>');
+ }
+ for(const [code,records] of Object.entries(m.menuStudy||{})){
+  for(const r of records)add(r.day,competency(code).name,menuStudyRecord({menuStudy:{[code]:[r]}},code));
+ }
+ for(const [n,item] of Object.entries(m.tableNotes||{})){
+  const story=tableCase(Number(n),p),label=tableWord(Number(n))+' · '+story.title;
+  for(const r of [...(item.earlier||[]),item]){
+   add(r.day,label,(r.parts?.length?'<ul>'+tableMessage(story,r.parts)+'</ul>':'')+(r.answer?'<p>'+html(r.answer)+'</p>':''));
+   if(Number.isInteger(r.field))add(r.fieldDay||r.day,t('Reflexe','Reflexia')+' · '+label,'<p>'+html(tableReflections()[r.field])+'</p>');
+  }
+ }
+ const fmt=new Intl.DateTimeFormat(language==='sk'?'sk-SK':'cs-CZ',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+ const cards=[...days.keys()].sort().reverse().map(day=>{
+  const entries=days.get(day);
+  return '<details class="journal-day"><summary><span><strong>'+html(fmt.format(new Date(day+'T12:00:00')))+'</strong><span>'+entries.map(e=>html(e.label)).join(' · ')+'</span></span></summary>'+entries.map(e=>'<article><h3>'+html(e.label)+'</h3>'+e.body+'</article>').join('')+'</details>';
+ }).join('');
+ return title(p.name,t('Můj deník praxe','Môj denník praxe'),t('Vyberte den a otevřete si zápisy z praxe.','Vyberte deň a otvorte si zápisy z praxe.'))+
+ '<section class="journal-days"><h2>'+t('Uložené dny','Uložené dni')+' ('+days.size+')</h2>'+ (cards||'<p>'+t('Zatím tu žádný den není. První zápis přibude po ranní přípravě.','Zatiaľ tu žiadny deň nie je. Prvý zápis pribudne po rannej príprave.')+'</p>')+'</section>'+
+ (m.shift.phase===0?'<section><h2>'+t('Naplánovaná směna','Naplánovaná zmena')+'</h2><p>'+html(dateLabel(m.shift.day)+' · '+courseTitle(p,m.shift))+'</p>'+goBtn('prepare',t('Otevřít ranní přípravu','Otvoriť rannú prípravu'),'button primary')+'</section>':'')+tableJournal(p,m);
 }
 function pastJournal(p,m){
  const seen=new Set([m.shift.id]);
