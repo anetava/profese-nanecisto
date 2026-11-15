@@ -27,3 +27,5 @@
 .wordmark::before{content:"";grid-column:1;grid-row:1/3;width:60px;height:44px;background:#fff url("gastro-znak.svg?v=koruna15b") center/88% auto no-repeat;border-radius:7px}
 .wordmark>span,.wordmark>small{grid-column:2}
 @media(max-width:700px){.wordmark{column-gap:6px}.wordmark::before{width:43px;height:34px}}
+
+.journal-days{max-width:58rem;margin-block:1.5rem 2rem}.journal-days .journal-day{border:1px solid var(--rule);border-left:5px solid var(--mint);margin:10px 0;padding:0}.journal-day summary{padding:14px;cursor:pointer}.journal-day summary strong,.journal-day summary span span{display:block}.journal-day summary>span{display:inline-block;vertical-align:middle}.journal-day summary strong{font-size:1.2rem}.journal-day article{padding:0 16px 12px}.journal-day[open] summary{background:var(--mint-wash)}
