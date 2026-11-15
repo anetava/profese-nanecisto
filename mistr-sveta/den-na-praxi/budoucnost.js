@@ -50,7 +50,7 @@ function portfolioMap(p, model, forecast = false) {
     (reached ? t('Můj cíl v Mistru světa je splněný','Môj cieľ v aplikácii MISTR SVĚTA je splnený') :
       forecast ? t('Mapa v cíli','Mapa v cieli') : t('Moje mapa dovedností','Moja mapa zručností')) +
      '</h2><p>' + html(help) + '</p>' + evidenceLink + '</div><div class="map-count"><strong>' + complete + '<span> / ' + skills.length + '</span></strong><small>' +
-    (forecast ? t('cíl na úrovni 3','cieľ na úrovni 3') : t('na úrovni 3')) + '</small></div></div><div class="map-groups">' + groups + '</div></section>';
+    (forecast ? t('cíl na úrovni 3','cieľ na úrovni 3') : t('na úrovni 3')) + '</small></div></div><div class="map-groups">' + groups + '</div><p><a class="map-recorded" href="profil-oboru.html?lang=' + language + '">' + t('Celý obor · 12 oblastí a 36 dovedností','Celý odbor · 12 oblastí a 36 zručností') + ' →</a></p></section>';
 }
 
 function switchPortfolioMap(mode) {
