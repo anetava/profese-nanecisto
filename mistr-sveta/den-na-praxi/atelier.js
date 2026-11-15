@@ -45,7 +45,7 @@ function mutate(fn,p=person()){
 }
 function setPref(k,value){try{localStorage.setItem(scopedKey(k),value)}catch{}}
 function tell(message){outlet.textContent=message;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>outlet.textContent='',5500)}
-function go(page){if(busy||audioSession){tell(t('Nejdřív dokončete záznam.','Najskôr dokončite záznam.'));return}window.speechSynthesis?.cancel();if((/^#(?:dovednost|budoucnost|stul|ukazka)-/.test(window.location?.hash))||page!=='exercise'&&['#denik','#vydej','#obsluha','#po-smene','#moje-portfolio','#listek-kuchyne','#listek-obsluha'].includes(window.location?.hash))window.history.replaceState(null,'',window.location.pathname+window.location.search);view=page;quizError=false;render(true)}
+function go(page){if(busy||audioSession){tell(t('Nejdřív dokončete záznam.','Najskôr dokončite záznam.'));return}window.speechSynthesis?.cancel();if((/^#(?:dovednost|budoucnost|stul|ukazka)-/.test(window.location?.hash))||page!=='exercise'&&['#karierni-mapa','#denik','#vydej','#obsluha','#po-smene','#moje-portfolio','#listek-kuchyne','#listek-obsluha'].includes(window.location?.hash))window.history.replaceState(null,'',window.location.pathname+window.location.search);view=page;quizError=false;render(true)}
 function scenes(p){const folder=p.full&&p.id!=='ema'?'assets/':'photos/';const n=p.full?6:3;return Array.from({length:n},(_,i)=>folder+p.photo+'-'+i+'.webp')}
 function picture(p,phase){const images=scenes(p);const idx=p.full?[0,1,2,3,4,5,3,5][phase]:[0,0,1,1,2,2,1,2][phase];return images[idx]}
 function face(p){return scenes(p)[0]}
@@ -428,6 +428,7 @@ function openSharedExercise(){
  view=hash.startsWith('#listek-')?'path':hash==='#moje-portfolio'?'employer':hash==='#po-smene'?(data().shift.phase>=4?'summary':'day'):serviceExercise(person(),data().shift)?'exercise':'day';
 }
 function renderSharedEntry(scroll=false){
+ if(location.hash==='#karierni-mapa'&&!busy&&!audioSession){role='student';view='path';render();document.getElementById('karierni-mapa')?.scrollIntoView();return;}
  if(/^#denik(?:-[a-z]+)?$/.test(window.location.hash)&&!busy&&!audioSession){const requested=window.location.hash.slice(7);if(requested&&PEOPLE.some(p=>p.id===requested))switchPerson(requested);role='student';view='journal';render(scroll);return;}
  const tableLink=/^#stul-(12|7)-([a-z]+)$/.exec(window.location?.hash || '');
  if (tableLink && PEOPLE.some(p=>p.id===tableLink[2]) && !busy && !audioSession) {

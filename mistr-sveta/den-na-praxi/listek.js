@@ -119,7 +119,7 @@ function pathPage() {
       '</header><div class="menu-rows">' + rows.map(c => menuRow(c, p, model)).join('') + '</div></section>';
   }).join('');
   const filters = [['all', t('Vše', 'Všetko')], ['specialty', specialty], ['shared', t('Společný základ', 'Spoločný základ')], ['confirmed', t('Potvrzené', 'Potvrdené')]];
-  return '<div class="menu-page">' + passportIntro(p, model) + portfolioMap(p, model) +
+  return '<div class="menu-page">' + passportIntro(p, model) + '<section class="career-poster" id="karierni-mapa"><h2>'+t('Kam mě může dovést praxe?', 'Kam ma môže priviesť prax?')+'</h2><a href="photos/karierni-mapa.webp"><img src="photos/karierni-mapa.webp" width="1086" height="1448" alt="'+t('Od úkolu na směně přes potvrzení pedagogem a vlastní portfolio až k vedení kuchyně nebo restaurace.', 'Od úlohy na zmene cez potvrdenie pedagógom a vlastné portfólio až k vedeniu kuchyne alebo reštaurácie.')+'"></a></section>' + portfolioMap(p, model) +
     '<div class="menu-controls"><h2>' + t('Můj lístek dovedností', 'Môj lístok zručností') + '</h2><div class="menu-filters" role="group" aria-label="' + t('Zobrazit dovednosti', 'Zobraziť zručnosti') + '">' +
     filters.map(([key, label]) => action('menu-filter', label, key, 'choice', 'aria-pressed="' + (menuFilter === key) + '"')).join('') +
     '</div></div>' + (sections || '<p>' + t('Zatím tu není potvrzená dovednost. První přibude po hodnocení pedagogem.', 'Zatiaľ tu nie je potvrdená zručnosť. Prvá pribudne po hodnotení pedagógom.') + '</p>') +
