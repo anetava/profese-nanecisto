@@ -43,23 +43,36 @@ window.PREP = (() => {
       exhausted:'Seznamte se s odpověďmi škol a zvolte další pracoviště.'
     };
     const note=s.status==='returned'&&s.comment?'<p><b>Poznámka z IVP</b><br>'+escape(s.comment)+'</p>':'';
+    const reply=(Array.isArray(s.schoolReplies)?s.schoolReplies:[]).at(-1);
+    const showReply=reply?.note && (s.status==='confirmed'||s.status==='exhausted'||(s.declined.length&&s.status==='coordinator'));
+    const message=showReply?'<p><b>Vzkaz školy · '+escape(titleOf(reply.schoolId))+'</b><br>'+escape(reply.note)+'</p>':'';
     const selection=s.primary?'<p>První volba · '+escape(titleOf(s.primary))+(s.backup?'<br>Náhradní volba · '+escape(titleOf(s.backup)):'')+'</p>':'';
-    return '<article class="panel"><span class="tag">'+escape(labels[s.status])+'</span><h2>'+escape(s.status==='confirmed'?titleOf(s.current):'Moje škola')+'</h2><p>'+escape(description[s.status])+'</p>'+selection+(s.focus?'<p><b>Zaměření praxe</b><br>'+escape(s.focus)+'</p>':'')+note+'</article>';
+    return '<article class="panel"><span class="tag">'+escape(labels[s.status])+'</span><h2>'+escape(s.status==='confirmed'?titleOf(s.current):'Moje škola')+'</h2><p>'+escape(description[s.status])+'</p>'+selection+(s.focus?'<p><b>Zaměření praxe</b><br>'+escape(s.focus)+'</p>':'')+note+message+'</article>';
   }
   function coordinator(s){
     if(s.status!=='coordinator')return '';
     const available=[s.primary,s.backup].filter(id=>school(id)&&!s.declined.includes(id));
     return '<form class="panel" data-prep="review"><h3>Posouzení volby IVP</h3><div class="fields"><label>Škola k potvrzení<select name="school">'+available.map(id=>'<option value="'+escape(id)+'">'+escape(titleOf(id))+'</option>').join('')+'</select></label><label>Zpráva studentovi<textarea rows="2" maxlength="600" name="note" placeholder="Při vrácení uveďte, co je třeba upravit."></textarea></label></div><p data-error class="notice" role="status" hidden></p><div class="actions"><button value="approve" class="primary">Schválit volbu a předat škole</button><button value="return" class="secondary">Vrátit s poznámkou</button></div></form>';
   }
-  function schoolDecision(s){
-    if(s.status!=='school')return '';
-    return '<form data-prep="school" class="panel"><h3>Je ve škole místo?</h3><p>'+escape(titleOf(s.current))+' · stanovisko pracoviště k přijetí studenta.</p><label>Poznámka pro studenta a IVP<textarea name="note" rows="2" maxlength="600"></textarea></label><div class="actions"><button value="accept" class="primary">Ano, přijímáme</button><button value="decline" class="secondary">Ne, nemáme místo</button></div></form>';
+  // One placement decision is always made by the school currently asked to host this student.
+  function schoolReply(value, schoolId, decision, note) {
+    const s=state(value);
+    if(s.status!=='school'||s.current!==schoolId||!school(schoolId)||!['accept','decline'].includes(decision))return null;
+    const comment=String(note||'').trim().slice(0,600);
+    const replies=Array.isArray(s.schoolReplies)?s.schoolReplies:[];
+    const reply={schoolId,decision,note:comment,at:new Date().toISOString()};
+    const statement=titleOf(schoolId)+(decision==='accept'?' přijímá studenta.':' nemá volné místo.');
+    const history=[...s.history,statement+(comment?' '+comment:'')];
+    if(decision==='accept')return {...s,status:'confirmed',schoolReplies:[...replies,reply],history};
+    const declined=[...new Set([...s.declined,schoolId])];
+    const alternate=[s.primary,s.backup].some(id=>school(id)&&!declined.includes(id));
+    return {...s,status:alternate?'coordinator':'exhausted',current:'',declined,schoolReplies:[...replies,reply],history};
   }
   function render(value,role='student'){
     const s=state(value);
     const editing=role==='student'&&['draft','returned','exhausted'].includes(s.status);
     const log=s.history.length?'<details class="panel"><summary>Průběh žádosti</summary><ol>'+s.history.map(row=>'<li>'+escape(row)+'</li>').join('')+'</ol></details>':'';
-    return '<div class="stack" data-preparation>'+((!editing||s.status!=='draft')?summary(s):'')+(editing?preference(s):'')+(role==='ivp'?coordinator(s):'')+(role==='mentor'?schoolDecision(s):'')+
+    return '<div class="stack" data-preparation>'+((!editing||s.status!=='draft')?summary(s):'')+(editing?preference(s):'')+(role==='ivp'?coordinator(s):'')+
       (role==='student'&&!editing?checklist(s):'')+log+'<small class="muted">Modelové školy · volbu a odpovědi si vyzkoušíte v rolích tohoto prohlížeče.</small></div>';
   }
   function bind(root,value,role,save){
@@ -85,17 +98,10 @@ window.PREP = (() => {
         }else if(action==='approve'&&school(id)&&[s.primary,s.backup].includes(id)&&!s.declined.includes(id)){
           commit({status:'school',current:id,comment:note},'IVP schválilo předání žádosti škole '+titleOf(id)+'. '+note);
         }
-      }else if(f.dataset.prep==='school'&&role==='mentor'&&s.status==='school'){
-        const note=get('note');
-        if(action==='accept')commit({status:'confirmed'},titleOf(s.current)+' přijímá studenta. '+note);
-        else if(action==='decline'){
-          const declined=[...s.declined,s.current],other=[s.primary,s.backup].some(id=>school(id)&&!declined.includes(id));
-          commit({status:other?'coordinator':'exhausted',current:'',declined},titleOf(s.current)+' nemá volné místo. '+note);
-        }
       }else if(f.dataset.prep==='checklist'&&role==='student'){
         commit({date:get('date'),checks:Object.fromEntries(checks.map(([key])=>[key,data.has(key)]))});
       }
     };
   }
-  return {render,bind,schoolName:titleOf,statusLabel:id=>labels[id]||labels.draft};
+  return {render,bind,schoolName:titleOf,statusLabel:id=>labels[id]||labels.draft,schoolReply,schools:schools.map(([id,name])=>({id,name}))};
 })();

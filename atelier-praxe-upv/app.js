@@ -20,18 +20,63 @@
     if(p.stage!=='group')events.forEach((ev,j)=>{ev.moduleId=p.stage;ev.title=(p.stage==='micro'?['Volba tématu mikrovýstupu','Konzultace přípravy','Mikrovýstup před skupinou','Reflexe mikrovýstupu']:['Konzultace přípravy hodiny','První výukový výstup','Rozbor výstupu s učitelem','Doplnění portfolia'])[j]});
     return [p.id,{events,records:[{id:'demo-'+p.id,moduleId:p.stage,date:'2026-11-'+(10+i),fields:firstField?{[firstField]:({group:'Modelová odborná škola · skupina B, 16 žáků',micro:'Po instruktáži změří dvojice vzorek a zdůvodní volbu měřidla.',continuous:'Žák samostatně vybere měřidlo pro zadanou toleranci a vysvětlí proč.'}[p.stage])}:{},timeline:[],feedback:'',...sample}]}];
   }));
-  let db; try { db=JSON.parse(localStorage.getItem(KEY)) || fresh(); } catch { db=fresh(); }
+  let db, stored;
+  function hydrate(data) {
+    const defaults=fresh(), out=data&&typeof data==='object'?data:{};
+    for (const p of people) {
+      const entry=out[p.id]||=defaults[p.id];
+      if (!Array.isArray(entry.records)) entry.records=defaults[p.id].records;
+      if (!Array.isArray(entry.events)) entry.events=defaults[p.id].events;
+      if (!Array.isArray(entry.reflections)) entry.reflections=IVPREF.seed(p.id);
+      if (!entry.prep) entry.prep=RoleDesk.initialPrep(p.id);
+    }
+    return out;
+  }
+  try {stored=localStorage.getItem(KEY);db=hydrate(JSON.parse(stored));} catch {db=hydrate(null);}
+
   let role='student',who='alex',search='',statusFilter='all';
+  const roleProfiles=[['mentor','Cvičný učitel'],['ivp','Koordinátor IVP'],...RoleDesk.profiles];
+  const allowedPeople=()=>role==='student'?people.filter(p=>p.id===who):role==='ivp'?people:role==='mentor'?people.filter(p=>p.id!=='sam'):[];
+  function useProfile(value){
+    const [next,id]=value.split('/');
+    if(next==='student' && people.some(p=>p.id===id)){role=next;who=id;}
+    else if(roleProfiles.some(([key])=>key===value)){role=value;if(role==='mentor' && !allowedPeople().some(p=>p.id===who))who=allowedPeople()[0].id;}
+  }
+  const entryProfile=new URLSearchParams(location.search).get('profil');
+  try {useProfile(entryProfile||sessionStorage.getItem(KEY+'.view')||'student/alex');} catch {if(entryProfile)useProfile(entryProfile);}
+  const refContext=()=>({
+    db,who,role,people:allowedPeople(),toast,canSee:id=>allowedPeople().some(p=>p.id===id),
+    save:(id,rows)=>{
+      if(!allowedPeople().some(p=>p.id===id)||!['ivp','student'].includes(role))return false;
+      const before=db[id].reflections;db[id].reflections=rows;
+      if(persist())return true;
+      db[id].reflections=before;return false;
+    }
+  });
   const person=()=>people.find(p=>p.id===who);
   const current=()=>db[who];
-  const recordRoute=r=>r.tool?r.tool:'praxe/'+r.moduleId+'/zaznam/'+encodeURIComponent(r.id);
+  const recordRoute=r=>r.isBlockReflection?IVPREF.route(r.blockId,r.id):r.tool?r.tool:'praxe/'+r.moduleId+'/zaznam/'+encodeURIComponent(r.id);
   const navItems=[['start','Všechny moduly'],['ivp','Praxe IVP'],['nacvik','Praxe nanečisto'],['adaptio','Adaptio'],['ss','Praxe SŠ'],['kurzy','Kurzy ČZU']];
   const names={student:'Student',mentor:'Cvičný učitel',ivp:'Přehled IVP'};
   const section=(ey,title,desc='')=>'<header class="subhead"><small class="eyebrow">'+e(ey)+'</small><h1>'+e(title)+'</h1>'+(desc?'<p>'+e(desc)+'</p>':'')+'</header>';
-  const visibleRecords=()=>[...current().records,...(role==='student'?Object.values(current().tools||{}).flat():[])].filter(r=>role==='student'||r.status!=='draft');
+  const visibleRecords=()=>allowedPeople().some(p=>p.id===who)
+    ? [...current().records,...(role==='student'?Object.values(current().tools||{}).flat():[]),...IVPREF.portfolio(refContext())].filter(r=>role==='student'||r.status!=='draft')
+    : [];
   const fmt=d=>d?new Intl.DateTimeFormat('cs-CZ',{day:'numeric',month:'long',year:'numeric'}).format(new Date(d+'T12:00:00')):'';
   function toast(msg){const node=document.getElementById('toast');node.textContent=msg;clearTimeout(toast.t);toast.t=setTimeout(()=>node.textContent='',3500);}
-  function persist(){try{localStorage.setItem(KEY,JSON.stringify(db));return true}catch{toast('Uložení v prohlížeči se nezdařilo. Zálohujte si portfolio tiskem.');return false}}
+  function persist(){
+    try {
+      if(localStorage.getItem(KEY)!==stored){
+        toast('V jiné kartě přibyla změna. Zkopírujte rozepsaný text a obnovte stránku.');return false;
+      }
+      const next=JSON.stringify(db); localStorage.setItem(KEY,next); stored=next; return true;
+    }catch{toast('Uložení se nezdařilo. Zkontrolujte dostupné místo v prohlížeči.');return false;}
+  }
+  window.addEventListener('storage',event=>{
+    if(event.key!==KEY || event.newValue===stored)return;
+    if(root.querySelector('form:focus-within')){toast('Praxe byla aktualizována v jiné kartě. Před obnovením si zkopírujte rozepsaný text.');return;}
+    try{db=hydrate(JSON.parse(event.newValue));stored=event.newValue;render();}catch{}
+  });
   function navigate(page){if(location.hash.slice(1)===page)render();else location.hash=page}
   function route(){return location.hash.slice(1)||'start'}
   function statusName(s){return PRACTICE.statusLabel(s)}
@@ -44,24 +89,48 @@
   ];
   const toolPages=['nacvik','adaptio','ss','kurzy'];
   const toolLabel=id=>catalog.find(row=>row[0]===id)?.[1]||'';
+  function shortcuts(){
+    const n=role==='ivp'?people.flatMap(p=>db[p.id].reflections).filter(r=>r.status==='submitted').length:
+      role==='student'?current().reflections.filter(r=>r.status==='returned').length:0;
+    const label=role==='ivp'?'Reflexe k vyřízení':role==='mentor'?'Předané reflexe':'Moje reflexe';
+    const status=n?' · '+n+(role==='student'?' k doplnění':''):'';
+    return '<nav class="desk-links" aria-label="Reflexe a podklady">'+
+      (!RoleDesk.isSpecial(role)?link('reflexe',label+status,'desk-link reflection-action'):'')+
+      link('materialy','Dokumenty ke stažení','desk-link docs-action')+'</nav>';
+  }
+  function sourceRef(block,id){
+    return 'reflexe/nova/'+block+'/zaznam/'+encodeURIComponent(id);
+  }
+  function blockNav(block){
+    return '<nav class="block-nav" aria-label="K tomuto bloku"><button type="button" class="secondary" data-block-docs>Dokumenty k bloku ↓</button>'+
+      (role==='student'?link('reflexe/nova/'+block,'Napsat reflexi pro IVP','secondary'):link('reflexe','Přehled předaných reflexí','secondary'))+'</nav>';
+  }
+  function blockExtras(id){
+    return '<div class="block-extras">'+BLOCKS.docs(id)+IVPREF.block(id,refContext())+'</div>';
+  }
   function hub(){
-    const personal=role==='student'?'Připravte se na další hodinu, zkuste si náročnou situaci nebo se vraťte k tomu, co jste viděli při náslechu.':role==='mentor'?'Otevřete si práci studenta, připravte společný rozbor nebo si vyberte situaci pro další setkání.':'Podívejte se, kdo čeká na přijetí na školu a které práce už prošly společným rozborem.';
-    return '<section class="hub-hero"><div class="hub-intro"><small class="eyebrow">Ateliér praxí · IVP ČZU</small><h1>Co právě potřebujete?</h1><p>'+personal+'</p>'+link('ivp',role==='student'?'Moje pedagogická praxe →':role==='mentor'?'Otevřít práce k rozboru →':'Otevřít koordinaci praxí →','primary')+'</div><figure><img src="hub.webp" alt="Dva studující před cvičnou školou probírají své poznámky."></figure></section>'+
-    '<header class="hub-head"><h2>Vyberte si podle situace</h2></header><div class="hub-grid">'+catalog.map(([id,name,kind,title,desc,photo])=>'<a class="hub-card" href="#'+id+'"><img src="'+photo+'" alt=""><div><small>'+e(name)+'</small><h3>'+e(title)+'</h3><p>'+e(desc)+'</p><span aria-hidden="true">↗</span></div></a>').join('')+'</div>';
+    const personal=RoleDesk.isSpecial(role)?RoleDesk.intro(role):role==='student'?'Připravte se na další hodinu, zkuste si náročnou situaci nebo se vraťte k tomu, co jste viděli při náslechu.':role==='mentor'?'Otevřete si práci studenta, připravte společný rozbor nebo si vyberte situaci pro další setkání.':'Podívejte se, kdo čeká na přijetí na školu a které práce už prošly společným rozborem.';
+    return '<section class="hub-hero"><div class="hub-intro"><small class="eyebrow">Ateliér praxí · IVP ČZU</small><h1>Co právě potřebujete?</h1><p>'+personal+'</p>'+link('ivp',role==='student'?'Moje pedagogická praxe →':role==='mentor'?'Otevřít práce k rozboru →':(RoleDesk.isSpecial(role)?RoleDesk.caption(role):'Otevřít koordinaci praxí →'),'primary')+'</div><figure><img src="hub.webp" alt="Dva studující před cvičnou školou probírají své poznámky."></figure></section>'+
+    shortcuts()+'<header class="hub-head"><h2>Vyberte si podle situace</h2></header><div class="hub-grid">'+catalog.map(([id,name,kind,title,desc,photo])=>'<a class="hub-card" href="#'+id+'"><img src="'+photo+'" alt=""><div><small>'+e(name)+'</small><h3>'+e(title)+'</h3><p>'+e(desc)+'</p><span aria-hidden="true">↗</span></div></a>').join('')+'</div>';
   }
   function practiceLinks(){
     const links=role==='student'?[['skola','Moje škola'],['plan','Termíny'],['skills','Moje kompetence'],['portfolio','Moje portfolio'],['sources','Metodiky a pomoc']]:[['skola',role==='ivp'?'Žádosti o školu':'Přijetí na školu'],['skills','Kompetence'],['portfolio','Portfolio'],['sources','Metodiky a pomoc']];
-    return '<nav class="practice-links" aria-label="Nástroje pro pedagogické praxe">'+links.map(([id,name])=>link(id,name)).join('')+'</nav>';
+    return (role==='student'?shortcuts():'')+'<nav class="practice-links" aria-label="Nástroje pro pedagogické praxe">'+links.map(([id,name])=>link(id,name)).join('')+'</nav>';
   }
   function schoolPage(){
-    const choices=role==='student'?'':'<label class="student-select">Studující <select id="school-user">'+people.map(p=>'<option value="'+p.id+'" '+(p.id===who?'selected':'')+'>'+e(p.name)+'</option>').join('')+'</select></label>';
+    const options=allowedPeople().filter(p=>role==='student'||(role==='ivp'?db[p.id].prep.status!=='draft':['school','confirmed'].includes(db[p.id].prep.status)));
+    if(!options.length)return section('Praxe IVP','Přijetí na cvičnou školu','Pro tento profil zatím není k dispozici předaná žádost.')+link('ivp','Zpět na přehled');
+    if(!options.some(p=>p.id===who))who=options[0].id;
+    const choices=role==='student'?'':'<label class="student-select">Studující <select id="school-user">'+options.map(p=>'<option value="'+p.id+'" '+(p.id===who?'selected':'')+'>'+e(p.name)+'</option>').join('')+'</select></label>';
     return section('Praxe IVP · '+person().name,role==='student'?'Moje cvičná škola':'Přijetí na cvičnou školu')+choices+'<div id="prep-space">'+PREP.render(current().prep||{},role)+'</div>';
   }
   function practiceTool(page){
     const tool=page==='nacvik'||page==='adaptio'?ATools:WORK;
     const notes=role==='student'?(current().tools?.[page]||[]):[];
     const ref={nacvik:['Původní trenažér Foxy','https://foxy-studio-campus-pilot.web.app/modules/nanecisto/index.html#prace/upv'],adaptio:['Samostatná aplikace Adaptio','https://adaptio-pruvodce-ucitele.aneta-vadovicova.chatgpt.site'],ss:['Kampus Foxy · Praxe SŠ','https://foxy-studio-campus-pilot.web.app/']}[page];
-    return '<div id="tool-space" data-page="'+page+'">'+tool.render(page,notes,role)+'</div>'+(ref?'<footer class="tool-source"><a href="'+ref[1]+'" target="_blank" rel="noopener">'+ref[0]+' ↗</a></footer>':'');
+    const last=notes.at(-1);
+    const recent=last?'<p class="saved-source"><strong>Poslední uložený podklad</strong> '+e(last.title)+' '+link(sourceRef(page,last.id),'Navázat reflexí pro IVP','text-btn')+'</p>':'';
+    return blockNav(page)+'<div id="tool-space" data-page="'+page+'">'+tool.render(page,notes,role)+'</div>'+recent+(ref?'<footer class="tool-source"><a href="'+ref[1]+'" target="_blank" rel="noopener">'+ref[0]+' ↗</a></footer>':'')+blockExtras(page);
   }
   function studentHome(){
     const p=person(),m=mod(p.stage),pending=current().records.find(r=>['draft','returned'].includes(r.status)),target=pending?mod(pending.moduleId):m;
@@ -73,8 +142,8 @@
     const mi=modules.indexOf(m), syl=syllabi[mi], guided=m.id==='guided', chosen=current().guidedPlan||'uis';
     const targets=guided&&chosen==='uis'?{theory:4,practice:6}:m.observationTargets;
     const variant=guided?'<aside class="notice"><strong>Rozsah řízeného náslechu</strong><p>Sylabus UIS pro rok 2026/27 a dodaná metodika 03 uvádějí různé počty. Po domluvě s garantem vyberte podklad pro své počítadlo.</p><label>Počítat podle<select id="guided-target" '+(role==='student'?'':'disabled')+'><option value="uis" '+(chosen==='uis'?'selected':'')+'>UIS 2026/27 · 4 teoretické a 6 praktických</option><option value="method" '+(chosen==='method'?'selected':'')+'>Metodika 03 · 10 teoretických a 2 praktické</option></select></label></aside>':'';
-    return section('Praxe '+String(modules.indexOf(m)+1).padStart(2,'0')+' · '+person().name,m.title,m.goal)+variant+
-    '<details class="area-box"><summary>Jak praxe probíhá a co doložím</summary>'+(syl?'<p><a href="'+e(syl.url)+'" target="_blank" rel="noopener">'+e(syl.name)+'</a><br>'+e(syl.note)+'</p>':'')+'<p>'+e(m.place)+'</p><ol class="steps">'+m.steps.map(x=>'<li>'+e(x)+'</li>').join('')+'</ol><h3>Co předložit</h3><ul>'+m.evidence.map(x=>'<li>'+e(x)+'</li>').join('')+'</ul><p>'+e(m.credit)+'</p><small>'+e((m.source||[]).join(' · '))+'</small></details><div id="record-space">'+PRACTICE.render({...m,observationTargets:targets},records,role)+'</div>';
+    return section('Praxe '+String(modules.indexOf(m)+1).padStart(2,'0')+' · '+person().name,m.title,m.goal)+blockNav(m.id)+variant+
+    '<details class="area-box"><summary>Jak praxe probíhá a co doložím</summary>'+(syl?'<p><a href="'+e(syl.url)+'" target="_blank" rel="noopener">'+e(syl.name)+'</a><br>'+e(syl.note)+'</p>':'')+'<p>'+e(m.place)+'</p><ol class="steps">'+m.steps.map(x=>'<li>'+e(x)+'</li>').join('')+'</ol><h3>Co předložit</h3><ul>'+m.evidence.map(x=>'<li>'+e(x)+'</li>').join('')+'</ul><p>'+e(m.credit)+'</p><small>'+e((m.source||[]).join(' · '))+'</small></details><div id="record-space">'+PRACTICE.render({...m,observationTargets:targets},records,role)+'</div>'+blockExtras(m.id);
   }
   function skills(){
     const records=visibleRecords();
@@ -82,39 +151,71 @@
     '<div class="stack">'+AREAS.map(area=>{const count=area.skills.filter(s=>records.some(r=>r.competency===s.code && r.status==='confirmed')).length;return '<details class="area-box"><summary>'+e(area.name)+' <small class="skill-count">'+count+' / '+area.skills.length+' po rozboru</small></summary>'+area.skills.map(s=>{const list=records.filter(r=>r.competency===s.code);return '<details><summary>'+e(s.code)+' · '+e(s.name)+' <small>('+list.length+')</small></summary><p>'+e(s.example||s.hint||'Vyberte při zápisu konkrétní situaci, na které tuto dovednost ukážete.')+'</p>'+(list.length?list.map(r=>'<p>'+e(r.title||'Rozepsaný záznam')+' · '+e(mod(r.moduleId)?.title)+' · '+e(statusName(r.status))+' '+link(recordRoute(r),'Otevřít doklad','text-btn')+'</p>').join(''):'<p>Zatím bez dokladu. Kompetenci přiřadíte v záznamu z praxe.</p>')+'</details>'}).join('')+'</details>'}).join('')+'</div><p class="muted">'+link('sources','Původ kompetencí a metodik','text-btn')+'</p>';
   }
   function exportBody(r){
-    return '<article class="record-export"><h3>'+e(r.title||'Rozepsaný záznam')+'</h3><p>'+e(r.tool?toolLabel(r.tool):mod(r.moduleId)?.title)+' · '+e(r.tool?'Vlastní poznámka':statusName(r.status))+'</p>'+PRACTICE.recordBody(r)+'</article>';
+    return '<article class="record-export"><h3>'+e(r.title||'Rozepsaný záznam')+'</h3><p>'+e(r.isBlockReflection?BLOCKS.get(r.blockId)?.title:r.tool?toolLabel(r.tool):mod(r.moduleId)?.title)+' · '+e(r.isBlockReflection?'Reflexe pro IVP':r.tool?'Vlastní poznámka':statusName(r.status))+'</p>'+PRACTICE.recordBody(r)+'</article>';
   }
   function listRecords(){
     const normalize=s=>String(s).toLocaleLowerCase('cs').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-    const out=visibleRecords().filter(r=>(statusFilter==='all'||statusFilter===r.status)&&normalize([r.title,r.date,fmt(r.date),mod(r.moduleId)?.title,r.competency,r.reflection,r.feedback,r.nextStep,...Object.values(r.fields||{}),...Object.values(r.review||{}),...(r.timeline||[]).flatMap(Object.values)].join(' ')).includes(normalize(search))).sort((a,b)=>b.date.localeCompare(a.date));
-    return out.length?out.map(r=>'<details class="area-box entry"><summary>'+e(r.title||'Rozepsaný záznam')+' · '+e(fmt(r.date))+'</summary>'+exportBody(r)+link(recordRoute(r),r.tool?'Otevřít modul':'Otevřít v praxi')+'</details>').join(''):'<p class="empty">Žádný odpovídající záznam.</p>';
+    const out=visibleRecords().filter(r=>(statusFilter==='all'||statusFilter===r.status)&&normalize([r.title,r.date,fmt(r.date),mod(r.moduleId)?.title,r.isBlockReflection?BLOCKS.get(r.blockId)?.title:'',r.competency,r.reflection,r.feedback,r.nextStep,...Object.values(r.fields||{}),...Object.values(r.review||{}),...(r.timeline||[]).flatMap(Object.values)].join(' ')).includes(normalize(search))).sort((a,b)=>b.date.localeCompare(a.date));
+    return out.length?out.map(r=>'<details class="area-box entry"><summary>'+e(r.title||'Rozepsaný záznam')+' · '+e(fmt(r.date))+'</summary>'+exportBody(r)+link(recordRoute(r),r.isBlockReflection?'Otevřít reflexi a odpověď':r.tool?'Otevřít modul':'Otevřít v praxi')+(role==='student'&&!r.isBlockReflection?' '+link(sourceRef(r.tool||r.moduleId,r.id),'Navázat reflexí pro IVP','text-btn'):'')+'</details>').join(''):'<p class="empty">Žádný odpovídající záznam.</p>';
   }
   function portfolio(){
     return section(person().name,role==='student'?'Moje portfolio':'Portfolio studujícího','Na jednom místě najdete záznamy, vlastní reflexe a zpětnou vazbu z praxí.')+
     '<div class="panel portfolio-toolbar"><label>Hledat v portfoliu<input type="search" id="filter-q" placeholder="Téma, datum, kompetence…" value="'+e(search)+'"></label><label>Stav<select id="filter-st">'+[['all','Všechny záznamy'],...['draft','submitted','returned','confirmed'].map(s=>[s,statusName(s)])].map(([v,l])=>'<option value="'+v+'"'+(v===statusFilter?' selected':'')+'>'+e(l)+'</option>').join('')+'</select></label><button class="primary" data-print>Vytisknout celé portfolio / PDF</button></div><div class="records-list" id="results">'+listRecords()+'</div>';
   }
   function staff(){
-    const pending=people.flatMap(p=>db[p.id].records.filter(r=>r.status==='submitted').map(r=>({p,r})));
-    return section('Ukázková role · '+names[role],role==='mentor'?'Co čeká na rozbor?':'Přehled pedagogických praxí',role==='mentor'?'Otevřete práci studenta, přečtěte si reflexi a doplňte zpětnou vazbu.':'Sledujte zaznamenanou práci a průběh rozborů u modelové skupiny.')+
+    const pending=allowedPeople().flatMap(p=>db[p.id].records.filter(r=>r.status==='submitted').map(r=>({p,r})));
+    return section('Ukázková role · '+names[role],role==='mentor'?'Co čeká na rozbor?':'Přehled pedagogických praxí',role==='mentor'?'Otevřete práci studenta, přečtěte si reflexi a doplňte zpětnou vazbu.':'Odpovězte na reflexi, rozhodněte o žádosti o cvičnou školu nebo otevřete portfolio studujícího.')+
+    shortcuts()+(role==='ivp'?RoleDesk.coordination(db,people):'')+
     (role==='mentor'?'<section class="panel"><h2>K rozboru · '+pending.length+'</h2>'+pending.map(({p,r})=>'<div class="overview-row"><div><strong>'+e(r.title)+'</strong><small>'+e(p.name)+' · '+e(mod(r.moduleId).title)+'</small></div><button class="secondary" data-person="'+p.id+'" data-stage="'+r.moduleId+'" data-entry="'+e(r.id)+'">Otevřít</button></div>').join('')+(pending.length?'':'<p>V tuto chvíli nikdo nečeká na zpětnou vazbu.</p>')+'</section>':'')+
-    '<div class="section-head"><h2>Studijní skupina</h2></div><div class="grid">'+people.map(p=>{const rs=db[p.id].records;return '<article class="tile"><span class="tag">'+e(mod(p.stage).title)+'</span><h3>'+e(p.name)+'</h3><p>Záznamy celkem · '+rs.length+'<br>Po rozboru · '+rs.filter(r=>r.status==='confirmed').length+'</p><button class="secondary" data-person="'+p.id+'">Otevřít portfolio</button></article>'}).join('')+'</div>';
+    '<div class="section-head"><h2>Studijní skupina</h2></div><div class="grid">'+allowedPeople().map(p=>{const rs=db[p.id].records.filter(r=>r.status!=='draft');return '<article class="tile"><span class="tag">'+e(mod(p.stage).title)+'</span><h3>'+e(p.name)+'</h3><p>Záznamy celkem · '+rs.length+'<br>Po rozboru · '+rs.filter(r=>r.status==='confirmed').length+'</p><button class="secondary" data-person="'+p.id+'">Otevřít portfolio</button></article>'}).join('')+'</div>';
   }
   function sources(){
     return section('IVP ČZU · MŠMT','Z čeho průvodce vychází','Podmínky jednotlivých praxí určují metodiky IVP. Profesní kompetence slouží k pojmenování toho, co můžete ve své práci doložit.')+'<div class="stack">'+SOURCES.map(s=>'<article class="panel"><h3>'+e(s.name)+'</h3><p>'+e(s.note)+'</p>'+(s.url?'<a href="'+e(s.url)+'" target="_blank" rel="noopener">Otevřít zdroj ↗</a>':'')+'</article>').join('')+'</div>';
   }
   function render(){
-    const page=route(),m=page.startsWith('praxe/')?mod(page.split('/')[1]):null;
-    const nav=navItems;
-    const active=navItems.some(([id])=>id===page)?page:'ivp';
-    const content=page==='start'?hub():page==='skola'?schoolPage():toolPages.includes(page)?practiceTool(page):m?modulePage(m):page==='skills'?skills():page==='portfolio'?portfolio():page==='sources'?sources():page==='plan'&&role==='student'?'<div id="plan-space">'+PLAN.render(current().events,modules)+'</div>':role==='student'?studentHome():staff()+practiceLinks()+STAFFTOOLS.render(db,people,role);
-    root.innerHTML='<header class="site-head"><a class="brand" href="#start"><img src="mark.svg" alt=""><span>Ateliér praxí<small>Učitelství praktického vyučování</small></span></a><nav aria-label="Hlavní nabídka">'+nav.map(([id,name])=>'<a href="#'+id+'" '+(active===id?'aria-current="page"':'')+'>'+e(name)+'</a>').join('')+'</nav><label class="account"><span class="sr">Ukázkový profil</span><select id="mode">'+[...people.map(p=>['student/'+p.id,p.name+' · student']),['mentor','Cvičný učitel'],['ivp','Koordinátor IVP']].map(([id,l])=>'<option value="'+id+'" '+(id===(role==='student'?'student/'+who:role)?'selected':'')+'>'+l+'</option>').join('')+'</select></label></header><main id="content" tabindex="-1">'+content+'</main><footer class="appfoot"><span>Ukázková skupina · záznamy zůstávají v tomto prohlížeči</span><a href="#sources">Metodiky a zdroje</a></footer>';
-    document.querySelector('#mode').onchange=ev=>{const [r,p]=ev.target.value.split('/');role=r;if(p)who=p;search='';statusFilter='all';navigate('start')};
+    const rawPage=route(), special=RoleDesk.isSpecial(role);
+    const page=special&&!['start','sources','materialy'].includes(rawPage)?'ivp':rawPage;
+    const parts=page.split('/'),m=parts[0]==='praxe'?mod(parts[1]):null,refPage=parts[0]==='reflexe';
+    const nav=special?[['ivp',role==='method'?'Přehled metodika':'Přehled školy'],['materialy','Dokumenty'],['sources','Metodiky']]:navItems;
+    const active=nav.some(([id])=>id===page)?page:(special||!['materialy','sources'].includes(page)?'ivp':'');
+    let content;
+    if(page==='materialy') content=BLOCKS.catalog(role);
+    else if(page==='sources')content=sources();
+    else if(special)content=RoleDesk.render(role,db,people,modules);
+    else if(page==='start')content=hub();
+    else if(refPage){
+      if(parts[1]==='nova' && role==='student' && BLOCKS.get(parts[2])){
+        content=link('reflexe','← Moje reflexe','text-btn')+IVPREF.block(parts[2],refContext(),{compose:true,activityId:parts[3]==='zaznam'?undefined:parts[3],sourceId:parts[3]==='zaznam'?parts[4]:undefined});
+      }else content=IVPREF.queue(refContext(),{focus:parts[1]});
+    }
+    else if(page==='skola')content=schoolPage();
+    else if(toolPages.includes(page))content=practiceTool(page);
+    else if(m)content=modulePage(m);
+    else if(page==='skills')content=skills();
+    else if(page==='portfolio')content=portfolio();
+    else if(page==='plan'&&role==='student')content='<div id="plan-space">'+PLAN.render(current().events,modules)+'</div>';
+    else content=role==='student'?studentHome():staff()+practiceLinks()+STAFFTOOLS.render(db,allowedPeople(),role);
+    root.innerHTML='<header class="site-head"><a class="brand" href="#start"><img src="mark.svg" alt=""><span>Ateliér praxí<small>Učitelství praktického vyučování</small></span></a><nav aria-label="Hlavní nabídka">'+nav.map(([id,name])=>'<a href="#'+id+'" '+(active===id?'aria-current="page"':'')+'>'+e(name)+'</a>').join('')+'</nav><label class="account"><span class="sr">Ukázkový profil</span><select id="mode">'+[...people.map(p=>['student/'+p.id,p.name+' · student']),...roleProfiles].map(([id,l])=>'<option value="'+id+'" '+(id===(role==='student'?'student/'+who:role)?'selected':'')+'>'+l+'</option>').join('')+'</select></label></header><main id="content" tabindex="-1">'+content+'</main><footer class="appfoot"><span>Ukázkové role · údaje se ukládají v tomto prohlížeči</span><a href="#materialy">Dokumenty ke stažení</a><a href="#sources">Metodiky a zdroje</a></footer>';
+    document.querySelector('#mode').onchange=ev=>{useProfile(ev.target.value);const url=new URL(location.href);url.searchParams.delete('profil');history.replaceState(null,'',url);try{sessionStorage.setItem(KEY+'.view',ev.target.value)}catch{} search='';statusFilter='all';navigate(role==='student'?'start':'ivp')};
+    root.querySelector('[data-block-docs]')?.addEventListener('click',()=>{
+      const panel=root.querySelector('[aria-label="Dokumenty k bloku"]');
+      if(!panel)return;
+      panel.scrollIntoView({block:'start'});panel.querySelector('a')?.focus({preventScroll:true});
+    });
+    if(special){
+      RoleDesk.bind(root,role,db,people,(id,next)=>{
+        const before=db[id].prep;db[id].prep=next;
+        if(!persist()){db[id].prep=before;return;}
+        render();toast('Odpověď školy je uložená.');
+      });
+      return;
+    }
     root.querySelectorAll('[data-person]').forEach(b=>b.onclick=()=>{who=b.dataset.person;search='';statusFilter='all';navigate(b.dataset.stage?'praxe/'+b.dataset.stage+'/zaznam/'+encodeURIComponent(b.dataset.entry):'portfolio')});
     if(page==='skola'){
       const select=root.querySelector('#school-user');if(select)select.onchange=()=>{who=select.value;render()};
-      PREP.bind(root.querySelector('#prep-space'),current().prep||{},role,state=>{current().prep=state;const ok=persist();render();if(ok)toast('Změna je uložená.')});
+      if(root.querySelector('#prep-space'))PREP.bind(root.querySelector('#prep-space'),current().prep||{},role,state=>{current().prep=state;const ok=persist();render();if(ok)toast('Změna je uložená.')});
     }
-    if(page==='ivp' && role!=='student')STAFFTOOLS.bind(root,{openStudent:(id,dest='portfolio')=>{who=id;navigate(dest)},go:navigate});
+    if(page==='ivp' && role!=='student')STAFFTOOLS.bind(root,{openStudent:(id,dest='portfolio')=>{if(!allowedPeople().some(p=>p.id===id))return;who=id;navigate(dest)},go:navigate});
     if(toolPages.includes(page)){
       const tool=page==='nacvik'||page==='adaptio'?ATools:WORK;
       const notes=role==='student'?(current().tools?.[page]||[]):[],save=items=>{if(role!=='student')return;current().tools||={};current().tools[page]=items.map(r=>({...r,tool:page}));const ok=persist();render();if(ok)toast('Poznámka je ve vašem portfoliu.')};
@@ -137,7 +238,12 @@
       document.querySelector('#filter-st').onchange=ev=>{statusFilter=ev.target.value;document.querySelector('#results').innerHTML=listRecords()};
       document.querySelector('[data-print]').onclick=()=>{root.querySelector('.print-all')?.remove();root.insertAdjacentHTML('beforeend','<div class="print-all"><h1>Portfolio pedagogických praxí</h1><p>'+e(person().name)+' · Učitelství praktického vyučování · ukázkový profil</p>'+visibleRecords().map(exportBody).join('')+'</div>');document.body.classList.add('print-mode');window.print()};
     }
+    IVPREF.bind(root,refContext());
+    RFX.bind(root,{db,role,who,people:allowedPeople(),validBlock:id=>Boolean(BLOCKS.get(id)),persist,render,toast});
   }
+  document.querySelector('a.skip')?.addEventListener('click',event=>{
+    event.preventDefault();document.getElementById('content')?.focus();
+  });
   window.addEventListener('afterprint',()=>document.body.classList.remove('print-mode'));
   window.addEventListener('hashchange',()=>{render();window.scrollTo(0,0)});
   render();

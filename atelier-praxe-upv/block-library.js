@@ -1,0 +1,180 @@
+'use strict';
+window.BLOCKS = (() => {
+  const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[c]));
+  const phaseTitles = new Map([...window.METHODS, window.FINAL_METHOD, window.REFLECTION_METHOD].map(m => [m.id, m.title]));
+  const block = (id, title, sheet, detail, prompts, activities = []) => ({
+    id, title, sheet, detail, prompts,
+    file: 'materialy/' + id + '.docx',
+    route: phaseTitles.has(id) ? 'praxe/' + id : id,
+    activities: activities.map(([title, prompts], index) => ({id: String(index), title, prompts}))
+  });
+  const list = [
+    block('ivp', phaseTitles.get('ivp'), 'Mapa školy a první pozorování',
+      'Při exkurzi zachyťte, jak se žáci přesouvají od teorie k praktické práci. Jednu situaci si vezměte do diskuse na IVP.', [
+        'Kde jste při návštěvě školy viděli propojení odborné teorie s činností žáků?',
+        'Co jste přímo viděli nebo slyšeli a co si z toho zatím jen vyvozujete?',
+        'Co byste si potřebovali ověřit při další návštěvě nebo v diskusi na IVP?'
+      ]),
+    block('group', phaseTitles.get('group'), 'Pozorovací arch ke skupinovému náslechu',
+      'U jedné situace zaznamenejte vedle sebe jednání učitele a reakci žáků. Po hodině porovnejte své postřehy s dalšími pozorovateli.', [
+        'Kterou otázku, instrukci nebo ukázku učitel použil a co žáci udělali bezprostředně poté?',
+        'Čeho si všimli ostatní pozorovatelé a jak to ovlivnilo vaše vysvětlení situace?',
+        'Na jakou reakci žáků se při příštím náslechu zaměříte?'
+      ]),
+    block('guided', phaseTitles.get('guided'), 'Pozorovací arch k řízenému náslechu',
+      'Zvolte jednu otázku k výuce vašeho oboru. Zapište rozhodnutí učitele, odezvu žáka a otázku pro společný rozbor.', [
+        'V kterém okamžiku učitel upravil ukázku nebo zadání podle reakce žáka?',
+        'Jaký žákův další pokus pomohl posoudit účinek změny? Co vám při rozboru objasnil učitel?',
+        'Co konkrétně budete příště sledovat, abyste svůj závěr ověřili?'
+      ]),
+    block('micro', phaseTitles.get('micro'), 'Příprava a rozbor mikrovýstupu',
+      'Připravte krátkou instruktáž. Po mikrovýstupu se vraťte k prvnímu samostatnému pokusu a k postřehu pozorovatele.', [
+        'Jak zněl váš první pokyn a co podle něj účastníci skutečně udělali?',
+        'Která reakce nebo připomínka skupiny vám ukázala, co ve vaší ukázce pomohlo a co potřebuje úpravu?',
+        'Jak změníte jednu větu nebo jeden krok ukázky? Podle čeho poznáte rozdíl?'
+      ]),
+    block('continuous', phaseTitles.get('continuous'), 'Výukový výstup a rozbor hodiny',
+      'Spojte cíl hodiny, jednu ukázku práce žáka a doporučení cvičného učitele. Zapište úpravu další výuky.', [
+        'Který okamžik vaší výuky nejlépe ukazuje, jak žáci pracovali na cíli hodiny?',
+        'Co v jejich odpovědi, postupu nebo výrobku dokládá učení? Jak se váš pohled shoduje s komentářem cvičného učitele?',
+        'Co upravíte v další hodině a na jaké konkrétní práci žáků změnu vyhodnotíte?'
+      ]),
+    block('reflection', phaseTitles.get('reflection'), 'Srovnání dvou dokladů z portfolia',
+      'Položte vedle sebe dva záznamy z různých období. Pojmenujte změnu ve svém uvažování o výuce a zvolte další profesní cíl.', [
+        'Které dva srovnatelné okamžiky ze staršího a novějšího záznamu jste vybrali?',
+        'V čem se změnilo vaše učitelské rozhodování a které pasáže obou záznamů to dokládají?',
+        'Jakou dovednost chcete rozvíjet dál a při čem získáte další doklad o svém pokroku?'
+      ]),
+    block('nacvik', 'Praxe nanečisto', 'Rozhodnutí ve třech situacích z výuky',
+      'Projděte zahájení instruktáže, podporu dvojic při práci a rozhovor po hodině. Vyberte si situaci, kterou chcete promyslet.', [
+        'Ve které situaci jste se rozhodovali a jak by zněla vaše první věta ve třídě?',
+        'Co vám zpětná vazba v modelové situaci ukázala o možné reakci žáků?',
+        'Jak svou volbu ověříte ve skutečné výuce a čeho si budete všímat?'
+      ], [
+        ['Jak začít instruktáž?', [
+          'Jakou první větou jste uvedli měření dvou vzorků?',
+          'Co z této věty žák ví o svém úkolu a o tom, jak pozná správný výsledek?',
+          'Jak při skutečné instruktáži ověříte, že zadání pochopil i žák bez předchozí zkušenosti?'
+        ]],
+        ['Dvě dvojice se zasekly', [
+          'Jak jste reagovali na větu „Nevíme, co odečíst“?',
+          'Co by vám pomohlo rozlišit potíž s odečtem od potíže s přiložením měřidla?',
+          'Jak dvojici vrátíte samostatnost a na kterém dalším pokusu ji ověříte?'
+        ]],
+        ['Co říct při rozboru?', [
+          'Který okamžik po slově „výborně“ jste zvolili jako začátek rozhovoru?',
+          'Co o účinku slov učitele dokládá žákova práce a co vám zatím chybí?',
+          'Na co přesně se učitele zeptáte, abyste porozuměli jeho hodnocení?'
+        ]]
+      ]),
+    block('adaptio', 'Adaptio', 'Příprava rozhovoru s mentorem',
+      'Pro první návštěvu, výstup nebo náročný okamžik si připravte otázku. Po setkání doplňte, na čem jste se domluvili.', [
+        'Se kterou konkrétní situací přicházíte za mentorem?',
+        'Co už o situaci víte a v čem by vám pomohl pohled druhého člověka?',
+        'Jakou otázku položíte nebo jaký krok po domluvě vyzkoušíte?'
+      ], [
+        ['Přicházím do nové školy', [
+          'Která věc před první návštěvou potřebuje domluvu s provázejícím učitelem?',
+          'Jak by její vyjasnění ovlivnilo, čemu budete při návštěvě věnovat pozornost?',
+          'Na co se zeptáte a kdy si ověříte, že máte potřebné informace?'
+        ]],
+        ['Připravuji první vlastní hodinu', [
+          'Kterou část své plánované instruktáže chcete předem ukázat mentorovi?',
+          'Proč právě zde očekáváte nejistotu u sebe nebo u žáků?',
+          'Co má mentor během výstupu sledovat, aby vám po něm mohl dát konkrétní zpětnou vazbu?'
+        ]],
+        ['Hodina mě zaskočila', [
+          'Co jste v jednom zlomovém okamžiku udělali a jak reagovali žáci?',
+          'Co vám zpětně pomáhá situaci pochopit a kde potřebujete mentorovu pomoc?',
+          'Co při další podobné situaci vyzkoušíte a jakou podporu si domluvíte?'
+        ]]
+      ]),
+    block('ss', 'Praxe SŠ', 'Předání úkolu mezi školou a pracovištěm',
+      'Projděte jeden pracovní úkol z pohledu školy, instruktora a žáka. Vyberte doklad o samostatné práci pro předání škole.', [
+        'Co měl žák při druhém měření předvést bez pomoci a kdo to mohl pozorovat?',
+        'Co ze zvoleného dokladu pozná škola o žákově postupu? Kterou informaci ještě potřebuje?',
+        'Jak se při příštím pracovním úkolu domluvíte s instruktorem na zachycení pokroku?'
+      ], [
+        ['Pohled školy', [
+          'Jaký výsledek byste před návštěvou pracoviště domluvili s instruktorem?',
+          'Co škola potřebuje vědět o postupu žáka kromě výsledného rozměru součásti?',
+          'Jaký krátký záznam si od instruktora vyžádáte pro další výuku?'
+        ]],
+        ['Pohled instruktora', [
+          'Co byste u prvního vzorku ukázali a co už by u druhého vzorku dělal žák?',
+          'Jak byste ze žákova jednání poznali, že zvolil měřidlo sám a rozumí své volbě?',
+          'Který postřeh byste předali žákovi a který cvičné škole?'
+        ]],
+        ['Pohled žáka', [
+          'Jak by žák mohl vysvětlit svou volbu měřidla pro druhý vzorek?',
+          'Z čeho by sám poznal, že jeho měření odpovídá zadání?',
+          'Jakou otázkou mu dáte prostor navrhnout další krok vlastními slovy?'
+        ]]
+      ]),
+    block('kurzy', 'Kurzy ČZU', 'Plán využití poznatku při vedení žáka',
+      'Vyberte si dovednost pro další vzdělávání. Naplánujte, při kterém úkolu na pracovišti ji využijete a jak poznáte její přínos.', [
+        'Ve které situaci na pracovišti chcete použít zvolenou dovednost?',
+        'Podle kterého projevu žáka poznáte, že vybraný postup pomohl?',
+        'Co konkrétně vyzkoušíte a s kým svůj první pokus rozeberete?'
+      ], [
+        ['Předat úkol tak, aby mu žák rozuměl', [
+          'Jak nyní žákovi předáváte vybraný úkol?',
+          'Podle čeho během jeho prvního pokusu poznáte, jak pokynu rozuměl?',
+          'Jak přeformulujete zadání a kdy si necháte výsledek popsat žákovými slovy?'
+        ]],
+        ['Poznat, kdy může žák pokračovat samostatně', [
+          'Při kterém kroku obvykle přebíráte vedení za žáka?',
+          'Jaký pozorovatelný výkon by vám ukázal, že už může pokračovat samostatně?',
+          'Při jakém dalším pokusu mu předáte rozhodnutí a jak výsledek zachytíte?'
+        ]],
+        ['Dát užitečnou zpětnou vazbu', [
+          'Který konkrétní krok žáka budete po úkolu společně rozebírat?',
+          'Co by mohl žák díky vašemu komentáři při dalším pokusu sám změnit?',
+          'Jak zpětnou vazbu zformulujete a kdy se společně vrátíte k jejímu účinku?'
+        ]]
+      ])
+  ];
+  const byId = new Map(list.map(item => [item.id, item]));
+  const get = id => byId.get(id);
+  const activity = (id, choice) => get(id)?.activities.find(item => item.id === String(choice));
+  const prompts = (id, choice) => activity(id, choice)?.prompts || get(id)?.prompts || [];
+  function sheetLink(item) {
+    return '<a class="primary" href="' + item.file + '" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', DOCX">Stáhnout pracovní list <small>· DOCX</small></a>';
+  }
+  function sourceLinks(item) {
+    const files = window.IVP_DOCUMENTS?.[item.id] || [];
+    if (!files.length) return '';
+    return '<details class="area-box"><summary>Metodika a přílohy k praxi</summary><ul>' +
+      files.map(file => '<li><a href="' + escape(file.url) + '" target="_blank" rel="noopener">' +
+        escape(file.label) + '</a>' + (file.kind ? ' · ' + escape(file.kind) : '') + '</li>').join('') + '</ul></details>';
+  }
+  const reflectionLink = (item, choice, label) => '<a href="#reflexe/nova/' + item.id +
+    (choice ? '/' + choice.id : '') + '">' + escape(label) + '</a>';
+  function docs(id) {
+    const item = get(id);
+    if (!item) return '';
+    return '<section class="panel stack" aria-label="Dokumenty k bloku"><div><small class="eyebrow">Dokumenty k bloku</small>' +
+      '<h2>' + escape(item.sheet) + '</h2><p>' + escape(item.detail) + '</p></div><div class="actions">' + sheetLink(item) +
+      '<a class="secondary" href="#materialy">Všechny dokumenty</a></div><small class="muted">Pracovní list Ateliéru praxí pro vlastní poznámky a reflexi.</small>' +
+      sourceLinks(item) + '</section>';
+  }
+  function indexItem(item, role) {
+    const student = role === 'student';
+    const canOpen = student || role === 'mentor' || role === 'ivp';
+    const practiceLink = !canOpen ? '' : '<a class="secondary" href="#' + item.route + '">Otevřít blok</a>';
+    const reflect = !student ? '' : item.activities.length ?
+      '<details class="area-box"><summary>Začít reflexi k vybrané situaci</summary><ul>' +
+        item.activities.map(choice => '<li>' + reflectionLink(item, choice, choice.title) + '</li>').join('') + '</ul></details>' :
+      '<p>' + reflectionLink(item, null, 'Napsat reflexi k tomuto bloku') + '</p>';
+    return '<article class="panel stack"><div><h3>' + escape(item.title) + '</h3><p>' + escape(item.sheet) + '</p></div>' +
+      '<div class="actions">' + sheetLink(item) + practiceLink + '</div>' + sourceLinks(item) + reflect + '</article>';
+  }
+  function catalog(role = 'student') {
+    const section = (title, subset) => '<section class="stack"><h2>' + title + '</h2><div class="grid">' +
+      subset.map(item => indexItem(item, role)).join('') + '</div></section>';
+    return '<header class="subhead"><h1>Dokumenty k praxím</h1><p>Pracovní list svého bloku si můžete stáhnout před cestou do školy a doplnit ve Wordu. U studijních praxí najdete také zdrojové podklady.</p></header><div class="stack">' +
+      section('Studijní praxe IVP', list.filter(item => phaseTitles.has(item.id))) +
+      section('Nácvik a profesní rozvoj', list.filter(item => !phaseTitles.has(item.id))) + '</div>';
+  }
+  return {list, get, activity, prompts, docs, catalog};
+})();

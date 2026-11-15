@@ -75,7 +75,7 @@ window.STAFFTOOLS = (() => {
       (coordinator ? '<details class="area-box"><summary>Souhrn za skupinu</summary>'+rowList(rows)+
         '<button type="button" class="secondary" data-staff-export>Stáhnout přehled CSV</button></details>':'')+
       '<details class="area-box"><summary>'+ (coordinator?'Profily a přístupy v ukázce':'Které podklady mám při rozboru sledovat?')+
-      '</summary><p>'+(coordinator?'V nabídce nahoře lze vyzkoušet tři modelové studenty, cvičného učitele a koordinaci IVP. Sdílejí údaje v tomto prohlížeči. Přidělení účtů školy řeší školní systém.':
+      '</summary><p>'+(coordinator?'Studující zpracuje vlastní podklady, cvičný učitel vede rozbor a koordinátor IVP předává volbu cvičné škole. Každý ze čtyř školních profilů vyřizuje žádosti svého pracoviště. Metodik sleduje souhrny za skupinu. Profily v ukázce pracují s údaji v tomto prohlížeči.':
         'Nechte studenta popsat jeden konkrétní okamžik. Porovnejte jeho záměr s reakcí žáků a domluvte pozorovatelný krok pro další výuku.')+
       '</p><button class="secondary" type="button" data-staff-help>Metodiky a sylaby</button></details></section>';
   }
@@ -94,9 +94,8 @@ window.STAFFTOOLS = (() => {
   }
 
   function bind(root,callbacks) {
-    const box=root.matches?.('[data-stafftools]')?root:root.querySelector('[data-stafftools]');
-    if(!box)return;
-    box.addEventListener('click',event=>{
+    const boxes=root.matches?.('[data-stafftools]')?[root]:[...root.querySelectorAll('[data-stafftools]')];
+    for (const box of boxes) box.addEventListener('click',event=>{
       const button=event.target.closest('button');
       if(!button)return;
       if(button.dataset.staffPerson)callbacks.openStudent(button.dataset.staffPerson,button.dataset.staffRoute);
