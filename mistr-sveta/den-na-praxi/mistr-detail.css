@@ -1,0 +1,13 @@
+.master-guide header{padding:clamp(18px,3vw,40px);background:#abdad5;color:#152f30}
+.master-guide header span,.master-guide li b{font-weight:750}
+.master-guide h1{font-size:clamp(2.1rem,5.3vw,4.8rem);line-height:1;letter-spacing:-.045em;margin:12px 0}
+.master-guide header p{max-width:60ch;font-size:clamp(1.05rem,1.6vw,1.35rem);margin:0}
+.master-grid{display:grid;grid-template-columns:1fr 1fr;align-items:start;background:#fff8f2}
+.master-guide .uniform{position:relative;margin:0}.uniform img{width:100%;height:auto;display:block}
+.ms-patch,.wordmark>span:before{background:#adede2;color:#172f32;border:2px solid #fd89b2;border-bottom-width:4px;border-radius:28% 28% 42% 42%;font-weight:850;letter-spacing:-.08em;text-align:center;font-style:normal}
+.ms-patch{position:absolute;transform:translate(-50%,-50%) rotate(-5deg);width:6%;font-size:clamp(8px,1vw,17px);line-height:1.25}
+.kitchen .ms-patch:nth-child(2){top:48%;left:56%}.kitchen .ms-patch:nth-child(3){top:65%;left:87%}.service .ms-patch:nth-child(2){top:49%;left:32%}.service .ms-patch:nth-child(3){top:42%;left:68%}
+.wordmark>span:before{content:'MS';display:inline-block;vertical-align:middle;font-size:.43em;padding:3px 4px;margin-right:5px}
+.master-guide ol{counter-reset:step;list-style:none;padding:0 18px;margin:0}.master-guide li{counter-increment:step;position:relative;padding:12px 0 12px 44px;border-bottom:1px solid #a5bdb6}.master-guide li:before{content:counter(step);position:absolute;left:0;top:13px;border-radius:50%;background:#ff94b8;color:#172f32;width:32px;height:32px;text-align:center;line-height:32px;font-weight:800}.master-guide li b{font-size:1.24rem}.master-guide li p{margin:4px 0;font-size:1.06rem}
+.master-guide footer{background:#172f32;color:white;padding:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}.master-guide footer details{background:transparent;color:white;margin:0;max-width:58ch}.master-guide footer summary{color:white}.master-guide footer .primary{background:#ff94b8;color:#172f32}
+@media(max-width:700px){.master-grid{grid-template-columns:1fr}.master-guide li p{font-size:1.04rem}.master-guide footer .primary{width:100%}}

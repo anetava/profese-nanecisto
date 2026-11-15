@@ -45,7 +45,7 @@ function mutate(fn,p=person()){
 }
 function setPref(k,value){try{localStorage.setItem(scopedKey(k),value)}catch{}}
 function tell(message){outlet.textContent=message;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>outlet.textContent='',5500)}
-function go(page){if(busy||audioSession){tell(t('Nejdřív dokončete záznam.','Najskôr dokončite záznam.'));return}window.speechSynthesis?.cancel();if((/^#(?:dovednost|budoucnost|stul)-/.test(window.location?.hash))||page!=='exercise'&&['#vydej','#obsluha','#po-smene','#moje-portfolio','#listek-kuchyne','#listek-obsluha'].includes(window.location?.hash))window.history.replaceState(null,'',window.location.pathname+window.location.search);view=page;quizError=false;render(true)}
+function go(page){if(busy||audioSession){tell(t('Nejdřív dokončete záznam.','Najskôr dokončite záznam.'));return}window.speechSynthesis?.cancel();if((/^#(?:dovednost|budoucnost|stul|ukazka)-/.test(window.location?.hash))||page!=='exercise'&&['#vydej','#obsluha','#po-smene','#moje-portfolio','#listek-kuchyne','#listek-obsluha'].includes(window.location?.hash))window.history.replaceState(null,'',window.location.pathname+window.location.search);view=page;quizError=false;render(true)}
 function scenes(p){const folder=p.full&&p.id!=='ema'?'assets/':'photos/';const n=p.full?6:3;return Array.from({length:n},(_,i)=>folder+p.photo+'-'+i+'.webp')}
 function picture(p,phase){const images=scenes(p);const idx=p.full?[0,1,2,3,4,5,3,5][phase]:[0,0,1,1,2,2,1,2][phase];return images[idx]}
 function face(p){return scenes(p)[0]}
@@ -109,12 +109,23 @@ function dayPage(){return todayTutor()}
 function back(page='day'){return goBtn(page,'← '+(labelsNav()[page]||t('Zpět','Späť')),'back')}
 function tipPage(){
  const p=person(),s=data().shift,mentor=hintStage==='mentor',defaultTask=s.code===DEFAULT_CODE[p.track];
- const img=mentor?(p.track==='cook'?'photos/chef-mentor.webp':'photos/service-mentor.webp'):!defaultTask?picture(p,3):p.track==='cook'?'photos/plate.webp':'photos/table.webp';
- const guideText=guide(p,s);
- const headline=mentor?(p.track==='cook'?t('Nejdřív porovnejte, potom dolaďte','Najskôr porovnajte, potom dolaďte'):t('Všímejte si hosta při příchodu','Všímajte si hosťa pri príchode')):guideText[0];
- return back()+title(mentor?t('Učím se od mistra','Učím sa od majstra'):t('Našeptávač','Našepkávač'),headline)+'<div class="editorial">'+photo(img,mentor?t('Ilustrační ukázka vedení na pracovišti','Ilustračná ukážka vedenia na pracovisku'):headline)+'<div><h2>'+t('Čeho si všimnout','Čo si všimnúť')+'</h2><p>'+html(mentor?(p.track==='cook'?t('Sledujte, který detail mistryně ukáže jako první. U vlastního talíře začněte stejnou kontrolou.','Sledujte, na ktorý detail majsterka ukáže ako prvý. Pri vlastnom tanieri začnite rovnakou kontrolou.'):t('Sledujte vzdálenost od stolu. Nechte hosta v klidu dosednout a navázat oční kontakt.','Sledujte vzdialenosť od stola. Nechajte hosťa v pokoji si sadnúť a nadviazať očný kontakt.')):guideText[1])+'</p><p>'+html(guideText[2])+'</p>'+
- (mentor?'<details><summary>'+t('Profese v zahraničí','Profesia v zahraničí')+'</summary>'+ (p.track==='cook'?'<p>'+t('Absolventka ICE Mashama Bailey získala v roce 2022 cenu James Beard Outstanding Chef. Jakou surovinu z domova byste chtěli jednou ukázat na vlastním talíři?','Absolventka ICE Mashama Bailey získala v roku 2022 cenu James Beard Outstanding Chef. Ktorú surovinu z domu by ste raz chceli ukázať na vlastnom tanieri?')+'</p><a href="https://www.ice.edu/newyork/explore-ice/alumni-profiles/mashama-bailey" target="_blank" rel="noopener">Mashama Bailey · ICE ↗</a>':'<p>'+t('Na Culinary Institute of America získávají studenti praxi v restauracích otevřených hostům. Co chcete, aby si host zapamatoval z vaší obsluhy?','Na Culinary Institute of America získavajú študenti prax v reštauráciách otvorených hosťom. Čo chcete, aby si hosť zapamätal z vašej obsluhy?')+'</p><a href="https://www.ciachef.edu/" target="_blank" rel="noopener">Culinary Institute of America ↗</a>')+'</details>':'')+
- '<div class="actions">'+goBtn('day',t('Zpět k dnešní směně','Späť k dnešnej zmene'),'button primary')+'</div></div></div>';
+ const cook=p.track==='cook', skill=competency(s.code);
+ const img=defaultTask?(mentor?(cook?'photos/chef-mentor.webp':'photos/service-mentor.webp'):(cook?'photos/plate.webp':'photos/table.webp')):picture(p,3);
+ const headline=defaultTask?(cook?t('Připravte dvě stejné porce','Pripravte dve rovnaké porcie'):t('Připravte stůl pro dva hosty','Pripravte stôl pre dvoch hostí')):menuSkillName(skill);
+ const steps=defaultTask?(cook?[
+ t('Položte svůj talíř vedle vzorové porce od pedagoga.','Položte svoj tanier vedľa vzorovej porcie od pedagóga.'),
+ t('Porovnejte množství mrkve a pyré. Doplňte nebo uberte tam, kde se vaše porce liší od vzoru.','Porovnajte množstvo mrkvy a pyré. Doplňte alebo uberte tam, kde sa vaša porcia líši od vzoru.'),
+ t('Zkontrolujte, že je okraj čistý. Ukažte oba talíře pedagogovi a řekněte, co jste upravili.','Skontrolujte, že okraj je čistý. Ukážte oba taniere pedagógovi a povedzte, čo ste upravili.')
+ ]:[
+ t('Připravte dvě místa podle prostření, které vám ukázal pedagog.','Pripravte dve miesta podľa prestretia, ktoré vám ukázal pedagóg.'),
+ t('Postavte se ke každé židli. Zkontrolujte, že host pohodlně dosáhne na sklenici a má příbor k objednanému jídlu.','Postavte sa ku každej stoličke. Skontrolujte, že hosť pohodlne dosiahne na pohár a má príbor k objednanému jedlu.'),
+ t('Po příchodu oba hosty přivítejte, nechte je usednout a nabídněte vodu.','Po príchode oboch hostí privítajte, nechajte ich sadnúť si a ponúknite vodu.')
+ ]):[skill.tasks[s.level-1],skill.levels[s.level-1],skill.evidence];
+ const labels=defaultTask?[t('Začněte tady','Začnite tu'),t('Co zkontrolovat','Čo skontrolovať'),t('Jak práci dokončit','Ako prácu dokončiť')]:[t('Praktický úkol','Praktická úloha'),t('Podle čeho poznáte výsledek','Podľa čoho spoznáte výsledok'),t('Čím práci doložíte','Čím prácu doložíte')];
+ const badge='<i class="ms-patch" aria-hidden="true">MS</i>';
+ const outcome=defaultTask?(cook?t('Dva hosté si objednali stejné jídlo. Oba mají dostat stejně velkou a stejně upravenou porci.','Dvaja hostia si objednali rovnaké jedlo. Obaja majú dostať rovnako veľkú a rovnako upravenú porciu.'):t('Hosté se mohou usadit a začít jíst, aniž by museli žádat o chybějící příbor nebo sklenici.','Hostia sa môžu usadiť a začať jesť bez toho, aby museli žiadať o chýbajúci príbor alebo pohár.')):skill.goal;
+ return '<div class="master-guide">'+back()+'<header><span>'+html(p.name)+' · '+html(profession(p))+' · '+t('Ukázka na pracovišti','Ukážka na pracovisku')+'</span><h1>'+html(headline)+'</h1><p>'+html(outcome)+'</p></header><div class="master-grid"><figure class="uniform '+(cook?'kitchen':'service')+'">'+photo(img,headline)+(mentor&&defaultTask?badge+badge:'')+'</figure><ol>'+steps.map((step,i)=>'<li><b>'+labels[i]+'</b><p>'+html(step)+'</p></li>').join('')+'</ol></div><footer><details><summary>'+t('Jaká dovednost se mi zapíše?','Aká zručnosť sa mi zapíše?')+'</summary><b>'+html(menuSkillName(skill))+'</b><p>'+t('Pedagog sleduje','Pedagóg sleduje')+' · '+skill.checks.map(html).join(' · ')+'. '+t('Po předvedení práce může potvrdit úroveň ','Po predvedení práce môže potvrdiť úroveň ')+s.level+'/3.</p></details>'+goBtn('day',t('Pokračovat na dnešní směně','Pokračovať na dnešnej zmene')+' →','button primary')+'</footer></div>';
+
 }
 function mediaMarkup(n){
  const img=n?.photo||'',voice=n?.audio||'';
@@ -390,6 +401,7 @@ function renderSharedEntry(scroll=false){
    if (dialog.open) dialog.close();
    switchPerson(tableLink[2]);role='student';tableNumber=tableLink[1];view='table';render(scroll);return;
  }
+ if(['#ukazka-kuchyne','#ukazka-obsluha'].includes(window.location?.hash) && !busy && !audioSession){switchPerson(window.location.hash==='#ukazka-kuchyne'?'ema':'matej');role='student';hintStage='mentor';view='tip';render(scroll);return;}
  const futureProfile = window.location?.hash?.match(/^#budoucnost-([a-z]+)$/)?.[1];
  if (PEOPLE.some(p => p.id === futureProfile) && !busy && !audioSession) {
    if (dialog.open) dialog.close();
