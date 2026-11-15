@@ -36,3 +36,7 @@
 @media(max-width:700px){.phone-preview{display:none}}
 
 .career-poster{padding:clamp(16px,3vw,36px);background:#172628;color:white;text-align:center;scroll-margin-top:85px}.career-poster h2{margin:0 0 14px}.career-poster img{display:block;width:min(100%,570px);height:auto;margin:auto}
+
+.career-thumb{display:grid;place-items:center;min-width:44px;min-height:44px}.career-thumb img{width:32px;height:42px;object-fit:cover;border-radius:4px}.bar .career-link{display:inline-flex;align-items:center;text-decoration:none;color:inherit}
+@media(max-width:1050px){.bar-inner{flex-wrap:wrap;gap:6px}.bar nav{order:3;width:100%;overflow-x:auto;gap:12px}.bar-tools{gap:5px}.bar .nav-link{flex-shrink:0}}
+@media(max-width:480px){.bar nav{gap:9px}.bar .nav-link{font-size:13px}.bar .wordmark::before{width:32px}.bar .wordmark>span{font-size:20px}.bar-tools{gap:2px}}
