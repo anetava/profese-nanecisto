@@ -79,3 +79,15 @@ body .bar.studio-header{background:#fff;border:0;border-bottom:1px solid #dcdedb
 .diary-tools{display:flex;align-items:center;flex-wrap:wrap;gap:12px 20px;margin:18px 0;padding:14px;background:var(--mint-wash);border-radius:9px}.diary-tools label{font-weight:650}.diary-tools input[type=search]{display:block;margin-top:4px;max-width:100%}.journal-days .journal-day[hidden]{display:none}
 
 .wordmark>span:before{background-size:contain}
+
+/* Field dictionary */
+.page-title:has(+ label #field-find){position:relative;isolation:isolate;overflow:hidden;padding:clamp(24px,4vw,60px);padding-right:34%;border-radius:28px;background:#073e40;color:#fff;margin-bottom:24px}
+.page-title:has(+ label #field-find)::after{content:"";position:absolute;z-index:-1;inset:0 0 0 68%;background:#ffdfed url("gastro-znak.svg?v=citrus13") center/auto 82% no-repeat;border-radius:50% 0 0 50%}
+.page-title:has(+ label #field-find) :is(h1,p){color:inherit}.page-title:has(+ label #field-find) .ey{color:#89ecdc}
+label:has(>#field-find){display:block;color:#124540}#field-find{border:2px solid #13796f;border-radius:16px;padding:14px 18px}
+.field-terms{display:block;columns:3;column-gap:14px;margin-block:18px}
+.field-terms>details:nth-child(n){display:inline-block;vertical-align:top;box-sizing:border-box;width:100%;break-inside:avoid;margin:0 0 12px;border:0;border-radius:16px;padding:16px 20px;background:#d0f4e9;color:#103c39}
+.field-terms>details:nth-child(3n+2){background:#ffe0e9}.field-terms>details:nth-child(3n){background:#fff0c8}
+.field-terms>details summary{font-size:1.25rem;cursor:pointer;line-height:1.25}.field-terms>details[hidden]{display:none}.field-terms a{overflow-wrap:anywhere}
+@media(max-width:850px){.field-terms{columns:2}}
+@media(max-width:600px){.field-terms{columns:1}.page-title:has(+ label #field-find) h1{font-size:clamp(2rem,9vw,3rem)}.page-title:has(+ label #field-find)::after{background-size:80% auto}}
