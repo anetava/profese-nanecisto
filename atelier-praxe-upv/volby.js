@@ -3,9 +3,10 @@
 window.Volba = (() => {
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   let sequence=0;
-  function field({label,items=[],value='',name='',answer,moment,required=false,max=1600,hint='',tiles=false}) {
+  function field({label,items=[],value='',name='',answer,moment,required=false,max=1600,hint='',tiles=true}) {
     value=String(value ?? '');
     const id='vyber-'+(++sequence);
+    if(value && !items.some(item=>value===item || value.startsWith(item+'\n')))items=[value,...items];
     const known=items.find(item=>value===item || value.startsWith(item+'\n')) || '';
     const own=known?value.slice(known.length).replace(/^\n/,''):value;
     const opts=items.map((item,i)=>tiles?'<label class="pick-tile"><input type="radio" name="'+id+'" value="'+escape(item)+'" '+(known===item?'checked':'')+'><span>'+escape(item)+'</span></label>':

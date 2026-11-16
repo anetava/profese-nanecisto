@@ -59,7 +59,7 @@ window.PRACTICE = (() => {
       '<div class="record-head-grid"><section class="record-basics"><h4>Údaje o hodině</h4>'+
       Volba.field({label:'Téma',name:'title',max:180,items:hints[0],value:r.title||'',required:true})+
       '<div class="record-date"><label>Datum<input name="date" type="date" value="'+esc(r.date||dateToday())+'"></label>'+
-      (options.length>1?'<label>Druh jednotky<select name="kind">'+options.map(k=>'<option value="'+k+'"'+pick(r.kind,k)+'>'+kinds[k]+'</option>').join('')+'</select></label>':'<input type="hidden" name="kind" value="'+options[0]+'">')+'</div></section>'+
+      (options.length>1?'<fieldset class="pick-field"><legend>Druh jednotky</legend><div class="pick-list">'+options.map(k=>'<label class="pick-tile"><input type="radio" name="kind" value="'+k+'" '+(k===(r.kind||options[0])?'checked':'')+'><span>'+kinds[k]+'</span></label>').join('')+'</div></fieldset>':'<input type="hidden" name="kind" value="'+options[0]+'">')+'</div></section>'+
       '<section class="record-ref"><h4>Co si odnáším</h4>'+Volba.field({label:'Moje reflexe',name:'reflection',items:hints[2],value:r.reflection||'',required:true})+
       Volba.field({label:'Můj další krok',name:'nextStep',items:hints[3],value:r.nextStep||''})+'</section></div>'+
       '<details open class="rec-evidence"><summary>Podklady z praxe</summary><p>Pro rozbor vyberte alespoň jeden podklad z vlastní praxe.</p><div class="fields">'+fieldEditors+'</div></details>'+
