@@ -2,11 +2,10 @@
 window.SOURCES = [
   {name:'IVP ČZU · Studijní plán UPV',url:'https://www.ivp.czu.cz/dl/82143?lang=cs',note:'Rozložení předmětů v šesti semestrech, rozsah praxí, způsob zakončení a kredity.'},
   {name:'IVP ČZU · Profil absolventa',url:'https://www.ivp.czu.cz/dl/141454?lang=cs',note:'Tříleté kombinované bakalářské studium. Dvanáct týdnů praxe zahrnuje pozorování, vlastní výuku a reflexi.'},
-  {name:'IVP ČZU · Harmonogram 2026/2027',url:'https://www.ivp.czu.cz/dl/156253?lang=cs',note:'Skupinový náslech 2. ročníku od 1. října do 30. listopadu 2026, řízený náslech 2. ročníku od 1. března do 30. dubna 2027. Řízená pedagogická praxe 3. ročníku od 1. prosince 2026 do 28. února 2027.'},
-  {name:'IVP ČZU · Souvislá řízená pedagogická praxe',url:'https://www.ivp.czu.cz/dl/135149?lang=cs',note:'Metodika 05, aktualizace 7. 10. 2024. Rozsah výstupů, portfolio, závěrečný výstup a odpovědnosti účastníků.'},
+  {name:'IVP ČZU · Souvislá řízená pedagogická praxe',url:'materialy/metodiky/05-souvisla-praxe.pdf',note:'Studijní kopie pro akademický rok 2026/2027. Rozsah výstupů, portfolio, závěrečný výstup a odpovědnosti účastníků.'},
   {name:'MŠMT · Kompetenční rámec absolventa a absolventky učitelství',url:'https://msmt.gov.cz/vzdelavani/pedagogicti-pracovnici/priprava-pedagogickych-pracovniku/kompetencni-ramec-absolventa-a-absolventky-ucitelstvi',note:'Mapa zachovává číslování 18 kompetencí a používá stručné pracovní názvy. Při studiu sledujte popis úrovně absolventa. Další stupně patří začínajícím a zkušeným učitelům.'},
   {name:'MŠMT · Oborový rámec pro odborné předměty, praktické vyučování a odborný výcvik',url:'https://msmt.gov.cz/uploads/OSKR/OSKR_Ucitelstvi_odbornych_predmetu_praktickeho_vyucovani_a_odborneho_vycviku.pdf',note:'Příklady pro odborné vzdělávání konkretizují mj. ukázku pracovního postupu, vedení nácviku a vztah školy k praxi.'},
-  {name:'IVP · Metodické pokyny 06 pro UPV',url:'https://foxy-studio-campus-pilot.web.app/metodiky/06-reflexe.docx',note:'Metodika zveřejněná v podkladech Foxy Studio. Stanoví rozsah písemné reflexe, odevzdání do Moodlu a podmínky zápočtu.'},
+  {name:'IVP · Metodické pokyny 06 pro UPV',url:'materialy/metodiky/06-reflexe.docx',note:'Studijní kopie pro akademický rok 2026/2027 podle podkladů Foxy Studio. Stanoví rozsah písemné reflexe, odevzdání do Moodlu a podmínky zápočtu.'},
   {name:'Foxy Studio · Studentský průvodce IVP',url:'https://foxy-studio-campus-pilot.web.app/',note:'Obsahová inspirace pro orientaci před praxí a práci s podklady.'}
 ];
 // Krátké pracovní názvy; číslování odpovídá KRAAU. Příklady jsou situace pro studenta UPV.
@@ -40,7 +39,7 @@ window.FINAL_METHOD = {
  id:'continuous',credit:'Zápočet zohledňuje splněné výstupy a portfolio. Závěrečný samostatný výstup hodnotí komise.',title:'Souvislá řízená pedagogická praxe',short:'Vedu vlastní výuku',place:'Cvičná SOŠ nebo SOU',
  goal:'Připravte, odučte a rozeberte výuku ve svém oboru. U závěrečného výstupu samostatně předveďte celou vyučovací jednotku.',
  steps:[
- 'S koordinátorem a cvičným učitelem sestavte rozvrh výstupů včetně závěrečného. Předejte jej do tří dnů koordinátorovi a pedagogovi IVP.',
+ 'S koordinátorem a cvičným učitelem sestavte rozvrh výstupů včetně závěrečného. Předejte jej koordinátorovi a pedagogovi IVP.',
  'Poznejte pracoviště, ŠVP, tematické plány a pravidla bezpečnosti. Proberte přípravy s cvičným učitelem.',
  'Standardní rozsah jsou čtyři týdny a 14 výstupů. Zkrácená varianta má dva týdny a osm výstupů a vyžaduje souhlas ředitele IVP na základě doloženého dvouletého pedagogického působení na odborné škole.',
  'Po každé jednotce proveďte s cvičným učitelem rozbor a doplňte doporučení do přípravy.',
@@ -50,7 +49,7 @@ window.FINAL_METHOD = {
  fields:[{label:'Cíl mé výuky',hint:'Co mají žáci samostatně předvést a podle čeho to poznáte?'},{label:'Doklad o učení',hint:'Která práce, odpověď nebo změna v postupu žáků doložila výsledek?'},{label:'Rozbor výstupu',hint:'Co jste zjistili s cvičným učitelem a jak to zapracujete do další hodiny?'}]
 };
 window.REFLECTION_METHOD = {
- id:'reflection',credit:'Podle sylabu VVV178Z pro rok 2026/27 upřesňuje závazné podmínky a způsob hodnocení Moodle předmětu.',title:'Reflexe pedagogické praxe',short:'Hodnotím svůj pokrok',place:'IVP · závěr studia',
+ id:'reflection',credit:'Podle sylabu VVV178Z pro rok 2026/2027 upřesňuje závazné podmínky a způsob hodnocení Moodle předmětu.',title:'Reflexe pedagogické praxe',short:'Hodnotím svůj pokrok',place:'IVP · závěr studia',
  goal:'Porovnejte, jak jste vyučování pozorovali na začátku studia a jak je dnes sami řídíte. Využijte konkrétní doklady z portfolia.',
  steps:['Vyberte z portfolia starší záznam z pozorování a vlastní výstup s podobným tématem.','U obou popište situaci, činnost žáků a doklad o jejich učení.','Zpracujte celkové zhodnocení praxí alespoň na tři strany a nahrajte je do Moodlu.','Absolvujte reflexi v celém rozsahu. V řízené diskusi na IVP vysvětlete vlastní didaktická rozhodnutí a proberte silné stránky i potřeby dalšího rozvoje.'],
  evidence:['Komplexní zhodnocení praxí v rozsahu nejméně tří stran pro Moodle','Podklady k diskusi: náslechové archy a přípravy vlastních hodin','Zápočet uděluje garant praxe na základě splněných podmínek.'],
@@ -65,4 +64,4 @@ const ivpSyllabi = [
   ['VVV177E',294600,'Souvislá řízená praxe','LS · 10 kreditů. Vlastní výuka, její rozbor a samostatně připravený závěrečný výstup před komisí.'],
   ['VVV178Z',294594,'Reflexe pedagogické praxe','LS · 2 kredity. Reflexe doložených zkušeností, supervize a profesní cíle. Závazná kritéria a způsob hodnocení najdete v Moodlu předmětu.']
 ];
-window.SOURCES.push(...ivpSyllabi.map(([code,id,title,note])=>({name:'UIS ČZU · '+code+' · '+title,url:'https://is.czu.cz/katalog/syllabus.pl?predmet='+id+';lang=cz',note:'2026/27 · '+note})));
+window.SOURCES.push(...ivpSyllabi.map(([code,id,title,note])=>({name:'UIS ČZU · '+code+' · '+title,url:'https://is.czu.cz/katalog/syllabus.pl?predmet='+id+';lang=cz',note:'2026/2027 · '+note})));

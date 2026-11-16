@@ -139,7 +139,7 @@ window.BLOCKS = (() => {
   const activity = (id, choice) => get(id)?.activities.find(item => item.id === String(choice));
   const prompts = (id, choice) => activity(id, choice)?.prompts || get(id)?.prompts || [];
   function sheetLink(item) {
-    return '<a class="primary" href="' + item.file + '" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', DOCX">Upravit ve Wordu <small>· DOCX</small></a><a class="secondary" href="materialy/' + item.id + '.pdf" download>Vzít do školy · PDF ↓</a>';
+    return '<a class="primary" href="' + item.file + '?v=rok2627" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', DOCX">Upravit ve Wordu <small>· DOCX</small></a><a class="secondary" href="materialy/' + item.id + '.pdf?v=rok2627" download>Vzít do školy · PDF ↓</a>';
   }
   function sourceLinks(item) {
     const files = window.IVP_DOCUMENTS?.[item.id] || [];
@@ -153,7 +153,7 @@ window.BLOCKS = (() => {
   function docs(id) {
     const item = get(id);
     if (!item) return '';
-    return '<section class="panel stack" aria-label="Dokumenty k bloku"><div><small class="eyebrow">Dokumenty k bloku</small>' +
+    return '<section class="panel stack" aria-label="Dokumenty k bloku"><div><small class="eyebrow">Dokumenty k bloku · Akademický rok 2026/2027</small>' +
       '<h2>' + escape(item.sheet) + '</h2><p>' + escape(item.detail) + '</p></div><div class="actions">' + sheetLink(item) +
       '<a class="secondary" href="#materialy">Všechny dokumenty</a></div><small class="muted">Pracovní list Ateliéru praxí pro vlastní poznámky a reflexi.</small>' +
       (['continuous','reflection'].includes(id)?'<a href="#materialy">Závěrečný protokol a portfolia →</a>':'') + sourceLinks(item) + '</section>';

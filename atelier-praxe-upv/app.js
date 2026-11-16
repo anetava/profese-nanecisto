@@ -142,7 +142,7 @@
     const records=current().records.filter(r=>r.moduleId===m.id);
     const mi=modules.indexOf(m), syl=syllabi[mi], guided=m.id==='guided', chosen=current().guidedPlan||'uis';
     const targets=guided&&chosen==='uis'?{theory:4,practice:6}:m.observationTargets;
-    const variant=guided?'<aside class="notice"><strong>Rozsah řízeného náslechu</strong><p>Sylabus UIS pro rok 2026/27 a dodaná metodika 03 uvádějí různé počty. Po domluvě s garantem vyberte podklad pro své počítadlo.</p><label>Počítat podle<select id="guided-target" '+(role==='student'?'':'disabled')+'><option value="uis" '+(chosen==='uis'?'selected':'')+'>UIS 2026/27 · 4 teoretické a 6 praktických</option><option value="method" '+(chosen==='method'?'selected':'')+'>Metodika 03 · 10 teoretických a 2 praktické</option></select></label></aside>':'';
+    const variant=guided?'<aside class="notice"><strong>Rozsah řízeného náslechu</strong><p>Sylabus UIS pro rok 2026/2027 a dodaná metodika 03 uvádějí různé počty. Po domluvě s garantem vyberte podklad pro své počítadlo.</p><label>Počítat podle<select id="guided-target" '+(role==='student'?'':'disabled')+'><option value="uis" '+(chosen==='uis'?'selected':'')+'>UIS 2026/2027 · 4 teoretické a 6 praktických</option><option value="method" '+(chosen==='method'?'selected':'')+'>Metodika 03 · 10 teoretických a 2 praktické</option></select></label></aside>':'';
     return section('Praxe '+String(modules.indexOf(m)+1).padStart(2,'0')+' · '+person().name,m.title,m.goal)+blockNav(m.id)+variant+
     '<details class="area-box"><summary>Jak praxe probíhá a co doložím</summary>'+(syl?'<p><a href="'+e(syl.url)+'" target="_blank" rel="noopener">'+e(syl.name)+'</a><br>'+e(syl.note)+'</p>':'')+'<p>'+e(m.place)+'</p><ol class="steps">'+m.steps.map(x=>'<li>'+e(x)+'</li>').join('')+'</ol><h3>Co předložit</h3><ul>'+m.evidence.map(x=>'<li>'+e(x)+'</li>').join('')+'</ul><p>'+e(m.credit)+'</p><small>'+e((m.source||[]).join(' · '))+'</small></details><div id="record-space">'+PRACTICE.render({...m,observationTargets:targets},records,role)+'</div>'+blockExtras(m.id);
   }
@@ -180,7 +180,7 @@
     return '<details class="research-practice"><summary>Jak se na praxi připravují budoucí učitelé v zahraničí</summary><div class="research-grid">'+approaches.map(([place,title,body,url])=>'<article><small class="eyebrow">'+e(place)+'</small><h3>'+e(title)+'</h3><p>'+e(body)+'</p><a href="'+e(url)+'" target="_blank" rel="noopener">Otevřít původní zdroj ↗</a></article>').join('')+'</div></details>';
   }
   function sources(){
-    return section('IVP ČZU · MŠMT','Z čeho průvodce vychází','Podmínky jednotlivých praxí určují metodiky IVP. Profesní kompetence slouží k pojmenování toho, co můžete ve své práci doložit.')+foreignPractice()+'<div class="stack">'+SOURCES.map(s=>'<article class="panel"><h3>'+e(s.name)+'</h3><p>'+e(s.note)+'</p>'+(s.url?'<a href="'+e(s.url)+'" target="_blank" rel="noopener">Otevřít zdroj ↗</a>':'')+'</article>').join('')+'</div>';
+    return section('Akademický rok 2026/2027 · IVP ČZU a MŠMT','Z čeho průvodce vychází','Podmínky jednotlivých praxí určují metodiky IVP. Profesní kompetence slouží k pojmenování toho, co můžete ve své práci doložit.')+foreignPractice()+'<div class="stack">'+SOURCES.map(s=>'<article class="panel"><h3>'+e(s.name)+'</h3><p>'+e(s.note)+'</p>'+(s.url?'<a href="'+e(s.url)+'" target="_blank" rel="noopener">Otevřít zdroj ↗</a>':'')+'</article>').join('')+'</div>';
   }
   function render(){
     const rawPage=route(), special=RoleDesk.isSpecial(role);
