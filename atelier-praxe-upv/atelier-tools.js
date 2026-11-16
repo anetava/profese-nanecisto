@@ -6,7 +6,7 @@ window.ATools = (() => {
       {title:'Jak začít instruktáž?',phase:'Před výukou',photo:'phase-4.webp',moduleId:'micro',code:'2.1',
         scene:'Máte sedm minut na ukázku měření posuvným měřítkem. Na stole leží dva téměř stejné vzorky. Co řeknete skupině jako první?',
         choices:[
-          ['„Dnes si ukážeme posuvné měřítko.“','Skupina zná téma. Zatím chybí představa, co má každý na konci samostatně udělat.','Doplňte do úvodu činnost žáka a znak úspěchu.'],
+          ['„Dnes si ukážeme posuvné měřítko.“','Skupina zná téma. Zatím chybí představa, co má každý na konci samostatně udělat.','Řeknu, co mají žáci udělat a podle čeho poznají výsledek.'],
           ['„Na konci každý změří oba vzorky a vysvětlí rozdíl.“','Žáci dostali úkol i způsob, jak poznat výsledek. Krátká otázka teď odhalí, kdo už měřidlo používal.','Před ukázkou zjistím, jak by žáci začali měřit.'],
           ['„Kdo z vás už někdy měřil takový díl?“','Zjistíte výchozí zkušenost části skupiny. Jak zapojíte i ty, kteří se nepřihlásí?','Nechám nejprve každého navrhnout první krok ve dvojici.']]},
       {title:'Dvě dvojice se zasekly',phase:'Během výuky',photo:'phase-5.webp',moduleId:'continuous',code:'2.4',
@@ -55,39 +55,71 @@ window.ATools = (() => {
       '<article class="tile phase-tile"><img class="phase-photo" src="'+s.photo+'" alt=""><small class="eyebrow">'+escape(s.phase)+'</small><h2>'+escape(s.title)+'</h2><button type="button" class="secondary" data-scenario="'+i+'">'+(id==='adaptio'?'Připravit rozhovor':'Vyzkoušet situaci')+' →</button></article>'
     ).join('')+'</div><div data-working></div>'+(past.length?'<details class="panel"><summary>Moje uložené zápisy · '+past.length+'</summary>'+past.slice().reverse().map(n=>'<p><b>'+escape(n.title)+'</b> · '+escape(n.date)+'<br>'+escape(n.nextStep)+'</p>').join('')+'</details>':'')+'</section>';
   }
-  function bind(root,id,notes,save,role='student') {
-    const container = root.matches?.('[data-atelier-tool]')?root:root.querySelector('[data-atelier-tool]');
-    if(!container || !scenarios[id]) return;
-    const panel=container.querySelector('[data-working]');
-    let active=null, choice=null;
-    const show=()=>{
-      const s=scenarios[id][active];
-      panel.innerHTML='<article class="panel stack"><h2 tabindex="-1">'+escape(s.title)+'</h2><p>'+escape(s.scene)+'</p><div class="stack">'+s.choices.map((c,i)=>
-        '<button type="button" data-choice="'+i+'" class="'+(i===choice?'primary':'secondary')+'" aria-pressed="'+(i===choice)+'">'+escape(c[0])+'</button>').join('')+'</div>'+
-        (choice===null?'':'<form data-save class="stack"><div class="notice" role="status"><strong>'+(id==='adaptio'?'Podnět k rozhovoru':'Co může následovat')+'</strong><p>'+escape(s.choices[choice][1])+'</p></div><label>Co si chci zapamatovat <small>(volitelné)</small><textarea name="reflection" maxlength="1600" rows="2"></textarea></label><label>Můj další krok<textarea required name="next" maxlength="1200" rows="2">'+escape(s.choices[choice][2])+'</textarea></label><div class="actions"><button type="submit" class="primary">Uložit do portfolia</button></div></form>')+'</article>';
-      if(role!=='student'){panel.querySelector('[type=submit]')?.remove();}
+  const takeaways={
+    nacvik:[
+      ['Žák potřebuje znát svůj úkol.','Otázka odkryje předchozí zkušenost.','Úspěch musí jít poznat na výsledku.'],
+      ['Nejdřív zjistím, kde se práce zastavila.','Po nápovědě má přijít vlastní pokus.','Oba ve dvojici potřebují prostor.'],
+      ['Popíšu reakci žáka.','Zeptám se na kritérium.','Odliším svůj dojem od pozorování.']
+    ],
+    adaptio:[
+      ['Potřebuji znát způsob spojení.','Na návštěvu si vezmu jednu otázku.','Pravidla pracoviště projdu předem.'],
+      ['Zjistím, na čem mohu stavět.','Předání práce žákovi si nacvičím.','Mentor má vědět, čeho si všímat.'],
+      ['Pro rozbor stačí konkrétní okamžik.','Mohu si předem domluvit podporu.','Změnu poznám podle reakce žáka.']
+    ]
+  };
+  function bind(root,id,notes,save,role='student'){
+    const container=root.querySelector('[data-atelier-tool]'), panel=container?.querySelector('[data-working]');
+    if(!panel)return;
+    const attempts=new Map(); let active;
+    const state=()=>attempts.get(active);
+    const scenario=()=>scenarios[id][active];
+    const remember=()=>{
+      const f=panel.querySelector('[data-save]');
+      if(!f || active===undefined)return;
+      const st=state(),values=new FormData(f);
+      st.notes.set(st.choice,{reflection:values.get('reflection')||'',next:values.get('next')||''});
+      if(st.choice==='own')st.words=f.elements.words?.value||'';
     };
-    container.onclick = event => {
-      const b=event.target.closest('button');
+    function show(){
+      const s=scenario(),st=state(),other=st.choice==='own',hasChoice=st.choice!==null;
+      const answer=hasChoice&&!other?s.choices[st.choice]:null;
+      const values=st.notes.get(st.choice)||{};
+      const outcome=other?'Představte si první reakci žáka. Podle čeho poznáte, že vaše věta splnila účel?':answer?.[1];
+      const actions=s.choices.map((c,i)=>'<button class="reaction" type="button" data-choice="'+i+'" aria-pressed="'+(st.choice===i)+'"><span aria-hidden="true">'+String.fromCharCode(65+i)+'</span>'+escape(c[0])+'</button>').join('');
+      panel.innerHTML='<article class="studio-case"><div class="case-situation"><small class="eyebrow">'+escape(s.phase)+'</small><h2 tabindex="-1">'+escape(s.title)+'</h2><p>'+escape(s.scene)+'</p><div class="case-options">'+actions+'<button class="reaction own-reaction" type="button" data-choice="own" aria-pressed="'+other+'"><span aria-hidden="true">+</span>Moje vlastní reakce</button></div></div><div class="case-response">'+
+        (!hasChoice?'<img src="'+s.photo+'" alt=""><p>Vyberte, jak zareagujete. Tady uvidíte, na co vaše volba může mít vliv.</p>':
+        '<div class="case-feedback" role="status"><small>'+(other?'Otázka k vlastní reakci':id==='adaptio'?'Podnět k rozhovoru':'Co může následovat')+'</small><p>'+escape(outcome)+'</p></div>'+
+        (role!=='student'?'':'<form data-save class="case-form">'+(other?'<label>Jak by zněla vaše reakce?<textarea name="words" rows="2" maxlength="400" required>'+escape(st.words)+'</textarea></label>':'')+
+        Volba.field({label:'Co si chci zapamatovat (volitelné)',name:'reflection',items:takeaways[id][active],value:values.reflection||'',tiles:true})+
+        Volba.field({label:'Můj další krok',name:'next',items:s.choices.map(c=>c[2]),value:values.next||'',required:true,max:1200})+
+        '<div><button class="primary" type="submit">Uložit do portfolia</button></div></form>'))+'</div></article>';
+    }
+    container.onclick=ev=>{
+      const b=ev.target.closest('button');
       if(!b)return;
       if(b.hasAttribute('data-scenario')){
-        active=Number(b.dataset.scenario);choice=null;show();panel.querySelector('h2').focus();
-      }else if(b.hasAttribute('data-choice') && active!==null){
-        const reflection=panel.querySelector('[name=reflection]')?.value||'';
-        choice=Number(b.dataset.choice);show();panel.querySelector('[name=reflection]').value=reflection;
-        panel.querySelector('[data-choice="'+choice+'"]').focus();
+        remember(); active=Number(b.dataset.scenario);
+        if(!attempts.has(active))attempts.set(active,{choice:null,notes:new Map(),words:''});
+        show();panel.querySelector('h2').focus();
+      }else if(b.hasAttribute('data-choice')&&active!==undefined){
+        remember(); const key=b.dataset.choice;state().choice=key==='own'?key:Number(key);show();
+        panel.querySelector('[data-choice="'+key+'"]').focus({preventScroll:true});
       }
     };
-    container.onsubmit = event=>{
-      if(!event.target.matches('[data-save]') || active===null || choice===null)return;
-      event.preventDefault();if(role!=='student')return;
-      const s=scenarios[id][active], data=new FormData(event.target), next=String(data.get('next')||'').trim();
-      if(!next){event.target.querySelector('[name=next]').focus();return;}
+    container.onsubmit=ev=>{
+      if(!ev.target.matches('[data-save]'))return;
+      ev.preventDefault();if(role!=='student'||active===undefined)return;
+      const st=state(),s=scenario(),own=st.choice==='own',data=new FormData(ev.target);
+      const words=String(data.get('words')||'').trim();
+      if(own&&!words){ev.target.elements.words.focus();return;}
       const now=new Date(), date=[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-');
-      const newNote={id:'tool-'+(globalThis.crypto?.randomUUID?.()||Math.random().toString(36).slice(2)),moduleId:s.moduleId,date,title:intro[id][0]+' · '+s.title,
-        reflection:String(data.get('reflection')||'').trim(),nextStep:next,kind:'practice-tool',tool:id,competency:s.code,status:'draft',fields:{'Typ podkladu':id==='adaptio'?'Příprava na rozhovor':'Modelová situace','Moje volba':s.choices[choice][0],'Podnět':s.choices[choice][1]},timeline:[]};
-      save([...notes,newNote]);
+      const choice=own?words:s.choices[st.choice][0],next=String(data.get('next')||'').trim();
+      if(!next)return;
+      const fields={'Typ podkladu':id==='adaptio'?'Příprava na rozhovor':'Modelová situace','Moje volba':choice};
+      if(!own)fields['Podnět']=s.choices[st.choice][1];
+      save([...notes,{id:'tool-'+(globalThis.crypto?.randomUUID?.()||Math.random().toString(36).slice(2)),moduleId:s.moduleId,date,title:intro[id][0]+' · '+s.title,activityId:String(active),
+        reflection:String(data.get('reflection')||'').trim(),nextStep:next,kind:'practice-tool',tool:id,competency:s.code,status:'draft',fields,timeline:[]}]);
     };
   }
-  return { render,bind };
+  return {render,bind};
 })();

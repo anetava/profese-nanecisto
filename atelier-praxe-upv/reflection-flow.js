@@ -37,7 +37,7 @@ window.IVPREF = (() => {
     (window.BLOCKS.get(block)?.activities||[]).forEach(a=>options.push({value:'a:'+a.id,topic:a.title,activityId:String(a.id),sourceId:''}));
     records.slice().reverse().forEach(r=>{
       const current=options.find(o=>o.activityId!==''&&String(r.title||'').includes(o.topic));
-      options.push({value:'r:'+r.id,topic:String(r.title||'Záznam ze dne '+displayDate(r.date)).slice(0,220),sourceId:r.id,activityId:current?.activityId||'',record:r});
+      options.push({value:'r:'+r.id,topic:String(r.title||'Záznam ze dne '+displayDate(r.date)).slice(0,220),sourceId:r.id,activityId:r.activityId??current?.activityId??'',record:r});
     });
     return options;
   }
@@ -73,10 +73,14 @@ window.IVPREF = (() => {
     return '<details class="rf-source"><summary>Nahlédnout do mého záznamu</summary><p>'+esc(note||r.title)+'</p>'+(r.nextStep?'<p><strong>Můj původní další krok</strong><br>'+esc(r.nextStep)+'</p>':'')+
       ((note||r.nextStep)?'<button type="button" class="secondary" data-rf-copy>Převzít do prázdných polí</button>':'')+'</details>';
   }
+  function responseFields(block,selected,values) {
+    const q=questions(block,selected.activityId),opts=Napovedy.reflection(block,selected.activityId);
+    return ['observation','meaning','next'].map((k,i)=>Volba.field({label:q[i],name:k,value:values[k]||'',items:opts[i],required:true})).join('');
+  }
   function form(ctx,p,block,row,activity,sourceId) {
-    const choices=sourceChoices(ctx,p,block),selected=selection(row||{sourceId},choices,activity), q=questions(block,selected.activityId);
-    return '<form class="fields rf-form" data-rf-compose data-owner="'+esc(p)+'" data-block="'+esc(block)+'" data-id="'+esc(row?.id)+'"><label>Čeho se reflexe týká<select name="source">'+choices.map(o=>option(o.value,o.record?o.topic+' · '+displayDate(o.record.date):o.topic,selected.value)).join('')+'</select></label><div data-rf-source>'+sourcePreview(selected)+'</div>'+
-      ['observation','meaning','next'].map((k,i)=>'<label><span data-rf-question="'+k+'">'+esc(q[i]||fallbackQuestions[i])+'</span><textarea name="'+k+'" required maxlength="1600" rows="2">'+esc(row?.[k])+'</textarea></label>').join('')+
+    const choices=sourceChoices(ctx,p,block),selected=selection(row||{sourceId},choices,activity);
+    return '<form class="fields rf-form" data-rf-compose data-source-key="'+esc(selected.value)+'" data-owner="'+esc(p)+'" data-block="'+esc(block)+'" data-id="'+esc(row?.id)+'"><label>Čeho se reflexe týká<select name="source">'+choices.map(o=>option(o.value,o.record?o.topic+' · '+displayDate(o.record.date):o.topic,selected.value)).join('')+'</select></label><div data-rf-source>'+sourcePreview(selected)+'</div>'+
+      '<div class="rf-picks" data-rf-answers>'+responseFields(block,selected,row||{})+'</div>'+
       '<div class="actions"><button type="submit" class="primary" value="submit">'+(row?.status==='returned'?'Znovu předat koordinátorovi':'Předat koordinátorovi IVP')+'</button><button class="secondary" type="submit" value="draft" formnovalidate>Uložit rozepsané</button></div><small>Rozepsanou reflexi vidíte jen vy. Po předání ji uvidí koordinátor IVP a váš cvičný učitel.</small><p class="notice" data-rf-error role="alert" hidden></p></form>';
   }
   function thread(ctx,p,row) {
@@ -86,7 +90,7 @@ window.IVPREF = (() => {
     return '<div class="rf-thread" data-rf-row="'+esc(row.id)+'">'+
       (answer?'<div class="rf-answer"><strong>'+esc(answer.type==='returned'?(row.status==='returned'?'Koordinátor IVP žádá o doplnění':'Poslední podnět koordinátora k doplnění'):'Zpětná vazba koordinátora IVP')+'</strong><p>'+esc(answer.message)+'</p></div>':'')+
       (editable?form(ctx,p,row.blockId,row):'<dl class="rf-body">'+bodyLines(row)+'</dl>')+
-      (ctx.role==='ivp'&&row.status==='submitted'?'<form class="fields rf-review" data-rf-review data-owner="'+esc(p)+'" data-id="'+esc(row.id)+'"><label>Moje odpověď studentovi<textarea rows="2" name="message" maxlength="1600" required placeholder="Čeho jste si všimli a na co může student navázat?"></textarea></label><div class="actions"><button class="primary" value="confirmed">Uzavřít se zpětnou vazbou</button><button class="secondary" value="returned">Vrátit k doplnění</button></div><p class="notice" data-rf-error role="alert" hidden></p></form>':'')+
+      (ctx.role==='ivp'&&row.status==='submitted'?'<form class="fields rf-review" data-rf-review data-owner="'+esc(p)+'" data-id="'+esc(row.id)+'">'+Volba.field({label:'Moje odpověď studentovi',name:'message',items:Napovedy.feedback,required:true})+'<div class="actions"><button class="primary" value="confirmed">Uzavřít se zpětnou vazbou</button><button class="secondary" value="returned">Vrátit k doplnění</button></div><p class="notice" data-rf-error role="alert" hidden></p></form>':'')+
       historyView(row)+exchange+'</div>';
   }
   function rowCard(ctx,p,row,open) {
@@ -98,7 +102,7 @@ window.IVPREF = (() => {
     const relevant=allVisible(ctx).filter(x=>x.p.id===peer.id&&x.row.blockId===blockId);
     const target=ctx.role==='student', composing=target&&opts.compose;
     return '<section class="rf-section" data-rf-widget="block" data-block="'+esc(blockId)+'"><div class="rf-heading"><div><small class="eyebrow">Student a koordinátor IVP</small><h2>Reflexe bloku</h2></div><a href="#reflexe" class="text-btn">'+(target?'Moje reflexe':'Přehled reflexí')+' →</a></div>'+
-      (target?'<p>Vyberte situaci nebo svůj uložený zápis. Napište, co vám ukázal a co příště změníte. Odpověď koordinátora najdete u této reflexe.</p><details class="rf-new"'+(composing?' open':'')+'><summary>Napsat reflexi</summary>'+form(ctx,peer.id,blockId,null,opts.activityId,opts.sourceId)+'</details>':'')+
+      (target?'<p>Vyberte situaci nebo svůj uložený zápis. Zvolte postřeh a další krok, případně je doplňte vlastními slovy. Odpověď koordinátora najdete u této reflexe.</p><details class="rf-new"'+(composing?' open':'')+'><summary>Vyplnit reflexi</summary>'+form(ctx,peer.id,blockId,null,opts.activityId,opts.sourceId)+'</details>':'')+
       (relevant.length?relevant.map(x=>rowCard(ctx,x.p,x.row,opts.focus===x.row.id)).join(''):target?'':'<p>Student zatím nepředal reflexi tohoto bloku.</p>')+'</section>';
   }
   function queue(ctx,opts={}) {
@@ -143,6 +147,7 @@ window.IVPREF = (() => {
           else replacement.querySelector('h2')?.focus();
         }else if(document.activeElement===document.body)replacement.querySelector('[data-rf-filter]')?.focus();
       }
+      const draftsByForm=new WeakMap();
       function choicesFor(f) {
         if(ctx.role!=='student'||f.dataset.owner!==ctx.who||!canSee(ctx,ctx.who))return null;
         return sourceChoices(ctx,ctx.who,f.dataset.block).find(o=>o.value===f.elements.source.value);
@@ -153,17 +158,20 @@ window.IVPREF = (() => {
         if(!f||event.target!==f.elements.source)return;
         const chosen=choicesFor(f);
         if(!chosen)return;
-        const q=questions(f.dataset.block,chosen.activityId);
-        f.querySelectorAll('[data-rf-question]').forEach((el,i)=>el.textContent=q[i]||fallbackQuestions[i]);
+        const drafts=draftsByForm.get(f)||new Map();
+        drafts.set(f.dataset.sourceKey,Object.fromEntries(['observation','meaning','next'].map(k=>[k,f.elements[k].value])));
+        draftsByForm.set(f,drafts);f.dataset.sourceKey=chosen.value;
+        const values=drafts.get(chosen.value)||{};
+        f.querySelector('[data-rf-answers]').innerHTML=responseFields(f.dataset.block,chosen,values);
         f.querySelector('[data-rf-source]').innerHTML=sourcePreview(chosen);
       });
       box.addEventListener('click',event=>{
         const b=event.target.closest('[data-rf-copy]');if(!b)return;
         const f=b.closest('[data-rf-compose]'), item=choicesFor(f)?.record;
         if(!item)return;
-        if(!f.elements.observation.value.trim())f.elements.observation.value=String(item.reflection || Object.values(item.fields||{}).filter(Boolean)[0] || '').slice(0,1600);
-        if(!f.elements.next.value.trim())f.elements.next.value=String(item.nextStep||'').slice(0,1600);
-        f.elements.meaning.focus();
+        const values={observation:f.elements.observation.value || String(item.reflection||Object.values(item.fields||{}).find(Boolean)||'').slice(0,1600),meaning:f.elements.meaning.value,next:f.elements.next.value||String(item.nextStep||'').slice(0,1600)};
+        f.querySelector('[data-rf-answers]').innerHTML=responseFields(f.dataset.block,choicesFor(f),values);
+        f.elements.meaning.closest('fieldset').querySelector('select').focus();
       });
       box.addEventListener('submit',event=>{
         const f=event.target;
@@ -180,7 +188,7 @@ window.IVPREF = (() => {
           if(!chosen||!blockIds.includes(blockId)||(!submit&&action!=='draft')||(f.dataset.id&&!old)||(old&&(!['draft','returned'].includes(old.status)||old.blockId!==blockId)))return;
           const observation=val('observation'),meaning=val('meaning'),next=val('next');
           if(submit&&(!observation||!meaning||!next))return error('Před předáním doplňte odpověď na všechny tři otázky.');
-          if(!observation&&!meaning&&!next)return error('Napište alespoň první poznámku.');
+          if(!observation&&!meaning&&!next)return error('Vyberte alespoň jednu možnost nebo přidejte vlastní poznámku.');
           const revision=(Number(old?.revision)||0)+(submit?1:0);
           const snapshot={topic:chosen.topic,observation,meaning,next};
           record={...old,...snapshot,id:old?.id||id(),blockId,sourceId:chosen.sourceId,activityId:chosen.activityId,status:submit?'submitted':(old?.status||'draft'),date:old?.date||localDate(clock),updatedAt:at,revision,

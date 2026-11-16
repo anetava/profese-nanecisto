@@ -41,7 +41,7 @@ window.RoleDesk = (() => {
     }
     const forms=waiting.map(({person,prep})=>'<form class="panel" data-school-request="'+esc(person.id)+'"><small class="eyebrow">Žádost IVP</small><h3>'+esc(person.name)+'</h3>'+
       (prep.focus?'<p><b>Zaměření praxe</b><br>'+esc(prep.focus)+'</p>':'')+
-      '<label>Vzkaz studentovi a koordinátorovi <small>(nepovinný)</small><textarea rows="2" name="message" maxlength="600" placeholder="Např. koho se zeptat po příchodu do školy."></textarea></label>'+
+      ''+Volba.field({label:'Vzkaz studentovi a koordinátorovi (nepovinný)',name:'message',max:600,items:['Před návštěvou si domluvte čas s cvičným učitelem.','Na první setkání si přineste svou přípravu.','V požadovaném termínu nemáme volnou kapacitu.']})+''+
       '<div class="actions"><button type="submit" value="accept" class="primary">Přijmout studenta</button><button type="submit" value="decline" class="secondary">Oznámit, že není místo</button></div></form>').join('');
     const acceptedRows=accepted.map(({person,prep})=>{
       const answer=(prep.schoolReplies||[]).filter(item=>item.schoolId===school.id && item.decision==='accept').at(-1);

@@ -44,23 +44,27 @@ window.PRACTICE = (() => {
   function timelineRow(row={}) {
     return '<fieldset data-time-row><legend>Okamžik z hodiny</legend><div class="fields">'+[
       ['time','Čas nebo minuta','např. 8:15'],['event','Činnost učitele','Jakou otázku učitel položil?'],['pupils','Činnost žáků','Co žáci udělali nebo řekli?'],['note','Poznámka k rozboru','Co pomohlo porozumění?']
-    ].map(([key,title,hint])=>'<label>'+esc(title)+'<input data-moment="'+key+'" value="'+esc(row[key])+'" placeholder="'+esc(hint)+'"></label>').join('')+'</div></fieldset>';
+    ].map(([key,title,hint])=>Volba.field({label:title,moment:key,items:Napovedy.moment[key],value:row[key]||'',hint:key==='time'?'Vyberte část hodiny nebo doplňte přesnou minutu.':''})).join('')+'</div></fieldset>';
   }
 
   function editor(m,r) {
     const observed = isObservation(m);
     const options = observed ? ['theory','practical'] : m.id==='continuous' ? ['teaching','final'] : ['activity'];
-    const fieldEditors = (m.fields || []).map((f,i)=>'<label>'+esc(f.label)+'<textarea rows="2" data-answer="'+i+'" placeholder="'+esc(f.hint)+'">'+esc(r.fields?.[f.label])+'</textarea></label>').join('');
-    const titleHint = observed ? 'Např. Jak učitel ověřoval porozumění' : m.id==='ivp' ? 'Např. Jak škola podporuje začínající učitele' : 'Např. Instruktáž při prvním použití měřidla';
+    const hints=Napovedy.packs[m.id];
+    const fieldEditors=(m.fields||[]).map((f,i)=>Volba.field({label:f.label,answer:i,items:Napovedy.fields[f.label],value:r.fields?.[f.label]||'',hint:f.hint})).join('');
     const areas = (window.AREAS||[]).map(a=>'<optgroup label="'+esc(a.name)+'">'+(a.skills||[]).map(s=>'<option value="'+esc(s.code)+'"'+pick(r.competency,s.code)+'>'+esc(s.code+' · '+s.name)+'</option>').join('')+'</optgroup>').join('');
     return '<form class="panel stack" data-rec-form data-id="'+esc(r.id)+'"><h3>'+ (r.id?'Upravit záznam':'Nový záznam')+'</h3>'+
       (r.status==='returned' ? '<div class="notice">'+section('Co doplnit',r.feedback)+'</div>' : '')+
-      '<div class="fields"><label>Téma<input name="title" maxlength="180" placeholder="'+esc(titleHint)+'" value="'+esc(r.title)+'"></label><label>Datum<input name="date" type="date" value="'+esc(r.date || dateToday())+'"></label>'+
-      (options.length>1?'<label>Druh jednotky<select name="kind">'+options.map(k=>'<option value="'+k+'"'+pick(r.kind,k)+'>'+kinds[k]+'</option>').join('')+'</select></label>':'<input type="hidden" name="kind" value="'+options[0]+'">')+'</div>'+
-      '<details open><summary>Podklady z praxe</summary><div class="fields">'+fieldEditors+'</div></details>'+
-      (observed?'<details open><summary>Časová osa náslechu</summary><div class="stack" data-time-rows>'+(r.timeline?.length?r.timeline:[{}]).map(timelineRow).join('')+'</div><button type="button" class="secondary" data-rec-moment>Přidat další okamžik</button></details>':'')+
-      '<div class="fields"><label>Moje reflexe<textarea name="reflection" rows="3" placeholder="Která konkrétní situace vás něco naučila? Podle čeho to soudíte?">'+esc(r.reflection)+'</textarea></label>'+
-      '<label>Můj další krok<textarea name="nextStep" rows="2" placeholder="Co při příštím náslechu ověříte nebo ve vlastní výuce zkusíte?">'+esc(r.nextStep)+'</textarea></label>'+
+      '<p class="form-guide">Vyberte, co odpovídá vaší hodině. U každé volby můžete připsat vlastní detail.</p>'+
+      '<div class="record-head-grid"><section class="record-basics"><h4>Údaje o hodině</h4>'+
+      Volba.field({label:'Téma',name:'title',max:180,items:hints[0],value:r.title||'',required:true})+
+      '<div class="record-date"><label>Datum<input name="date" type="date" value="'+esc(r.date||dateToday())+'"></label>'+
+      (options.length>1?'<label>Druh jednotky<select name="kind">'+options.map(k=>'<option value="'+k+'"'+pick(r.kind,k)+'>'+kinds[k]+'</option>').join('')+'</select></label>':'<input type="hidden" name="kind" value="'+options[0]+'">')+'</div></section>'+
+      '<section class="record-ref"><h4>Co si odnáším</h4>'+Volba.field({label:'Moje reflexe',name:'reflection',items:hints[2],value:r.reflection||'',required:true})+
+      Volba.field({label:'Můj další krok',name:'nextStep',items:hints[3],value:r.nextStep||''})+'</section></div>'+
+      '<details open class="rec-evidence"><summary>Podklady z praxe</summary><p>Pro rozbor vyberte alespoň jeden podklad z vlastní praxe.</p><div class="fields">'+fieldEditors+'</div></details>'+
+      (observed?'<details class="rec-timeline" '+(r.timeline?.length?'open':'')+'><summary>Časová osa náslechu</summary><p>Ke stejnému okamžiku zachyťte činnost učitele i reakci žáků.</p><div class="stack" data-time-rows>'+(r.timeline?.length?r.timeline:[{}]).map(timelineRow).join('')+'</div><button type="button" class="secondary" data-rec-moment>Přidat další okamžik</button></details>':'')+
+      '<div class="fields">'+
       (areas?'<label>Kompetence, kterou zde dokládám<select name="competency"><option value="">Vyberu později</option>'+areas+'</select></label>':'')+'</div>'+
       '<p class="notice" data-rec-msg role="status" hidden></p><div class="actions"><button type="submit" class="primary" value="submit">Předat k rozboru</button><button type="submit" value="draft" class="secondary">Uložit rozepsané</button><button type="button" class="secondary" data-rec-close>Zavřít formulář</button></div></form>';
   }
@@ -69,7 +73,7 @@ window.PRACTICE = (() => {
     const rubrics = ['Srozumitelnost cíle hodiny','Návaznost metod na cíl',...(r.kind==='theory'?['Otázky vedoucí k porozumění']:['Instruktáž a kontrola samostatné práce žáků']), 'Závěrečné vyhodnocení učení'];
     return '<form class="fields" data-review="'+esc(r.id)+'"><h3>Společný rozbor</h3>'+
       (isTeaching(m)?'<details><summary>Pozorované projevy výuky</summary>'+rubrics.map(label=>'<label>'+esc(label)+'<select data-rubric="'+esc(label)+'">'+['Neposuzováno','Ano','Částečně','Ne'].map(v=>'<option'+pick(v,r.review?.[label])+'>'+v+'</option>').join('')+'</select></label>').join('')+'</details>':'')+
-      '<label>Zpětná vazba studujícímu<textarea name="feedback" required rows="2" placeholder="Popište situaci, které jste si všimli, a domluvte další krok.">'+esc(r.feedback)+'</textarea></label><div class="actions"><button class="primary" value="confirm">Uzavřít rozbor</button><button class="secondary" value="return">Vrátit k doplnění</button></div><p class="muted">Splnění předmětu posuzuje IVP podle podmínek příslušné praxe.</p></form>';
+      Volba.field({label:'Zpětná vazba studujícímu',name:'feedback',items:Napovedy.feedback,value:r.feedback||'',required:true})+'<div class="actions"><button class="primary" value="confirm">Uzavřít rozbor</button><button class="secondary" value="return">Vrátit k doplnění</button></div><p class="muted">Splnění předmětu posuzuje IVP podle podmínek příslušné praxe.</p></form>';
   }
 
   function bind(root,m,records,callbacks) {
@@ -82,7 +86,7 @@ window.PRACTICE = (() => {
       if (!target || !student) return;
       if (target.hasAttribute('data-rec-moment')) {
         const rows = box.querySelector('[data-time-rows]');
-        rows.insertAdjacentHTML('beforeend', timelineRow());rows.lastElementChild.querySelector('input').focus();
+        rows.insertAdjacentHTML('beforeend', timelineRow());rows.lastElementChild.querySelector('select').focus();
       }
       if (target.hasAttribute('data-rec-close')) {editorBox.replaceChildren();box.querySelector('[data-rec-new]').focus();}
       if (target.hasAttribute('data-rec-new')||target.hasAttribute('data-rec-edit')) {
@@ -90,7 +94,7 @@ window.PRACTICE = (() => {
         const r=id?records.find(v=>v.id===id):{};
         if (!r || (id && !['draft','returned'].includes(r.status))) return;
         editorBox.innerHTML=editor(m,r);
-        editorBox.querySelector('[name=title]').focus();
+        editorBox.querySelector('[data-pick-options]').focus({preventScroll:true});editorBox.scrollIntoView({block:'start'});
       }
     };
     box.onsubmit = e=>{

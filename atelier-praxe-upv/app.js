@@ -103,7 +103,7 @@
   }
   function blockNav(block){
     return '<nav class="block-nav" aria-label="K tomuto bloku"><button type="button" class="secondary" data-block-docs>Dokumenty k bloku ↓</button>'+
-      (role==='student'?link('reflexe/nova/'+block,'Napsat reflexi pro IVP','secondary'):link('reflexe','Přehled předaných reflexí','secondary'))+'</nav>';
+      (role==='student'?link('reflexe/nova/'+block,'Otevřít reflexi pro IVP','secondary'):link('reflexe','Přehled předaných reflexí','secondary'))+'</nav>';
   }
   function blockExtras(id){
     return '<div class="block-extras">'+BLOCKS.docs(id)+IVPREF.block(id,refContext())+'</div>';
@@ -169,12 +169,22 @@
     (role==='mentor'?'<section class="panel"><h2>K rozboru · '+pending.length+'</h2>'+pending.map(({p,r})=>'<div class="overview-row"><div><strong>'+e(r.title)+'</strong><small>'+e(p.name)+' · '+e(mod(r.moduleId).title)+'</small></div><button class="secondary" data-person="'+p.id+'" data-stage="'+r.moduleId+'" data-entry="'+e(r.id)+'">Otevřít</button></div>').join('')+(pending.length?'':'<p>V tuto chvíli nikdo nečeká na zpětnou vazbu.</p>')+'</section>':'')+
     '<div class="section-head"><h2>Studijní skupina</h2></div><div class="grid">'+allowedPeople().map(p=>{const rs=db[p.id].records.filter(r=>r.status!=='draft');return '<article class="tile"><span class="tag">'+e(mod(p.stage).title)+'</span><h3>'+e(p.name)+'</h3><p>Záznamy celkem · '+rs.length+'<br>Po rozboru · '+rs.filter(r=>r.status==='confirmed').length+'</p><button class="secondary" data-person="'+p.id+'">Otevřít portfolio</button></article>'}).join('')+'</div>';
   }
+  function foreignPractice(){
+    const approaches=[
+      ['USA · University of Michigan','Nácvik jedné učitelské věty','TeachingWorks rozkládá výuku na krátké úseky, které lze nacvičit se zpětnou vazbou. V modulu Praxe nanečisto zkuste dvě zahájení stejné instruktáže. Které z nich žákovi řekne, co má udělat?','https://library.teachingworks.org/curriculum-resources/pedagogies/using-approximations-to-practice-practice/'],
+      ['Austrálie · AITSL','Učitel a žák ve stejném okamžiku','Při pozorování výuky se sleduje jednání učitele i žáků. V časové ose náslechu zachyťte jejich dvojici. Například učitel předal měřidlo a žák sám ukázal, kde bude odečítat.','https://www.aitsl.edu.au/resources/looking-at-classroom-practice'],
+      ['Singapur · NIE, NTU','Jeden doklad pro rozhovor','Studující vybírají z elektronického portfolia doklady pro řízené rozhovory o svém rozvoji. V reflexi pro IVP můžete otevřít vlastní zápis a vybrat okamžik, který chcete s koordinátorem rozebrat.','https://www.ntu.edu.sg/nie/about-us/programme-offices/office-of-teacher-education-and-undergraduate-programmes/professional-practice-inquiry'],
+      ['Spojené království · Ambition Institute','Druhý pokus po zpětné vazbě','Příručka pro vzdělavatele učitelů pracuje se záměrným nácvikem konkrétní dovednosti. Při dalším výstupu změňte jeden pokyn a sledujte, co žáci udělají jinak.','https://www.ambition.org.uk/research-and-insight/deliberate-practice-teacher-educators-handbook/']
+    ];
+    return '<details class="research-practice"><summary>Jak se na praxi připravují budoucí učitelé v zahraničí</summary><div class="research-grid">'+approaches.map(([place,title,body,url])=>'<article><small class="eyebrow">'+e(place)+'</small><h3>'+e(title)+'</h3><p>'+e(body)+'</p><a href="'+e(url)+'" target="_blank" rel="noopener">Otevřít původní zdroj ↗</a></article>').join('')+'</div></details>';
+  }
   function sources(){
-    return section('IVP ČZU · MŠMT','Z čeho průvodce vychází','Podmínky jednotlivých praxí určují metodiky IVP. Profesní kompetence slouží k pojmenování toho, co můžete ve své práci doložit.')+'<div class="stack">'+SOURCES.map(s=>'<article class="panel"><h3>'+e(s.name)+'</h3><p>'+e(s.note)+'</p>'+(s.url?'<a href="'+e(s.url)+'" target="_blank" rel="noopener">Otevřít zdroj ↗</a>':'')+'</article>').join('')+'</div>';
+    return section('IVP ČZU · MŠMT','Z čeho průvodce vychází','Podmínky jednotlivých praxí určují metodiky IVP. Profesní kompetence slouží k pojmenování toho, co můžete ve své práci doložit.')+foreignPractice()+'<div class="stack">'+SOURCES.map(s=>'<article class="panel"><h3>'+e(s.name)+'</h3><p>'+e(s.note)+'</p>'+(s.url?'<a href="'+e(s.url)+'" target="_blank" rel="noopener">Otevřít zdroj ↗</a>':'')+'</article>').join('')+'</div>';
   }
   function render(){
     const rawPage=route(), special=RoleDesk.isSpecial(role);
-    const page=special&&!['start','sources','materialy'].includes(rawPage)?'ivp':rawPage;
+    const scenarioMatch=/^(nacvik|adaptio)\/situace\/([1-3])$/.exec(rawPage);
+    const page=special&&!['start','sources','materialy'].includes(rawPage)?'ivp':scenarioMatch?scenarioMatch[1]:rawPage;
     const parts=page.split('/'),m=parts[0]==='praxe'?mod(parts[1]):null,refPage=parts[0]==='reflexe';
     const nav=special?[['ivp',role==='method'?'Přehled metodika':'Přehled školy'],['materialy','Dokumenty'],['sources','Metodiky']]:navItems;
     const active=nav.some(([id])=>id===page)?page:(special||!['materialy','sources'].includes(page)?'ivp':'');
@@ -218,16 +228,18 @@
     if(page==='ivp' && role!=='student')STAFFTOOLS.bind(root,{openStudent:(id,dest='portfolio')=>{if(!allowedPeople().some(p=>p.id===id))return;who=id;navigate(dest)},go:navigate});
     if(toolPages.includes(page)){
       const tool=page==='nacvik'||page==='adaptio'?ATools:WORK;
-      const notes=role==='student'?(current().tools?.[page]||[]):[],save=items=>{if(role!=='student')return;current().tools||={};current().tools[page]=items.map(r=>({...r,tool:page}));const ok=persist();render();if(ok)toast('Poznámka je ve vašem portfoliu.')};
+      const notes=role==='student'?(current().tools?.[page]||[]):[],save=items=>{if(role!=='student')return;current().tools||={};current().tools[page]=items.map(r=>({...r,tool:page}));const ok=persist();if(ok&&scenarioMatch)history.replaceState(null,'','#'+page);render();if(ok)toast('Poznámka je ve vašem portfoliu.')};
       if(tool===WORK)tool.bind(root.querySelector('#tool-space'),page,notes,role,save);
       else tool.bind(root.querySelector('#tool-space'),page,notes,save,role);
+      if(scenarioMatch)root.querySelector('[data-scenario="'+(Number(scenarioMatch[2])-1)+'"]')?.click();
     }
     if(m?.id==='guided'&&role==='student')document.querySelector('#guided-target').onchange=ev=>{current().guidedPlan=ev.target.value;persist();render()};
-    if(m){PRACTICE.bind(document.querySelector('#record-space'),m,current().records.filter(r=>r.moduleId===m.id),{role:role,save:items=>{current().reviewLog=STAFFTOOLS.logChanges(current().records.filter(r=>r.moduleId===m.id),items,current().reviewLog);current().records=[...current().records.filter(r=>r.moduleId!==m.id),...items];const ok=persist();render();if(ok)toast('Záznam je uložený.')},go:navigate})}
+    if(m){PRACTICE.bind(document.querySelector('#record-space'),m,current().records.filter(r=>r.moduleId===m.id),{role:role,save:items=>{if(parts[2]==='novy')history.replaceState(null,'','#praxe/'+m.id);current().reviewLog=STAFFTOOLS.logChanges(current().records.filter(r=>r.moduleId===m.id),items,current().reviewLog);current().records=[...current().records.filter(r=>r.moduleId!==m.id),...items];const ok=persist();render();if(ok)toast('Záznam je uložený.')},go:navigate})}
     if(m && page.split('/')[2]==='zaznam'){
       const sel=[...root.querySelectorAll('[data-record-id]')].find(el=>el.dataset.recordId===page.split('/')[3]);
       if(sel){sel.open=true;requestAnimationFrame(()=>sel.scrollIntoView({block:'start'}))}
     }
+    if(m && parts[2]==='novy' && role==='student')root.querySelector('[data-rec-new]')?.click();
     if(m && page.split('/')[2]==='upravit' && role==='student'){
       const edit=[...root.querySelectorAll('[data-rec-edit]')].find(b=>b.dataset.recEdit===page.split('/')[3]);
       if(edit){edit.click();history.replaceState(null,'','#praxe/'+m.id)}
@@ -245,6 +257,6 @@
     event.preventDefault();document.getElementById('content')?.focus();
   });
   window.addEventListener('afterprint',()=>document.body.classList.remove('print-mode'));
-  window.addEventListener('hashchange',()=>{render();window.scrollTo(0,0)});
+  window.addEventListener('hashchange',()=>{window.scrollTo(0,0);render()});
   render();
 })();

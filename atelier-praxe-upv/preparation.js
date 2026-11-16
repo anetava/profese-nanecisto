@@ -26,7 +26,7 @@ window.PREP = (() => {
   const schoolOptions=(value,alternate=false)=>'<option value="">'+(alternate?'Zatím bez náhradní volby':'Vyberte školu')+'</option>'+schools.map(([id,name,field])=>'<option value="'+id+'"'+pick(id,value)+'>'+escape(name+' · '+field)+'</option>').join('');
   const titleOf=id=>school(id)?.[1]||'Nevybráno';
   function preference(s){
-    return '<form data-prep="choice" class="panel"><h2>Kde chcete učit?</h2><p>Vyberte pracoviště pro řízenou praxi a napište, čemu se tam chcete věnovat.</p><div class="fields"><label>První volba<select required name="primary">'+schoolOptions(s.primary)+'</select></label><label>Náhradní volba<select name="backup">'+schoolOptions(s.backup,true)+'</select></label><label>Co potřebuji na praxi vyzkoušet<textarea name="focus" rows="2" maxlength="600" placeholder="Např. vedení krátké instruktáže v dílně">'+escape(s.focus)+'</textarea></label></div>'+
+    return '<form data-prep="choice" class="panel"><h2>Kde chcete učit?</h2><p>Vyberte pracoviště pro řízenou praxi a činnost, kterou si tam chcete vyzkoušet.</p><div class="fields"><label>První volba<select required name="primary">'+schoolOptions(s.primary)+'</select></label><label>Náhradní volba<select name="backup">'+schoolOptions(s.backup,true)+'</select></label>'+Volba.field({label:'Co potřebuji na praxi vyzkoušet',name:'focus',max:600,value:s.focus||'',items:['Vést krátkou instruktáž','Sledovat práci žáků ve dvojicích','Vyzkoušet zpětnou vazbu po praktickém úkolu']})+'</div>'+
       '<p data-error hidden role="status" class="notice"></p><div class="actions"><button class="primary" value="send">Předat volbu koordinátorovi</button><button class="secondary" value="draft" formnovalidate>Uložit rozepsané</button></div></form>';
   }
   function checklist(s){
@@ -52,7 +52,7 @@ window.PREP = (() => {
   function coordinator(s){
     if(s.status!=='coordinator')return '';
     const available=[s.primary,s.backup].filter(id=>school(id)&&!s.declined.includes(id));
-    return '<form class="panel" data-prep="review"><h3>Posouzení volby IVP</h3><div class="fields"><label>Škola k potvrzení<select name="school">'+available.map(id=>'<option value="'+escape(id)+'">'+escape(titleOf(id))+'</option>').join('')+'</select></label><label>Zpráva studentovi<textarea rows="2" maxlength="600" name="note" placeholder="Při vrácení uveďte, co je třeba upravit."></textarea></label></div><p data-error class="notice" role="status" hidden></p><div class="actions"><button value="approve" class="primary">Schválit volbu a předat škole</button><button value="return" class="secondary">Vrátit s poznámkou</button></div></form>';
+    return '<form class="panel" data-prep="review"><h3>Posouzení volby IVP</h3><div class="fields"><label>Škola k potvrzení<select name="school">'+available.map(id=>'<option value="'+escape(id)+'">'+escape(titleOf(id))+'</option>').join('')+'</select></label>'+Volba.field({label:'Zpráva studentovi',name:'note',max:600,items:['Doplňte, kterou činnost si chcete vyzkoušet.','Ověřte u školy obor svého výstupu.','Před první návštěvou se domluvte s cvičným učitelem.']})+'</div><p data-error class="notice" role="status" hidden></p><div class="actions"><button value="approve" class="primary">Schválit volbu a předat škole</button><button value="return" class="secondary">Vrátit s poznámkou</button></div></form>';
   }
   // One placement decision is always made by the school currently asked to host this student.
   function schoolReply(value, schoolId, decision, note) {

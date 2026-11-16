@@ -30,12 +30,12 @@ window.WORK = (() => {
       '<div class="split"><section class="panel stack"><small class="eyebrow">Ukázka z dílny</small><h2>Dva vzorky, dvě měřidla</h2><p>Žák má podle výkresu ověřit rozměr součásti. V dílně má k dispozici pravítko a posuvné měřítko. Co si předem potřebují domluvit tři lidé?</p>'+
       roles.map(([k,v])=>'<details class="area-box"><summary>'+k+'</summary><p>'+v+'</p></details>').join('')+'</section>'+
       '<form class="panel stack" data-work-form><small class="eyebrow">Vaše pozorování</small><h2>Co předáte škole?</h2><label>Vyberte doklad o tom, co žák umí'+select('choice',options.map(o=>o.label),'Vyberte situaci z dílny')+'</label><p data-work-feedback class="notice" role="status" hidden></p>'+
-      (writable?'<label>Co byste příště ověřili?<textarea rows="2" name="note" placeholder="Při příštím pokusu si všimnu…"></textarea></label><button class="primary" type="submit">Uložit ukázku do portfolia</button>':'')+
+      (writable?Volba.field({label:'Co byste příště ověřili?',name:'note',items:Napovedy.packs.ss[3]})+'<button class="primary" type="submit">Uložit ukázku do portfolia</button>':'')+
       '</form></div>'+log(notes);
     return section('Kurzy ČZU','Jak lépe vést žáka na pracovišti?','Vyberte si jednu dovednost pro další profesní rozvoj. K cíli si můžete poznamenat, při jaké příležitosti ho vyzkoušíte.')+
       '<div class="split"><article class="panel stack"><small class="eyebrow">Celoživotní vzdělávání IVP ČZU</small><h2>Instruktor praktického vyučování</h2><p>Podrobnosti, termíny a možnosti přihlášení ověřte přímo u poskytovatele.</p><p><a class="primary" href="'+course+'" target="_blank" rel="noopener">Oficiální nabídka IVP ↗</a></p></article>'+
       '<form class="panel stack" data-work-form><h2>Můj cíl</h2><label>Co chci při vedení žáka vyzkoušet?'+select('choice',goals.map(row=>row[0]),'Vyberte si jeden cíl')+'</label><p data-work-feedback class="notice" role="status" hidden></p>'+
-      (writable?'<label>Kde ho vyzkouším?<input name="note" required maxlength="220" placeholder="Např. při příští instruktáži ve školní dílně"></label><button class="primary" type="submit">Uložit cíl do portfolia</button>':'')+
+      (writable?Volba.field({label:'Kde ho vyzkouším?',name:'note',items:['Při úvodní instruktáži v dílně','Při samostatné práci dvojice','Při rozboru výsledku na pracovišti'],required:true,max:220})+'<button class="primary" type="submit">Uložit cíl do portfolia</button>':'')+
       '</form></div>'+log(notes);
   }
   function bind(root,id,notes,role,save){
@@ -54,7 +54,7 @@ window.WORK = (() => {
       const i=Number(choice.value), note=form.elements.note.value.trim();
       const title=id==='ss'?'Předání výsledku z dílny škole':goals[i][0];
       const reflection=id==='ss'?options[i].label:goals[i][1];
-      const nextStep=note||'Při skutečném náslechu zaznamenám, ve které části úkolu žák pracoval samostatně.';
+      const nextStep=note||'';
       const d=new Date();
       const date=[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
       save([...notes,{id:crypto.randomUUID(),moduleId:'guided',date,title,reflection,nextStep,kind:'practice-tool',competency:id==='ss'?'5.2':'6.1',status:'draft',fields:id==='ss'?{'Typ podkladu':'Modelová situace z dílny','Rozbor důkazu':options[i].feedback}:{'Typ podkladu':'Plán profesního rozvoje','Příležitost k vyzkoušení':note},timeline:[]}]);
