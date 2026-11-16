@@ -126,7 +126,7 @@ function pathPage() {
     return '<details class="chapter-tile" '+(rows.some(r=>r.code===menuOpenCode)?'open':'')+'><summary>'+(image?'<img src="'+html(image)+'" alt="" loading="lazy">':'')+'<span><strong>'+html(heading)+'</strong><small>'+t('Počet dovedností','Počet zručností')+' · '+rows.length+'</small></span></summary>'+content+'</details>';
   }).join('');
   const filters = [['all', t('Vše', 'Všetko')], ['specialty', specialty], ['shared', t('Společný základ', 'Spoločný základ')], ['confirmed', t('Potvrzené', 'Potvrdené')]];
-  return '<div class="menu-page">' + passportIntro(p, model) + lunchInvitation(model) + mySkillShelf(p,model) + portfolioMap(p, model) +
+  return '<div class="menu-page">' + passportIntro(p, model) + bonInvitation() + lunchInvitation(model) + mySkillShelf(p,model) + portfolioMap(p, model) +
     '<div class="menu-controls"><h2>' + t('Můj lístek dovedností', 'Môj lístok zručností') + '</h2><div class="menu-filters" role="group" aria-label="' + t('Zobrazit dovednosti', 'Zobraziť zručnosti') + '">' +
     filters.map(([key, label]) => action('menu-filter', label, key, 'choice', 'aria-pressed="' + (menuFilter === key) + '"')).join('') +
     '</div></div>' + (sections || '<p>' + t('Zatím tu není potvrzená dovednost. První přibude po hodnocení pedagogem.', 'Zatiaľ tu nie je potvrdená zručnosť. Prvá pribudne po hodnotení pedagógom.') + '</p>') +
