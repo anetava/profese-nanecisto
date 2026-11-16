@@ -3,19 +3,19 @@ window.ATools = (() => {
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const scenarios = {
     nacvik: [
-      {title:'Jak začít instruktáž?',phase:'Před výukou',photo:'phase-4.webp',moduleId:'micro',code:'2.1',
+      {title:'Jak začít instruktáž?',phase:'Před výukou',photo:'phase-4.webp?v=atelier-foto1',moduleId:'micro',code:'2.1',
         scene:'Máte sedm minut na ukázku měření posuvným měřítkem. Na stole leží dva téměř stejné vzorky. Co řeknete skupině jako první?',
         choices:[
           ['„Dnes si ukážeme posuvné měřítko.“','Skupina zná téma. Zatím chybí představa, co má každý na konci samostatně udělat.','Řeknu, co mají žáci udělat a podle čeho poznají výsledek.'],
           ['„Na konci každý změří oba vzorky a vysvětlí rozdíl.“','Žáci dostali úkol i způsob, jak poznat výsledek. Krátká otázka teď odhalí, kdo už měřidlo používal.','Před ukázkou zjistím, jak by žáci začali měřit.'],
           ['„Kdo z vás už někdy měřil takový díl?“','Zjistíte výchozí zkušenost části skupiny. Jak zapojíte i ty, kteří se nepřihlásí?','Nechám nejprve každého navrhnout první krok ve dvojici.']]},
-      {title:'Dvě dvojice se zasekly',phase:'Během výuky',photo:'phase-5.webp',moduleId:'continuous',code:'2.4',
+      {title:'Dvě dvojice se zasekly',phase:'Během výuky',photo:'phase-5.webp?v=atelier-foto1',moduleId:'continuous',code:'2.4',
         scene:'Po vaší ukázce dvě dvojice čekají. Ostatní už zapisují výsledek. Jedna žákyně říká: „Nevíme, co odečíst.“ Jak zareagujete?',
         choices:[
           ['Zeptám se, které místo na stupnici je mate.','Konkrétní odpověď ukáže, zda je potíž v odečtu, nebo už v přiložení měřidla. Můžete nabídnout krátkou oporu.','Ověřím porozumění na druhém vzorku bez nápovědy.'],
           ['Ukážu oběma dvojicím celý postup znovu.','Opakování může pomoci. Sledujte, při kterém kroku žáci přestávají pracovat sami.','Po prvním kroku předám měřidlo zpět dvojici.'],
           ['Nechám zkušenějšího spolužáka předvést odečet.','Vrstevnická ukázka zpřístupní další vysvětlení. Oba členové dvojice potřebují vlastní pokus.','Po ukázce si dvojice vystřídá role a zdůvodní výsledek.']]},
-      {title:'Co říct při rozboru?',phase:'Po výuce',photo:'phase-6.webp',moduleId:'guided',code:'4.2',
+      {title:'Co říct při rozboru?',phase:'Po výuce',photo:'phase-6.webp?v=atelier-foto1',moduleId:'guided',code:'4.2',
         scene:'Při náslechu zaznělo „výborně“ u tří různých výrobků. Cvičný učitel se vás po hodině ptá, čeho jste si všimli. Čím zahájíte rozhovor?',
         choices:[
           ['Zmíním, že hodina měla dobrou atmosféru.','Zachytili jste dojem ze třídy. Pro rozbor jeho účinku vyhledejte konkrétní reakci žáka.','Do zápisu připojím jednu přesnou situaci.'],
@@ -23,19 +23,19 @@ window.ATools = (() => {
           ['Zeptám se, jak poznal, co žáci potřebovali slyšet.','Otázka otevírá učitelovo uvažování. Připomeňte okamžik, o kterém chcete mluvit.','K otázce připojím čas a stručný popis situace.']]}
     ],
     adaptio: [
-      {title:'Přicházím do nové školy',phase:'Před nástupem',photo:'phase-1.webp',moduleId:'guided',code:'5.1',
+      {title:'Přicházím do nové školy',phase:'Před nástupem',photo:'phase-1.webp?v=atelier-foto1',moduleId:'guided',code:'5.1',
         scene:'Za pár dní máte první náslech. Co potřebujete s provázejícím učitelem vyjasnit jako první?',
         choices:[
           ['Kde a kdy se potkáme','Zapište si jedno místo setkání a čas. Předejdete hledání učebny během předávání skupiny.','Před návštěvou si potvrdím místo, čas a způsob spojení.'],
           ['Čeho si mám při náslechu všímat','Společná otázka vám pomůže soustředit se na učení konkrétní skupiny.','Domluvím si jednu pozorovací otázku a čas na rozbor.'],
           ['Jaká pravidla platí na pracovišti','Požádejte o seznámení s místním režimem a vybavením před příchodem žáků.','Před hodinou projdu s učitelem pracoviště a jeho pravidla.']]},
-      {title:'Připravuji první vlastní hodinu',phase:'Před výstupem',photo:'phase-4.webp',moduleId:'micro',code:'5.1',
+      {title:'Připravuji první vlastní hodinu',phase:'Před výstupem',photo:'phase-4.webp?v=atelier-foto1',moduleId:'micro',code:'5.1',
         scene:'Máte připravenou krátkou instruktáž. Kterou část chcete s mentorem projít ještě před výukou?',
         choices:[
           ['Co už skupina umí','Vyžádejte si příklad předchozí práce. Lépe zvolíte náročnost prvního samostatného úkolu.','Zjistím, na který zvládnutý postup mohu navázat.'],
           ['Kdy předám činnost žákům','Zkuste si nahlas poslední větu ukázky a úplně první pokyn pro práci ve dvojicích.','Nacvičím přechod od předvedení k samostatné práci.'],
-          ['Na co se má mentor zaměřit','Jedna přesná zakázka usnadní následnou zpětnou vazbu.','Požádám mentora, aby sledoval reakce na první pokyn.']]},
-      {title:'Hodina mě zaskočila',phase:'Po výstupu',photo:'phase-6.webp',moduleId:'continuous',code:'6.1',
+          ['Na co se má mentor zaměřit','Když učitel ví, čeho si má všímat, může vám po hodině popsat konkrétní reakce žáků.','Požádám mentora, aby sledoval reakce na první pokyn.']]},
+      {title:'Hodina mě zaskočila',phase:'Po výstupu',photo:'phase-6.webp?v=atelier-foto1',moduleId:'continuous',code:'6.1',
         scene:'Po výstupu máte pocit, že hodina dopadla jinak, než jste čekali. Co si vezmete do rozhovoru s učitelem?',
         choices:[
           ['Okamžik, kdy se mi podařilo žáka zapojit','Vraťte se k jedné větě nebo ukázce. Pojmenujte reakci žáka, kterou jste skutečně viděli.','S mentorem najdu jeden postup, který zopakuji.'],
@@ -47,6 +47,22 @@ window.ATools = (() => {
     nacvik:['Praxe nanečisto','Vyberte si okamžik z hodiny. Vyzkoušejte vlastní rozhodnutí a podívejte se, co může znamenat pro žáky.'],
     adaptio:['Adaptio','Připravte si rozhovor s provázejícím učitelem. Z konkrétní situace si odneste jeden krok pro příští návštěvu školy.']
   };
+  const mentorQuestions=[
+    ['Kde se před hodinou potkáme a jak se vám ozvu, pokud vás nenajdu?','Kterého okamžiku si mám při náslechu všimnout, abychom ho mohli po hodině rozebrat?','Co potřebuji vědět o pravidlech tohoto pracoviště, než přijdou žáci?'],
+    ['Můžete mi ukázat příklad práce, kterou už tato skupina zvládla samostatně?','Podle čeho poznám, že můžu ukázku ukončit a nechat žáky pracovat?','Můžete při mém prvním pokynu sledovat, kdo začne pracovat a kdo ještě potřebuje pomoc?'],
+    ['Co podle vás pomohlo žákovi v tu chvíli se zapojit?','Jak si během hodiny můžeme dát znamení, když budu potřebovat vaši podporu?','Které reakce žáků si máme příště všimnout, abychom poznali účinek změny?']
+  ];
+  const fullAdaptio='https://adaptio-pruvodce-ucitele.aneta-vadovicova.chatgpt.site/';
+  function adaptioHome(role) {
+    const school=RoleDesk.isSpecial(role);
+    const student=role==='student';
+    const outside='<section class="adapt-school"><small class="eyebrow">Samostatná aplikace</small><h2>Začínám učit ve škole</h2><p>V původním Adaptiu najdete podporu pro začínajícího učitele, uvádějícího učitele i vedení školy. Na úvodní stránce si můžete projít naplněné demo.</p><a href="'+fullAdaptio+'" target="_blank" rel="noopener noreferrer" class="secondary">Otevřít Adaptio pro školy ↗</a><small>Otevře se v nové kartě. Zápisy z Ateliéru se tam nepřenášejí.</small></section>';
+    const practice='<section class="adapt-practice"><small class="eyebrow">Pedagogická praxe IVP</small><h2>'+ (student?'Jdu na praxi':'Provázím studenta na praxi')+'</h2><p>'+ (student?'Vyberte, co vás čeká. Připravíte si otázku pro cvičného učitele i jeden krok do další hodiny.':'Vyberte situaci a prohlédněte si podněty pro rozhovor se studentem.')+'</p><nav class="adapt-situations" aria-label="Situace na praxi">'+scenarios.adaptio.map((s,i)=>'<a href="#adaptio/situace/'+(i+1)+'">'+escape(s.title)+'<span aria-hidden="true">→</span></a>').join('')+'</nav></section>';
+    return '<header class="adapt-hero"><div><small class="eyebrow">Ateliér praxí · začátek v učitelství</small><h1>Adaptio</h1><p>'+ (school?'Jak podpořit učitele při nástupu do školy? Projděte si, jak může s uvádějícím učitelem naplánovat první kroky.':'Chystáte se na pedagogickou praxi, nebo už nastupujete do školy jako učitel?')+'</p></div><img src="phase-6.webp?v=atelier-foto1" alt="Začínající učitelka probírá poznámky z výuky se zkušenější kolegyní."></header><div class="adapt-paths'+(school?' school-only':'')+'">'+(school?outside:practice+outside)+'</div>';
+  }
+  function adaptioCase() {
+    return '<section class="stack" data-atelier-tool="adaptio"><a href="#adaptio" class="text-btn adapt-back">← Zpět na Adaptio</a><div data-working></div></section>';
+  }
   function render(id,notes=[]) {
     const config = scenarios[id];
     if (!config) return '';
@@ -67,7 +83,7 @@ window.ATools = (() => {
       ['Pro rozbor stačí konkrétní okamžik.','Mohu si předem domluvit podporu.','Změnu poznám podle reakce žáka.']
     ]
   };
-  function bind(root,id,notes,save,role='student'){
+  function bind(root,id,notes,save,role='student',initial=null){
     const container=root.querySelector('[data-atelier-tool]'), panel=container?.querySelector('[data-working]');
     if(!panel)return;
     const attempts=new Map(); let active;
@@ -84,15 +100,21 @@ window.ATools = (() => {
       const s=scenario(),st=state(),other=st.choice==='own',hasChoice=st.choice!==null;
       const answer=hasChoice&&!other?s.choices[st.choice]:null;
       const values=st.notes.get(st.choice)||{};
-      const outcome=other?'Představte si první reakci žáka. Podle čeho poznáte, že vaše věta splnila účel?':answer?.[1];
+      const adapt=id==='adaptio';
+      const outcome=other?(adapt?'Co potřebujete od cvičného učitele zjistit, abyste si mohli domluvit další krok?':'Představte si první reakci žáka. Podle čeho poznáte, že vaše věta splnila účel?'):answer?.[1];
+      const prompt=adapt&&!other&&hasChoice?mentorQuestions[active][st.choice]:'';
+      const suggestion=prompt?'<div class="adapt-question"><small>Jak se můžete zeptat</small><p>„'+escape(prompt)+'“</p></div>':'';
       const actions=s.choices.map((c,i)=>'<button class="reaction" type="button" data-choice="'+i+'" aria-pressed="'+(st.choice===i)+'"><span aria-hidden="true">'+String.fromCharCode(65+i)+'</span>'+escape(c[0])+'</button>').join('');
-      panel.innerHTML='<article class="studio-case"><div class="case-situation"><small class="eyebrow">'+escape(s.phase)+'</small><h2 tabindex="-1">'+escape(s.title)+'</h2><p>'+escape(s.scene)+'</p><div class="case-options">'+actions+'<button class="reaction own-reaction" type="button" data-choice="own" aria-pressed="'+other+'"><span aria-hidden="true">+</span>Moje vlastní reakce</button></div></div><div class="case-response">'+
-        (!hasChoice?'<img src="'+s.photo+'" alt=""><p>Vyberte, jak zareagujete. Tady uvidíte, na co vaše volba může mít vliv.</p>':
-        '<div class="case-feedback" role="status"><small>'+(other?'Otázka k vlastní reakci':id==='adaptio'?'Podnět k rozhovoru':'Co může následovat')+'</small><p>'+escape(outcome)+'</p></div>'+
-        (role!=='student'?'':'<form data-save class="case-form">'+(other?'<label>Jak by zněla vaše reakce?<textarea name="words" rows="2" maxlength="400" required>'+escape(st.words)+'</textarea></label>':'')+
+      panel.innerHTML='<article class="studio-case"><div class="case-situation"><small class="eyebrow">'+escape(s.phase)+'</small><'+(adapt?'h1':'h2')+' tabindex="-1">'+escape(s.title)+'</'+(adapt?'h1':'h2')+'><p>'+escape(s.scene)+'</p><div class="case-options">'+actions+'<button class="reaction own-reaction" type="button" data-choice="own" aria-pressed="'+other+'"><span aria-hidden="true">+</span>'+(adapt?'Moje vlastní téma':'Moje vlastní reakce')+'</button></div></div><div class="case-response">'+
+        (!hasChoice?'<img src="'+s.photo+'" alt=""><p>'+(adapt?'Vyberte si téma rozhovoru. Objeví se námět, jak o něm s cvičným učitelem mluvit.':'Vyberte, jak zareagujete. Tady uvidíte, na co vaše volba může mít vliv.')+'</p>':
+        '<div class="case-feedback" role="status"><small>'+(other?'Otázka k vlastní reakci':id==='adaptio'?'Podnět k rozhovoru':'Co může následovat')+'</small><p>'+escape(outcome)+'</p></div>'+suggestion+
+        (role!=='student'?'':'<form data-save class="case-form">'+(other?'<label>'+(adapt?'Co chcete probrat s cvičným učitelem?':'Jak by zněla vaše reakce?')+'<textarea name="words" rows="2" maxlength="400" required>'+escape(st.words)+'</textarea></label>':'')+
         Volba.field({label:'Co si chci zapamatovat (volitelné)',name:'reflection',items:takeaways[id][active],value:values.reflection||'',tiles:true})+
         Volba.field({label:'Můj další krok',name:'next',items:s.choices.map(c=>c[2]),value:values.next||'',required:true,max:1200})+
-        '<div><button class="primary" type="submit">Uložit do portfolia</button></div></form>'))+'</div></article>';
+        (adapt?'<small class="adapt-private">Příprava zůstane ve vašem portfoliu. Pokud ji chcete využít při reflexi pro IVP, rozhodnete se po uložení.</small>':'')+'<div><button class="primary" type="submit">'+(adapt?'Uložit přípravu do mého portfolia':'Uložit do portfolia')+'</button></div></form>'))+'</div></article>';
+    }
+    if(Number.isInteger(initial) && scenarios[id][initial]){
+      active=initial;attempts.set(active,{choice:null,notes:new Map(),words:''});show();
     }
     container.onclick=ev=>{
       const b=ev.target.closest('button');
@@ -117,9 +139,10 @@ window.ATools = (() => {
       if(!next)return;
       const fields={'Typ podkladu':id==='adaptio'?'Příprava na rozhovor':'Modelová situace','Moje volba':choice};
       if(!own)fields['Podnět']=s.choices[st.choice][1];
+      if(id==='adaptio')fields['Otázka nebo téma pro cvičného učitele']=own?words:mentorQuestions[active][st.choice];
       save([...notes,{id:'tool-'+(globalThis.crypto?.randomUUID?.()||Math.random().toString(36).slice(2)),moduleId:s.moduleId,date,title:intro[id][0]+' · '+s.title,activityId:String(active),
         reflection:String(data.get('reflection')||'').trim(),nextStep:next,kind:'practice-tool',tool:id,competency:s.code,status:'draft',fields,timeline:[]}]);
     };
   }
-  return {render,bind};
+  return {render,bind,adaptioHome,adaptioCase};
 })();

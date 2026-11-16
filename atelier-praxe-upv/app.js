@@ -82,11 +82,11 @@
   function route(){return location.hash.slice(1)||'start'}
   function statusName(s){return PRACTICE.statusLabel(s)}
   const catalog=[
-    ['ivp','Praxe IVP','Studium','Chystám se na praxi','Škola, termíny, záznamy a společný rozbor s učitelem.','phase-2.webp'],
-    ['nacvik','Praxe nanečisto','Trénink','Chci si to zkusit před hodinou','Vyberte, jak zareagujete ve třídě. Podívejte se, co vaše rozhodnutí změní.','phase-4.webp'],
-    ['adaptio','Adaptio','Začátek v profesi','Začínám učit','Pojmenujte situaci, se kterou chcete za mentorem. Domluvte si první krok.','phase-6.webp'],
-    ['ss','Praxe SŠ','Odborný výcvik','Propojuji školu a pracoviště','Sledujte jeden úkol očima žáka, učitele a instruktora na pracovišti.','phase-5.webp'],
-    ['kurzy','Kurzy ČZU','Další vzdělávání','Chci se dál vzdělávat','Projděte si kurz pro instruktory praktického vyučování a vyberte si vlastní cíl.','phase-1.webp']
+    ['ivp','Praxe IVP','Studium','Chystám se na praxi','Škola, termíny, záznamy a společný rozbor s učitelem.','phase-2.webp?v=atelier-foto1'],
+    ['nacvik','Praxe nanečisto','Trénink','Chci si to zkusit před hodinou','Vyberte, jak zareagujete ve třídě. Podívejte se, co vaše rozhodnutí změní.','phase-4.webp?v=atelier-foto1'],
+    ['adaptio','Adaptio','Začátek v profesi','Jdu na praxi nebo začínám učit','Připravte si rozhovor s cvičným učitelem nebo otevřete Adaptio pro začátek v zaměstnání.','phase-6.webp?v=atelier-foto1'],
+    ['ss','Praxe SŠ','Odborný výcvik','Propojuji školu a pracoviště','Sledujte jeden úkol očima žáka, učitele a instruktora na pracovišti.','phase-5.webp?v=atelier-foto1'],
+    ['kurzy','Kurzy ČZU','Další vzdělávání','Chci se dál vzdělávat','Projděte si kurz pro instruktory praktického vyučování a vyberte si vlastní cíl.','phase-1.webp?v=atelier-foto1']
   ];
   const toolPages=['nacvik','adaptio','ss','kurzy'];
   const toolLabel=id=>catalog.find(row=>row[0]===id)?.[1]||'';
@@ -111,7 +111,7 @@
   }
   function hub(){
     const personal=RoleDesk.isSpecial(role)?RoleDesk.intro(role):role==='student'?'Připravte se na další hodinu, zkuste si náročnou situaci nebo se vraťte k tomu, co jste viděli při náslechu.':role==='mentor'?'Otevřete si práci studenta, připravte společný rozbor nebo si vyberte situaci pro další setkání.':'Podívejte se, kdo čeká na přijetí na školu a které práce už prošly společným rozborem.';
-    return '<section class="hub-hero"><div class="hub-intro"><small class="eyebrow">Ateliér praxí · IVP ČZU</small><h1>Co právě potřebujete?</h1><p>'+personal+'</p>'+link('ivp',role==='student'?'Moje pedagogická praxe →':role==='mentor'?'Otevřít práce k rozboru →':(RoleDesk.isSpecial(role)?RoleDesk.caption(role):'Otevřít koordinaci praxí →'),'primary')+'</div><figure><img src="hub.webp" alt="Dva studující před cvičnou školou probírají své poznámky."></figure></section>'+
+    return '<section class="hub-hero"><div class="hub-intro"><small class="eyebrow">Ateliér praxí · IVP ČZU</small><h1>Co právě potřebujete?</h1><p>'+personal+'</p>'+link('ivp',role==='student'?'Moje pedagogická praxe →':role==='mentor'?'Otevřít práce k rozboru →':(RoleDesk.isSpecial(role)?RoleDesk.caption(role):'Otevřít koordinaci praxí →'),'primary')+'</div><figure><img src="hub.webp?v=atelier-foto1" alt="Studující různých generací spolu přicházejí do školy."></figure></section>'+
     shortcuts()+'<header class="hub-head"><h2>Vyberte si podle situace</h2></header><div class="hub-grid">'+catalog.map(([id,name,kind,title,desc,photo])=>'<a class="hub-card" href="#'+id+'"><img src="'+photo+'" alt=""><div><small>'+e(name)+'</small><h3>'+e(title)+'</h3><p>'+e(desc)+'</p><span aria-hidden="true">↗</span></div></a>').join('')+'</div>';
   }
   function practiceLinks(){
@@ -125,18 +125,24 @@
     const choices=role==='student'?'':'<label class="student-select">Studující <select id="school-user">'+options.map(p=>'<option value="'+p.id+'" '+(p.id===who?'selected':'')+'>'+e(p.name)+'</option>').join('')+'</select></label>';
     return section('Praxe IVP · '+person().name,role==='student'?'Moje cvičná škola':'Přijetí na cvičnou školu')+choices+'<div id="prep-space">'+PREP.render(current().prep||{},role)+'</div>';
   }
-  function practiceTool(page){
+  function practiceTool(page,scenarioMatch){
     const tool=page==='nacvik'||page==='adaptio'?ATools:WORK;
     const notes=role==='student'?(current().tools?.[page]||[]):[];
-    const ref={nacvik:['Původní trenažér Foxy','https://foxy-studio-campus-pilot.web.app/modules/nanecisto/index.html#prace/upv'],adaptio:['Samostatná aplikace Adaptio','https://adaptio-pruvodce-ucitele.aneta-vadovicova.chatgpt.site'],ss:['Kampus Foxy · Praxe SŠ','https://foxy-studio-campus-pilot.web.app/']}[page];
+    const ref={nacvik:['Původní trenažér Foxy','https://foxy-studio-campus-pilot.web.app/modules/nanecisto/index.html#prace/upv'],ss:['Kampus Foxy · Praxe SŠ','https://foxy-studio-campus-pilot.web.app/']}[page];
     const last=notes.at(-1);
     const recent=last?'<p class="saved-source"><strong>Poslední uložený podklad</strong> '+e(last.title)+' '+link(sourceRef(page,last.id),'Navázat reflexí pro IVP','text-btn')+'</p>':'';
+    if(page==='adaptio'){
+      if(scenarioMatch)return '<div id="tool-space" data-page="adaptio">'+ATools.adaptioCase()+'</div>';
+      const portfolio=role==='student'&&last?'<aside class="adapt-saved"><small class="eyebrow">V mém portfoliu</small><h3>'+e(last.title)+'</h3><p>'+e(last.nextStep)+'</p><div>'+link('portfolio','Otevřít moje portfolio','text-btn')+' '+link(sourceRef(page,last.id),'Připravit reflexi pro IVP','text-btn')+'</div></aside>':'';
+      const older=notes.length>1?'<details class="area-box"><summary>Dřívější přípravy · '+(notes.length-1)+'</summary>'+notes.slice(0,-1).reverse().map(r=>'<p><strong>'+e(r.title)+'</strong><br>'+e(r.nextStep)+' '+link(sourceRef(page,r.id),'Navázat reflexí','text-btn')+'</p>').join('')+'</details>':'';
+      return '<div id="tool-space" data-page="adaptio">'+ATools.adaptioHome(role)+'</div>'+portfolio+older+blockNav(page)+blockExtras(page);
+    }
     return blockNav(page)+'<div id="tool-space" data-page="'+page+'">'+tool.render(page,notes,role)+'</div>'+recent+(ref?'<footer class="tool-source"><a href="'+ref[1]+'" target="_blank" rel="noopener">'+ref[0]+' ↗</a></footer>':'')+blockExtras(page);
   }
   function studentHome(){
     const p=person(),m=mod(p.stage),pending=current().records.find(r=>['draft','returned'].includes(r.status)),target=pending?mod(pending.moduleId):m;
-    return '<section class="hero"><div class="hero-copy"><small>'+e(p.name)+' · Učitelství praktického vyučování</small><h1>'+({group:'Co dnes uvidíte ve výuce?',micro:'Jak povedete první výstup?',continuous:'Co si žáci odnesou z hodiny?'}[p.stage])+'</h1><p>'+({group:'Při náslechu vyberte jeden okamžik. Zapište, co udělal učitel a jak na to žáci reagovali.',micro:'Naplánujte si krátkou instruktáž a určete, podle čeho poznáte, že jí skupina rozumí.',continuous:'Spojte přípravu, vlastní výuku a rozbor s cvičným učitelem do jednoho záznamu.'}[p.stage])+'</p>'+link('praxe/'+target.id+(pending?'/upravit/'+pending.id:''),pending?'Pokračovat v záznamu →':'Otevřít moji praxi →','primary')+'</div><figure class="hero-photo"><img src="praxe.webp" alt="Studentka učitelství a mentorka poslouchají, jak žák vysvětluje sestavení dřevěného spoje."><figcaption>'+e(target.title)+'</figcaption></figure></section>'+
-    practiceLinks()+'<a class="kit-link" href="#druhy-pokus"><strong>Můj druhý pokus →</strong><span>Otevřete svůj poslední záměr a při další návštěvě školy zaznamenejte, co se změnilo.</span></a><div class="section-head"><div><small class="eyebrow">Studijní cesta</small><h2>Od náslechu k vlastní výuce</h2></div></div><div class="grid">'+modules.map((m,i)=>'<article class="tile phase-tile"><img class="phase-photo" src="phase-'+(i+1)+'.webp" alt="" loading="lazy"><span class="tag">'+[2,3,4,5,6,6][i]+'. semestr · Praxe '+String(i+1).padStart(2,'0')+'</span><h3>'+e(m.title)+'</h3><p>'+e(m.short)+'</p>'+link('praxe/'+m.id,'Otevřít praxi →')+'</article>').join('')+'</div>';
+    return '<section class="hero"><div class="hero-copy"><small>'+e(p.name)+' · Učitelství praktického vyučování</small><h1>'+({group:'Co dnes uvidíte ve výuce?',micro:'Jak povedete první výstup?',continuous:'Co si žáci odnesou z hodiny?'}[p.stage])+'</h1><p>'+({group:'Při náslechu vyberte jeden okamžik. Zapište, co udělal učitel a jak na to žáci reagovali.',micro:'Naplánujte si krátkou instruktáž a určete, podle čeho poznáte, že jí skupina rozumí.',continuous:'Spojte přípravu, vlastní výuku a rozbor s cvičným učitelem do jednoho záznamu.'}[p.stage])+'</p>'+link('praxe/'+target.id+(pending?'/upravit/'+pending.id:''),pending?'Pokračovat v záznamu →':'Otevřít moji praxi →','primary')+'</div><figure class="hero-photo"><img src="praxe.webp?v=atelier-foto1" alt="Student učitelství a mentorka poslouchají, jak žák vysvětluje sestavení dřevěného spoje."><figcaption>'+e(target.title)+'</figcaption></figure></section>'+
+    practiceLinks()+'<a class="kit-link" href="#druhy-pokus"><strong>Můj druhý pokus →</strong><span>Otevřete svůj poslední záměr a při další návštěvě školy zaznamenejte, co se změnilo.</span></a><div class="section-head"><div><small class="eyebrow">Studijní cesta</small><h2>Od náslechu k vlastní výuce</h2></div></div><div class="grid">'+modules.map((m,i)=>'<article class="tile phase-tile"><img class="phase-photo" src="phase-'+(i+1)+'.webp?v=atelier-foto1" alt="" loading="lazy"><span class="tag">'+[2,3,4,5,6,6][i]+'. semestr · Praxe '+String(i+1).padStart(2,'0')+'</span><h3>'+e(m.title)+'</h3><p>'+e(m.short)+'</p>'+link('praxe/'+m.id,'Otevřít praxi →')+'</article>').join('')+'</div>';
   }
   function modulePage(m){
     const records=current().records.filter(r=>r.moduleId===m.id);
@@ -185,14 +191,14 @@
   function render(){
     const rawPage=route(), special=RoleDesk.isSpecial(role);
     const scenarioMatch=/^(nacvik|adaptio)\/situace\/([1-3])$/.exec(rawPage);
-    const page=special&&!['start','sources','materialy'].includes(rawPage)?'ivp':scenarioMatch?scenarioMatch[1]:rawPage;
+    const page=special&&!['start','sources','materialy','adaptio'].includes(rawPage)?'ivp':scenarioMatch?scenarioMatch[1]:rawPage;
     const parts=page.split('/'),m=parts[0]==='praxe'?mod(parts[1]):null,refPage=parts[0]==='reflexe';
-    const nav=special?[['ivp',role==='method'?'Přehled metodika':'Přehled školy'],['materialy','Dokumenty'],['sources','Metodiky']]:navItems;
+    const nav=special?[['ivp',role==='method'?'Přehled metodika':'Přehled školy'],['adaptio','Adaptio'],['materialy','Dokumenty'],['sources','Metodiky']]:navItems;
     const active=nav.some(([id])=>id===page)?page:(special||!['materialy','sources'].includes(page)?'ivp':'');
     let content;
     if(page==='materialy') content=BLOCKS.catalog(role);
     else if(page==='sources')content=sources();
-    else if(special)content=RoleDesk.render(role,db,people,modules);
+    else if(special)content=page==='adaptio'?ATools.adaptioHome(role):RoleDesk.render(role,db,people,modules);
     else if(page==='start')content=hub();
     else if(refPage){
       if(parts[1]==='nova' && role==='student' && BLOCKS.get(parts[2])){
@@ -200,7 +206,7 @@
       }else content=IVPREF.queue(refContext(),{focus:parts[1]});
     }
     else if(page==='skola')content=schoolPage();
-    else if(toolPages.includes(page))content=practiceTool(page);
+    else if(toolPages.includes(page))content=practiceTool(page,scenarioMatch);
     else if(m)content=modulePage(m);
     else if(parts[0]==='druhy-pokus'&&role==='student')content=DRUHY.render(visibleRecords(),current().retries,parts[1]);
     else if(page==='skills')content=skills();
@@ -241,10 +247,19 @@
     if(page==='ivp' && role!=='student')STAFFTOOLS.bind(root,{openStudent:(id,dest='portfolio')=>{if(!allowedPeople().some(p=>p.id===id))return;who=id;navigate(dest)},go:navigate});
     if(toolPages.includes(page)){
       const tool=page==='nacvik'||page==='adaptio'?ATools:WORK;
-      const notes=role==='student'?(current().tools?.[page]||[]):[],save=items=>{if(role!=='student')return;current().tools||={};current().tools[page]=items.map(r=>({...r,tool:page}));const ok=persist();if(ok&&scenarioMatch)history.replaceState(null,'','#'+page);render();if(ok)toast('Poznámka je ve vašem portfoliu.')};
+      const notes=role==='student'?(current().tools?.[page]||[]):[],save=items=>{
+        if(role!=='student')return;
+        const before=current().tools;
+        current().tools={...before,[page]:items.map(r=>({...r,tool:page}))};
+        if(!persist()){current().tools=before;return;}
+        if(scenarioMatch)history.replaceState(null,'','#'+page);
+        render();
+        if(page==='adaptio'){const result=root.querySelector('.adapt-saved');if(result){result.tabIndex=-1;result.focus();}}
+        toast(page==='adaptio'?'Příprava je uložená ve vašem portfoliu.':'Poznámka je ve vašem portfoliu.');
+      };
       if(tool===WORK)tool.bind(root.querySelector('#tool-space'),page,notes,role,save);
-      else tool.bind(root.querySelector('#tool-space'),page,notes,save,role);
-      if(scenarioMatch)root.querySelector('[data-scenario="'+(Number(scenarioMatch[2])-1)+'"]')?.click();
+      else tool.bind(root.querySelector('#tool-space'),page,notes,save,role,page==='adaptio'&&scenarioMatch?Number(scenarioMatch[2])-1:null);
+      if(scenarioMatch&&page==='nacvik')root.querySelector('[data-scenario="'+(Number(scenarioMatch[2])-1)+'"]')?.click();
     }
     if(m?.id==='guided'&&role==='student')document.querySelector('#guided-target').onchange=ev=>{current().guidedPlan=ev.target.value;persist();render()};
     if(m){PRACTICE.bind(document.querySelector('#record-space'),m,current().records.filter(r=>r.moduleId===m.id),{role:role,save:items=>{if(parts[2]==='novy')history.replaceState(null,'','#praxe/'+m.id);current().reviewLog=STAFFTOOLS.logChanges(current().records.filter(r=>r.moduleId===m.id),items,current().reviewLog);current().records=[...current().records.filter(r=>r.moduleId!==m.id),...items];const ok=persist();render();if(ok)toast('Záznam je uložený.')},go:navigate})}
