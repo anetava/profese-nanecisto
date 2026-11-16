@@ -66,6 +66,7 @@ function menuSkillBody(c, p, model) {
     '</h3><p>' + html(loc(studySituations[c.code][1])) + '</p></div>';
   const liked=(model.favourites||[]).includes(c.code);
   const actions = action('fav-skill',liked?t('★ V oblíbených','★ V obľúbených'):t('☆ Přidat do oblíbených','☆ Pridať do obľúbených'),c.code,'button','aria-pressed="'+liked+'"')+(assigned ? menuAssignmentAction(s) : '') +
+    (c.code==='K08.3' ? action('lunch-open',lunchTitle(),'','button primary') : '') +
     action('menu-study', studyLabel, c.code, assigned ? 'button' : 'button primary') +
     (latest && !(assigned && s.phase === 6) ? action('menu-proof', t('Moje práce v portfoliu', 'Moja práca v portfóliu'), c.code, 'text-link') : '');
   const ownNote = assigned && ['after','during'].map(k => loc(s.notes[k]?.text).trim()).find(Boolean);
@@ -125,7 +126,7 @@ function pathPage() {
     return '<details class="chapter-tile" '+(rows.some(r=>r.code===menuOpenCode)?'open':'')+'><summary>'+(image?'<img src="'+html(image)+'" alt="" loading="lazy">':'')+'<span><strong>'+html(heading)+'</strong><small>'+t('Počet dovedností','Počet zručností')+' · '+rows.length+'</small></span></summary>'+content+'</details>';
   }).join('');
   const filters = [['all', t('Vše', 'Všetko')], ['specialty', specialty], ['shared', t('Společný základ', 'Spoločný základ')], ['confirmed', t('Potvrzené', 'Potvrdené')]];
-  return '<div class="menu-page">' + passportIntro(p, model) + mySkillShelf(p,model) + portfolioMap(p, model) +
+  return '<div class="menu-page">' + passportIntro(p, model) + lunchInvitation(model) + mySkillShelf(p,model) + portfolioMap(p, model) +
     '<div class="menu-controls"><h2>' + t('Můj lístek dovedností', 'Môj lístok zručností') + '</h2><div class="menu-filters" role="group" aria-label="' + t('Zobrazit dovednosti', 'Zobraziť zručnosti') + '">' +
     filters.map(([key, label]) => action('menu-filter', label, key, 'choice', 'aria-pressed="' + (menuFilter === key) + '"')).join('') +
     '</div></div>' + (sections || '<p>' + t('Zatím tu není potvrzená dovednost. První přibude po hodnocení pedagogem.', 'Zatiaľ tu nie je potvrdená zručnosť. Prvá pribudne po hodnotení pedagógom.') + '</p>') +
