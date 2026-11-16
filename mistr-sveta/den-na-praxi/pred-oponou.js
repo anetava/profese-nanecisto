@@ -52,7 +52,17 @@ function bonInvitation() {
 function bonInput(name,label,type,value,extra='') {
   return '<label><span>'+html(label)+'</span><input data-bon-field="'+name+'" name="'+name+'" type="'+type+'" value="'+html(value)+'" '+extra+'></label>';
 }
-function bonRecord(r) {
+function bonImage(r, edit=false) {
+  if(!r.photo || !/^data:image\/jpeg;base64,/.test(r.photo))return '';
+  const l=bonText, mark=r.point;
+  const img='<img src="'+html(r.photo)+'" alt="'+l('Jídlo při výdeji','Jedlo pri výdaji')+'">';
+  const hasPoint=mark && Number.isFinite(mark.x) && Number.isFinite(mark.y);
+  // SVG coordinates stay registered to the full photograph in print and on narrow phones.
+  const marker=hasPoint?'<svg class="bon-overlay" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><circle cx="'+Math.max(0,Math.min(100,mark.x))+'" cy="'+Math.max(0,Math.min(100,mark.y))+'" r="2.3" fill="none" stroke="white" stroke-width="5" vector-effect="non-scaling-stroke"/><circle cx="'+Math.max(0,Math.min(100,mark.x))+'" cy="'+Math.max(0,Math.min(100,mark.y))+'" r="2.3" fill="none" stroke="#963721" stroke-width="2.3" vector-effect="non-scaling-stroke"/></svg>':'';
+  const body=edit?'<button type="button" class="bon-photo" data-bon-point="'+html(r.id)+'" aria-label="'+l('Označit detail na fotografii','Označiť detail na fotografii')+'">'+img+marker+'</button>':'<div class="bon-photo">'+img+marker+'</div>';
+  return '<figure class="bon-evidence">'+body+(edit?'':r.photoNote?'<figcaption>'+html(r.photoNote)+'</figcaption>':'')+'</figure>';
+}
+function bonRecord(r, showImage=true) {
   const d=r.order,c=bonMath(d);
   if(!c||c.margin===undefined)return '';
   const tr=bonText;
@@ -64,7 +74,7 @@ function bonRecord(r) {
     display+='<p><b>'+tr('Zapsaný výdej','Zapísaný výdaj')+' '+bonTime(real.serve)+'</b> · '+
       (diff===0?tr('podle plánu','podľa plánu'):Math.abs(diff)+' min '+(diff>0?tr('později','neskôr'):tr('dříve','skôr')))+' · '+bonSummary(real)+'</p>';
   }
-  return display;
+  return display+(showImage?bonImage(r):'');
 }
 function bonRecords(model){return model.serviceBon?.records || [];}
 function bonSource(d){return d.mode==='own'?bonText('Zápis ze směny','Zápis zo zmeny'):bonText('Modelová objednávka','Modelová objednávka');}
@@ -76,7 +86,7 @@ function bonPortfolio(model){
 }
 function bonExport(model){
   return bonRecords(model).map(r=>({id:r.id,day:r.day,source:r.order.mode,order:{...r.order},dish:bonFood(r.order),
-    planned:bonMath(r.order),actualPrepMinutes:r.actual===''?null:Number(r.actual),
+    planned:bonMath(r.order),photo:r.photo||null,photoNote:r.photoNote||'',point:r.point||null,actualPrepMinutes:r.actual===''?null:Number(r.actual),
     observed:r.actual===''?null:bonMath(r.order,r.actual)}));
 }
 function bonPreview(d){
@@ -95,11 +105,17 @@ function bonPage(){
     '<header><span class="ticket-kicker">'+html(person().name)+' · '+l('Obsluha','Obsluha')+'</span><h1>'+bonTitle()+'</h1></header>';
   if(r){
     const hasActual = r.actual!=='' && r.actual!==undefined;
-    return page+'<section class="bon-card"><div class="bon-ey">'+bonSource(d)+'</div><h2>'+l('Uložený pracovní bon','Uložený pracovný bon')+'</h2>'+bonRecord(r)+
+    return page+'<section class="bon-card"><div class="bon-ey">'+bonSource(d)+'</div><h2>'+l('Uložený pracovní bon','Uložený pracovný bon')+'</h2>'+bonRecord(r,false)+
       '<p class="bon-muted">'+l('Bon najdete také v deníku a portfoliu tohoto profilu.','Bon nájdete aj v denníku a portfóliu tohto profilu.')+'</p></section>'+
       '<section class="bon-card"><h2>'+l('Po výdeji','Po výdaji')+'</h2><label><span>'+l('Kolik minut skutečně uplynulo od objednání do výdeje?','Koľko minút skutočne uplynulo od objednania do výdaja?')+
       '</span><input id="bon-actual" type="number" inputmode="numeric" min="0" max="1440" step="1" value="'+(hasActual?html(r.actual):'')+'"></label>'+
       action('bon-actual',l('Uložit skutečný výdej','Uložiť skutočný výdaj'),r.id,'ticket-primary')+'</section>'+
+      '<section class="bon-card"><h2>'+l('Kontrola talíře při výdeji','Kontrola taniera pri výdaji')+'</h2>'+
+      '<label>'+l('Vyfoťte vydané jídlo nebo vyberte jeho fotografii (JPEG, PNG, WebP).','Odfoťte vydané jedlo alebo vyberte jeho fotografiu (JPEG, PNG, WebP).')+
+      '<input type="file" accept="image/jpeg,image/png,image/webp" data-bon-photo="'+html(r.id)+'"></label>'+
+      (r.photo?'<p>'+l('Klepněte na místo, které jste při výdeji zkontrolovali.','Ťuknite na miesto, ktoré ste pri výdaji skontrolovali.')+'</p>'+bonImage(r,true)+
+      '<label>'+l('Co jste zkontrolovali?','Čo ste skontrolovali?')+'<textarea rows="2" maxlength="200" data-bon-caption="'+html(r.id)+'">'+html(r.photoNote||'')+'</textarea></label>'+
+      action('bon-remove',l('Odebrat fotografii','Odobrať fotografiu'),r.id,'button'):'')+'</section>'+
       '<div class="bon-nav">'+(bonReviewId?action('bon-resume',l('Zpět na pracovní bon','Späť na pracovný bon'),'','button'):action('bon-new',l('Nový bon','Nový bon'),'','button'))+
       goBtn('portfolio',l('Otevřít moje portfolio','Otvoriť moje portfólio'),'button')+'</div></article>';
   }
@@ -168,6 +184,10 @@ function handleBon(cmd,val){
       g.drafts ||= {};g.drafts[d.mode]={...d};g.draft=g.drafts[val]||bonDefault(val);delete g.drafts[val];return;
     }
     if(cmd==='bon-new'){guard(d.saved);g.draft=bonDefault(d.mode);return;}
+    if(cmd==='bon-remove'){
+      const r=g.records.find(row=>row.id===val);guard(r && val===(bonReviewId||d.saved));
+      delete r.photo;delete r.point;delete r.photoNote;return;
+    }
     if(cmd==='bon-actual'){
       const r=g.records.find(row=>row.id===val);guard(r && val===(bonReviewId||d.saved));
       r.actual=document.querySelector('#bon-actual').value;return;
@@ -182,3 +202,45 @@ function handleBon(cmd,val){
   render(cmd==='bon-save'||cmd==='bon-new');
   if(cmd==='bon-actual')tell(l('Skutečný výdej je zapsaný.','Skutočný výdaj je zapísaný.'));
 }
+
+function bonEditRecord(id, edit, p=person()) {
+  guard(view==='bon' && role==='student' && p.id===person().id);
+  mutate(m=>{
+    const group=m.serviceBon;
+    guard(group && id===(bonReviewId||group.draft.saved));
+    const record=group.records.find(r=>r.id===id);guard(record);edit(record);
+  },p);
+}
+async function bonAttachPhoto(el){
+  const file=el.files[0];if(!file)return;
+  const l=bonText;
+  if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>12*1024*1024){
+    tell(l('Vyberte JPEG, PNG nebo WebP do 12 MB.','Vyberte JPEG, PNG alebo WebP do 12 MB.'));el.value='';return;
+  }
+  const profile=person(),id=el.dataset.bonPhoto;
+  guard(!busy&&!audioSession);busy=true;
+  try {
+    const im=new Image();im.src=await blobURL(file);await im.decode();
+    const ratio=Math.min(1,920/Math.max(im.width,im.height));
+    const canvas=document.createElement('canvas');
+    canvas.width=Math.max(1,Math.round(im.width*ratio));canvas.height=Math.max(1,Math.round(im.height*ratio));
+    const ctx=canvas.getContext('2d');ctx.fillStyle='white';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(im,0,0,canvas.width,canvas.height);
+    const photo=canvas.toDataURL('image/jpeg',.73);
+    bonEditRecord(id,r=>{r.photo=photo;delete r.point;delete r.photoNote;},profile);
+    tell(l('Fotografie je uložená u bonu.','Fotografia je uložená pri bone.'));
+  } finally {busy=false;render();}
+}
+document.addEventListener('change',e=>{
+  if(e.target.matches('[data-bon-photo]'))bonAttachPhoto(e.target).catch(problem);
+});
+document.addEventListener('input',e=>{
+  const el=e.target;if(!el.matches('[data-bon-caption]'))return;
+  try{bonEditRecord(el.dataset.bonCaption,r=>r.photoNote=el.value.slice(0,200));}catch(error){problem(error);}
+});
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('[data-bon-point]');if(!btn)return;
+  const rect=btn.querySelector('img').getBoundingClientRect();if(!rect.width||!rect.height)return;
+  const coord=v=>Math.max(0,Math.min(100,Math.round(1000*v)/10));
+  const point=e.detail===0?{x:50,y:50}:{x:coord((e.clientX-rect.left)/rect.width),y:coord((e.clientY-rect.top)/rect.height)};
+  try{bonEditRecord(btn.dataset.bonPoint,r=>r.point=point);render();tell(bonText('Detail je označený.','Detail je označený.'));}catch(error){problem(error);}
+});
