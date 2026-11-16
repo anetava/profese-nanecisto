@@ -3,13 +3,13 @@ window.ATools = (() => {
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const scenarios = {
     nacvik: [
-      {title:'Jak začít instruktáž?',phase:'Před výukou',photo:'phase-4.webp?v=atelier-foto1',moduleId:'micro',code:'2.1',
+      {title:'Jak začít instruktáž?',phase:'Před výukou',photo:'phase-4.webp?v=zaci-ss1',moduleId:'micro',code:'2.1',
         scene:'Máte sedm minut na ukázku měření posuvným měřítkem. Na stole leží dva téměř stejné vzorky. Co řeknete skupině jako první?',
         choices:[
           ['„Dnes si ukážeme posuvné měřítko.“','Skupina zná téma. Zatím chybí představa, co má každý na konci samostatně udělat.','Řeknu, co mají žáci udělat a podle čeho poznají výsledek.'],
           ['„Na konci každý změří oba vzorky a vysvětlí rozdíl.“','Žáci dostali úkol i způsob, jak poznat výsledek. Krátká otázka teď odhalí, kdo už měřidlo používal.','Před ukázkou zjistím, jak by žáci začali měřit.'],
           ['„Kdo z vás už někdy měřil takový díl?“','Zjistíte výchozí zkušenost části skupiny. Jak zapojíte i ty, kteří se nepřihlásí?','Nechám nejprve každého navrhnout první krok ve dvojici.']]},
-      {title:'Dvě dvojice se zasekly',phase:'Během výuky',photo:'phase-5.webp?v=atelier-foto1',moduleId:'continuous',code:'2.4',
+      {title:'Dvě dvojice se zasekly',phase:'Během výuky',photo:'phase-5.webp?v=zaci-ss1',moduleId:'continuous',code:'2.4',
         scene:'Po vaší ukázce dvě dvojice čekají. Ostatní už zapisují výsledek. Jedna žákyně říká: „Nevíme, co odečíst.“ Jak zareagujete?',
         choices:[
           ['Zeptám se, které místo na stupnici je mate.','Konkrétní odpověď ukáže, zda je potíž v odečtu, nebo už v přiložení měřidla. Můžete nabídnout krátkou oporu.','Ověřím porozumění na druhém vzorku bez nápovědy.'],
@@ -29,7 +29,7 @@ window.ATools = (() => {
           ['Kde a kdy se potkáme','Zapište si jedno místo setkání a čas. Předejdete hledání učebny během předávání skupiny.','Před návštěvou si potvrdím místo, čas a způsob spojení.'],
           ['Čeho si mám při náslechu všímat','Společná otázka vám pomůže soustředit se na učení konkrétní skupiny.','Domluvím si jednu pozorovací otázku a čas na rozbor.'],
           ['Jaká pravidla platí na pracovišti','Požádejte o seznámení s místním režimem a vybavením před příchodem žáků.','Před hodinou projdu s učitelem pracoviště a jeho pravidla.']]},
-      {title:'Připravuji první vlastní hodinu',phase:'Před výstupem',photo:'phase-4.webp?v=atelier-foto1',moduleId:'micro',code:'5.1',
+      {title:'Připravuji první vlastní hodinu',phase:'Před výstupem',photo:'phase-4.webp?v=zaci-ss1',moduleId:'micro',code:'5.1',
         scene:'Máte připravenou krátkou instruktáž. Kterou část chcete s mentorem projít ještě před výukou?',
         choices:[
           ['Co už skupina umí','Vyžádejte si příklad předchozí práce. Lépe zvolíte náročnost prvního samostatného úkolu.','Zjistím, na který zvládnutý postup mohu navázat.'],

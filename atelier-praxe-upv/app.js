@@ -83,9 +83,9 @@
   function statusName(s){return PRACTICE.statusLabel(s)}
   const catalog=[
     ['ivp','Praxe IVP','Studium','Chystám se na praxi','Škola, termíny, záznamy a společný rozbor s učitelem.','phase-2.webp?v=atelier-foto1'],
-    ['nacvik','Praxe nanečisto','Trénink','Chci si to zkusit před hodinou','Vyberte, jak zareagujete ve třídě. Podívejte se, co vaše rozhodnutí změní.','phase-4.webp?v=atelier-foto1'],
+    ['nacvik','Praxe nanečisto','Trénink','Chci si to zkusit před hodinou','Vyberte, jak zareagujete ve třídě. Podívejte se, co vaše rozhodnutí změní.','phase-4.webp?v=zaci-ss1'],
     ['adaptio','Adaptio','Začátek v profesi','Jdu na praxi nebo začínám učit','Připravte si rozhovor s cvičným učitelem nebo otevřete Adaptio pro začátek v zaměstnání.','phase-6.webp?v=atelier-foto1'],
-    ['ss','Praxe SŠ','Odborný výcvik','Propojuji školu a pracoviště','Sledujte jeden úkol očima žáka, učitele a instruktora na pracovišti.','phase-5.webp?v=atelier-foto1'],
+    ['ss','Praxe SŠ','Odborný výcvik','Propojuji školu a pracoviště','Sledujte jeden úkol očima žáka, učitele a instruktora na pracovišti.','phase-5.webp?v=zaci-ss1'],
     ['kurzy','Kurzy ČZU','Další vzdělávání','Chci se dál vzdělávat','Projděte si kurz pro instruktory praktického vyučování a vyberte si vlastní cíl.','phase-1.webp?v=atelier-foto1']
   ];
   const toolPages=['nacvik','adaptio','ss','kurzy'];
@@ -142,7 +142,7 @@
   function studentHome(){
     const p=person(),m=mod(p.stage),pending=current().records.find(r=>['draft','returned'].includes(r.status)),target=pending?mod(pending.moduleId):m;
     return '<section class="hero"><div class="hero-copy"><small>'+e(p.name)+' · Učitelství praktického vyučování</small><h1>'+({group:'Co dnes uvidíte ve výuce?',micro:'Jak povedete první výstup?',continuous:'Co si žáci odnesou z hodiny?'}[p.stage])+'</h1><p>'+({group:'Při náslechu vyberte jeden okamžik. Zapište, co udělal učitel a jak na to žáci reagovali.',micro:'Naplánujte si krátkou instruktáž a určete, podle čeho poznáte, že jí skupina rozumí.',continuous:'Spojte přípravu, vlastní výuku a rozbor s cvičným učitelem do jednoho záznamu.'}[p.stage])+'</p>'+link('praxe/'+target.id+(pending?'/upravit/'+pending.id:''),pending?'Pokračovat v záznamu →':'Otevřít moji praxi →','primary')+'</div><figure class="hero-photo"><img src="praxe.webp?v=atelier-foto1" alt="Student učitelství a mentorka poslouchají, jak žák vysvětluje sestavení dřevěného spoje."><figcaption>'+e(target.title)+'</figcaption></figure></section>'+
-    practiceLinks()+'<a class="kit-link" href="#druhy-pokus"><strong>Můj druhý pokus →</strong><span>Otevřete svůj poslední záměr a při další návštěvě školy zaznamenejte, co se změnilo.</span></a><div class="section-head"><div><small class="eyebrow">Studijní cesta</small><h2>Od náslechu k vlastní výuce</h2></div></div><div class="grid">'+modules.map((m,i)=>'<article class="tile phase-tile"><img class="phase-photo" src="phase-'+(i+1)+'.webp?v=atelier-foto1" alt="" loading="lazy"><span class="tag">'+[2,3,4,5,6,6][i]+'. semestr · Praxe '+String(i+1).padStart(2,'0')+'</span><h3>'+e(m.title)+'</h3><p>'+e(m.short)+'</p>'+link('praxe/'+m.id,'Otevřít praxi →')+'</article>').join('')+'</div>';
+    practiceLinks()+'<a class="kit-link" href="#druhy-pokus"><strong>Můj druhý pokus →</strong><span>Otevřete svůj poslední záměr a při další návštěvě školy zaznamenejte, co se změnilo.</span></a><div class="section-head"><div><small class="eyebrow">Studijní cesta</small><h2>Od náslechu k vlastní výuce</h2></div></div><div class="grid">'+modules.map((m,i)=>'<article class="tile phase-tile"><img class="phase-photo" src="phase-'+(i+1)+'.webp?v=zaci-ss1" alt="" loading="lazy"><span class="tag">'+[2,3,4,5,6,6][i]+'. semestr · Praxe '+String(i+1).padStart(2,'0')+'</span><h3>'+e(m.title)+'</h3><p>'+e(m.short)+'</p>'+link('praxe/'+m.id,'Otevřít praxi →')+'</article>').join('')+'</div>';
   }
   function modulePage(m){
     const records=current().records.filter(r=>r.moduleId===m.id);
