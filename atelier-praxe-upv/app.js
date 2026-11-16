@@ -28,6 +28,7 @@
       if (!Array.isArray(entry.records)) entry.records=defaults[p.id].records;
       if (!Array.isArray(entry.events)) entry.events=defaults[p.id].events;
       if (!Array.isArray(entry.reflections)) entry.reflections=IVPREF.seed(p.id);
+      if (!Array.isArray(entry.retries)) entry.retries=[];
       if (!entry.prep) entry.prep=RoleDesk.initialPrep(p.id);
     }
     return out;
@@ -55,12 +56,12 @@
   });
   const person=()=>people.find(p=>p.id===who);
   const current=()=>db[who];
-  const recordRoute=r=>r.isBlockReflection?IVPREF.route(r.blockId,r.id):r.tool?r.tool:'praxe/'+r.moduleId+'/zaznam/'+encodeURIComponent(r.id);
+  const recordRoute=r=>r.isRetry?'druhy-pokus/'+encodeURIComponent(r.id):r.isBlockReflection?IVPREF.route(r.blockId,r.id):r.tool?r.tool:'praxe/'+r.moduleId+'/zaznam/'+encodeURIComponent(r.id);
   const navItems=[['start','Všechny moduly'],['ivp','Praxe IVP'],['nacvik','Praxe nanečisto'],['adaptio','Adaptio'],['ss','Praxe SŠ'],['kurzy','Kurzy ČZU']];
   const names={student:'Student',mentor:'Cvičný učitel',ivp:'Přehled IVP'};
   const section=(ey,title,desc='')=>'<header class="subhead"><small class="eyebrow">'+e(ey)+'</small><h1>'+e(title)+'</h1>'+(desc?'<p>'+e(desc)+'</p>':'')+'</header>';
   const visibleRecords=()=>allowedPeople().some(p=>p.id===who)
-    ? [...current().records,...(role==='student'?Object.values(current().tools||{}).flat():[]),...IVPREF.portfolio(refContext())].filter(r=>role==='student'||r.status!=='draft')
+    ? [...current().records,...(role==='student'?[...Object.values(current().tools||{}).flat(),...current().retries]:[]),...IVPREF.portfolio(refContext())].filter(r=>role==='student'||r.status!=='draft')
     : [];
   const fmt=d=>d?new Intl.DateTimeFormat('cs-CZ',{day:'numeric',month:'long',year:'numeric'}).format(new Date(d+'T12:00:00')):'';
   function toast(msg){const node=document.getElementById('toast');node.textContent=msg;clearTimeout(toast.t);toast.t=setTimeout(()=>node.textContent='',3500);}
@@ -135,7 +136,7 @@
   function studentHome(){
     const p=person(),m=mod(p.stage),pending=current().records.find(r=>['draft','returned'].includes(r.status)),target=pending?mod(pending.moduleId):m;
     return '<section class="hero"><div class="hero-copy"><small>'+e(p.name)+' · Učitelství praktického vyučování</small><h1>'+({group:'Co dnes uvidíte ve výuce?',micro:'Jak povedete první výstup?',continuous:'Co si žáci odnesou z hodiny?'}[p.stage])+'</h1><p>'+({group:'Při náslechu vyberte jeden okamžik. Zapište, co udělal učitel a jak na to žáci reagovali.',micro:'Naplánujte si krátkou instruktáž a určete, podle čeho poznáte, že jí skupina rozumí.',continuous:'Spojte přípravu, vlastní výuku a rozbor s cvičným učitelem do jednoho záznamu.'}[p.stage])+'</p>'+link('praxe/'+target.id+(pending?'/upravit/'+pending.id:''),pending?'Pokračovat v záznamu →':'Otevřít moji praxi →','primary')+'</div><figure class="hero-photo"><img src="praxe.webp" alt="Studentka učitelství a mentorka poslouchají, jak žák vysvětluje sestavení dřevěného spoje."><figcaption>'+e(target.title)+'</figcaption></figure></section>'+
-    practiceLinks()+'<div class="section-head"><div><small class="eyebrow">Studijní cesta</small><h2>Od náslechu k vlastní výuce</h2></div></div><div class="grid">'+modules.map((m,i)=>'<article class="tile phase-tile"><img class="phase-photo" src="phase-'+(i+1)+'.webp" alt="" loading="lazy"><span class="tag">'+[2,3,4,5,6,6][i]+'. semestr · Praxe '+String(i+1).padStart(2,'0')+'</span><h3>'+e(m.title)+'</h3><p>'+e(m.short)+'</p>'+link('praxe/'+m.id,'Otevřít praxi →')+'</article>').join('')+'</div>';
+    practiceLinks()+'<a class="kit-link" href="#druhy-pokus"><strong>Můj druhý pokus →</strong><span>Otevřete svůj poslední záměr a při další návštěvě školy zaznamenejte, co se změnilo.</span></a><div class="section-head"><div><small class="eyebrow">Studijní cesta</small><h2>Od náslechu k vlastní výuce</h2></div></div><div class="grid">'+modules.map((m,i)=>'<article class="tile phase-tile"><img class="phase-photo" src="phase-'+(i+1)+'.webp" alt="" loading="lazy"><span class="tag">'+[2,3,4,5,6,6][i]+'. semestr · Praxe '+String(i+1).padStart(2,'0')+'</span><h3>'+e(m.title)+'</h3><p>'+e(m.short)+'</p>'+link('praxe/'+m.id,'Otevřít praxi →')+'</article>').join('')+'</div>';
   }
   function modulePage(m){
     const records=current().records.filter(r=>r.moduleId===m.id);
@@ -151,16 +152,16 @@
     '<div class="stack">'+AREAS.map(area=>{const count=area.skills.filter(s=>records.some(r=>r.competency===s.code && r.status==='confirmed')).length;return '<details class="area-box"><summary>'+e(area.name)+' <small class="skill-count">'+count+' / '+area.skills.length+' po rozboru</small></summary>'+area.skills.map(s=>{const list=records.filter(r=>r.competency===s.code);return '<details><summary>'+e(s.code)+' · '+e(s.name)+' <small>('+list.length+')</small></summary><p>'+e(s.example||s.hint||'Vyberte při zápisu konkrétní situaci, na které tuto dovednost ukážete.')+'</p>'+(list.length?list.map(r=>'<p>'+e(r.title||'Rozepsaný záznam')+' · '+e(mod(r.moduleId)?.title)+' · '+e(statusName(r.status))+' '+link(recordRoute(r),'Otevřít doklad','text-btn')+'</p>').join(''):'<p>Zatím bez dokladu. Kompetenci přiřadíte v záznamu z praxe.</p>')+'</details>'}).join('')+'</details>'}).join('')+'</div><p class="muted">'+link('sources','Původ kompetencí a metodik','text-btn')+'</p>';
   }
   function exportBody(r){
-    return '<article class="record-export"><h3>'+e(r.title||'Rozepsaný záznam')+'</h3><p>'+e(r.isBlockReflection?BLOCKS.get(r.blockId)?.title:r.tool?toolLabel(r.tool):mod(r.moduleId)?.title)+' · '+e(r.isBlockReflection?'Reflexe pro IVP':r.tool?'Vlastní poznámka':statusName(r.status))+'</p>'+PRACTICE.recordBody(r)+'</article>';
+    return '<article class="record-export"><h3>'+e(r.title||'Rozepsaný záznam')+'</h3><p>'+e(r.isBlockReflection?BLOCKS.get(r.blockId)?.title:r.tool?toolLabel(r.tool):mod(r.moduleId)?.title)+' · '+e(r.isRetry?'Osobní druhý pokus':r.isBlockReflection?'Reflexe pro IVP':r.tool?'Vlastní poznámka':statusName(r.status))+'</p>'+PRACTICE.recordBody(r)+'</article>';
   }
   function listRecords(){
     const normalize=s=>String(s).toLocaleLowerCase('cs').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
     const out=visibleRecords().filter(r=>(statusFilter==='all'||statusFilter===r.status)&&normalize([r.title,r.date,fmt(r.date),mod(r.moduleId)?.title,r.isBlockReflection?BLOCKS.get(r.blockId)?.title:'',r.competency,r.reflection,r.feedback,r.nextStep,...Object.values(r.fields||{}),...Object.values(r.review||{}),...(r.timeline||[]).flatMap(Object.values)].join(' ')).includes(normalize(search))).sort((a,b)=>b.date.localeCompare(a.date));
-    return out.length?out.map(r=>'<details class="area-box entry"><summary>'+e(r.title||'Rozepsaný záznam')+' · '+e(fmt(r.date))+'</summary>'+exportBody(r)+link(recordRoute(r),r.isBlockReflection?'Otevřít reflexi a odpověď':r.tool?'Otevřít modul':'Otevřít v praxi')+(role==='student'&&!r.isBlockReflection?' '+link(sourceRef(r.tool||r.moduleId,r.id),'Navázat reflexí pro IVP','text-btn'):'')+'</details>').join(''):'<p class="empty">Žádný odpovídající záznam.</p>';
+    return out.length?out.map(r=>'<details class="area-box entry"><summary>'+e(r.title||'Rozepsaný záznam')+' · '+e(fmt(r.date))+'</summary>'+exportBody(r)+link(recordRoute(r),r.isRetry?'Otevřít srovnání':r.isBlockReflection?'Otevřít reflexi a odpověď':r.tool?'Otevřít modul':'Otevřít v praxi')+(role==='student'&&!r.isBlockReflection&&!r.isRetry?' '+link(sourceRef(r.tool||r.moduleId,r.id),'Navázat reflexí pro IVP','text-btn'):'')+(role==='student'&&r.nextStep&&!r.isRetry?' '+link('druhy-pokus/'+encodeURIComponent(r.id),'Porovnat s druhým pokusem','text-btn'):'')+'</details>').join(''):'<p class="empty">Žádný odpovídající záznam.</p>';
   }
   function portfolio(){
     return section(person().name,role==='student'?'Moje portfolio':'Portfolio studujícího','Na jednom místě najdete záznamy, vlastní reflexe a zpětnou vazbu z praxí.')+
-    '<div class="panel portfolio-toolbar"><label>Hledat v portfoliu<input type="search" id="filter-q" placeholder="Téma, datum, kompetence…" value="'+e(search)+'"></label><label>Stav<select id="filter-st">'+[['all','Všechny záznamy'],...['draft','submitted','returned','confirmed'].map(s=>[s,statusName(s)])].map(([v,l])=>'<option value="'+v+'"'+(v===statusFilter?' selected':'')+'>'+e(l)+'</option>').join('')+'</select></label><button class="primary" data-print>Vytisknout celé portfolio / PDF</button></div><div class="records-list" id="results">'+listRecords()+'</div>';
+    (role==='student'?'<div class="export-actions"><button class="secondary" data-exp-kind="full">Stáhnout celé portfolio</button><button class="secondary" data-exp-kind="brief">Stáhnout stručné portfolio · 4 strany</button></div>':'')+'<div class="panel portfolio-toolbar"><label>Hledat v portfoliu<input type="search" id="filter-q" placeholder="Téma, datum, kompetence…" value="'+e(search)+'"></label><label>Stav<select id="filter-st">'+[['all','Všechny záznamy'],...['draft','submitted','returned','confirmed'].map(s=>[s,statusName(s)])].map(([v,l])=>'<option value="'+v+'"'+(v===statusFilter?' selected':'')+'>'+e(l)+'</option>').join('')+'</select></label><button class="primary" data-print>Vytisknout celé portfolio / PDF</button></div><div class="records-list" id="results">'+listRecords()+'</div>';
   }
   function staff(){
     const pending=allowedPeople().flatMap(p=>db[p.id].records.filter(r=>r.status==='submitted').map(r=>({p,r})));
@@ -201,9 +202,11 @@
     else if(page==='skola')content=schoolPage();
     else if(toolPages.includes(page))content=practiceTool(page);
     else if(m)content=modulePage(m);
+    else if(parts[0]==='druhy-pokus'&&role==='student')content=DRUHY.render(visibleRecords(),current().retries,parts[1]);
     else if(page==='skills')content=skills();
+    else if(parts[0]==='nahled'&&role==='student'&&['full','brief'].includes(parts[1]))content=link('materialy','← Dokumenty k praxím','text-btn')+section(person().name,parts[1]==='brief'?'Moje stručné portfolio':'Moje celé portfolio')+'<div class="export-actions"><button class="primary" data-exp-kind="'+parts[1]+'">Stáhnout HTML ↓</button><button class="secondary" data-preview-print>Tisk / uložit PDF</button></div><iframe class="doc-preview" title="Náhled mého portfolia" id="export-preview"></iframe>';
     else if(page==='portfolio')content=portfolio();
-    else if(page==='plan'&&role==='student')content='<div id="plan-space">'+PLAN.render(current().events,modules)+'</div>';
+    else if(page==='plan'&&role==='student')content='<div id="plan-space">'+PLAN.render(current().events,modules)+'</div><div class="calendar-take"><button type="button" class="secondary" data-calendar '+(current().events.length?'':'disabled')+'>Stáhnout termíny do mého kalendáře ↓</button><small>Soubor ICS pro kalendář v telefonu, Outlook nebo Google Kalendář.</small></div>';
     else content=role==='student'?studentHome():staff()+practiceLinks()+STAFFTOOLS.render(db,allowedPeople(),role);
     root.innerHTML='<header class="site-head"><a class="brand" href="#start"><img src="mark.svg" alt=""><span>Ateliér praxí<small>Učitelství praktického vyučování</small></span></a><nav aria-label="Hlavní nabídka">'+nav.map(([id,name])=>'<a href="#'+id+'" '+(active===id?'aria-current="page"':'')+'>'+e(name)+'</a>').join('')+'</nav><label class="account"><span class="sr">Ukázkový profil</span><select id="mode">'+[...people.map(p=>['student/'+p.id,p.name+' · student']),...roleProfiles].map(([id,l])=>'<option value="'+id+'" '+(id===(role==='student'?'student/'+who:role)?'selected':'')+'>'+l+'</option>').join('')+'</select></label></header><main id="content" tabindex="-1">'+content+'</main><footer class="appfoot"><span>Ukázkové role · údaje se ukládají v tomto prohlížeči</span><a href="#materialy">Dokumenty ke stažení</a><a href="#sources">Metodiky a zdroje</a></footer>';
     document.querySelector('#mode').onchange=ev=>{useProfile(ev.target.value);const url=new URL(location.href);url.searchParams.delete('profil');history.replaceState(null,'',url);try{sessionStorage.setItem(KEY+'.view',ev.target.value)}catch{} search='';statusFilter='all';navigate(role==='student'?'start':'ivp')};
@@ -212,6 +215,16 @@
       if(!panel)return;
       panel.scrollIntoView({block:'start'});panel.querySelector('a')?.focus({preventScroll:true});
     });
+    root.querySelector('[data-worksheets]')?.addEventListener('click',ev=>{ev.preventDefault();const h=root.querySelector('#pracovni-listy');h?.focus({preventScroll:true});h?.scrollIntoView({block:'start'});});
+    if(role==='student'){
+      const preview=root.querySelector('#export-preview');
+      if(preview){preview.srcdoc=ATDOC.exportHtml(parts[1],person(),visibleRecords());root.querySelector('[data-preview-print]').onclick=()=>preview.contentWindow.print();}
+      root.querySelectorAll('[data-exp-kind]').forEach(btn=>btn.onclick=()=>{ATDOC.download(btn.dataset.expKind,person(),visibleRecords());toast('Portfolio je připravené ke stažení.');});
+      root.querySelector('[data-calendar]')?.addEventListener('click',()=>ATDOC.calendar(person(),current().events));
+      if(parts[0]==='druhy-pokus')DRUHY.bind(root,visibleRecords(),row=>{
+        const before=current().retries;current().retries=[...before,row];if(persist()){toast('Druhý pokus je ve vašem portfoliu.');return true;}current().retries=before;return false;
+      },navigate);
+    }
     if(special){
       RoleDesk.bind(root,role,db,people,(id,next)=>{
         const before=db[id].prep;db[id].prep=next;
@@ -248,7 +261,7 @@
     if(page==='portfolio'){
       document.querySelector('#filter-q').oninput=ev=>{search=ev.target.value;document.querySelector('#results').innerHTML=listRecords()};
       document.querySelector('#filter-st').onchange=ev=>{statusFilter=ev.target.value;document.querySelector('#results').innerHTML=listRecords()};
-      document.querySelector('[data-print]').onclick=()=>{root.querySelector('.print-all')?.remove();root.insertAdjacentHTML('beforeend','<div class="print-all"><h1>Portfolio pedagogických praxí</h1><p>'+e(person().name)+' · Učitelství praktického vyučování · ukázkový profil</p>'+visibleRecords().map(exportBody).join('')+'</div>');document.body.classList.add('print-mode');window.print()};
+      document.querySelector('[data-print]').onclick=()=>{root.querySelector('#print-portfolio')?.remove();const frame=document.createElement('iframe');frame.id='print-portfolio';frame.title='Portfolio pro tisk';frame.className='print-frame';frame.onload=()=>frame.contentWindow.print();frame.srcdoc=ATDOC.exportHtml('full',person(),visibleRecords());root.append(frame);};
     }
     IVPREF.bind(root,refContext());
     RFX.bind(root,{db,role,who,people:allowedPeople(),validBlock:id=>Boolean(BLOCKS.get(id)),persist,render,toast});

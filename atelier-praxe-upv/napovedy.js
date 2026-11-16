@@ -46,7 +46,7 @@ window.Napovedy=(()=>{
     kurzy:[
       [],['Chci upravit zadání praktického úkolu.','Chci lépe rozpoznat, kdy mohu ustoupit do pozadí.','Procvičuji zpětnou vazbu po výkonu.'],
       ['Samostatný první krok ukáže, jak žák porozuměl.','Další pokus pomůže posoudit přínos zpětné vazby.','Užitečným dokladem bude vysvětlení žákovy volby.'],
-      ['Vyzkouším to při příští instruktáži.','Při další praxi si vyžádám pozorování kolegy.','V rozboru porovnám dva pokusy.']]
+      ['Vyzkouším to při příští instruktáži.','Při další praxi si zachytím první samostatný krok žáka.','V rozboru porovnám dva pokusy.']]
   };
   const fields={
     'Škola, obor a třída':['Modelová SOŠ technická · strojírenství','Modelové učiliště řemesel · truhlářství','Modelová SOŠ služeb · gastronomie'],
@@ -133,7 +133,7 @@ window.Napovedy=(()=>{
   };
   const phaseReflection={
     ivp:[['V dílně žáci použili výkres z odborného předmětu.','Učitel při výkladu ukázal výrobek z dílny.'],['Viděl/a jsem práci s výkresem. Nevím ještě, jak si žák poradil poprvé.','Slyšel/a jsem zadání, vlastní pokus žáka jsem nezachytil/a.'],packs.ivp[3]],
-    group:[['Učitel předal měřidlo a žák ukázal první krok.','Po zadání se dvojice zeptala, kterou hodnotu má odečíst.','Učitel požádal o porovnání a žáci si vyměnili výrobky.'],['Spolužák zachytil doplňující otázku žáka. První pokyn zřejmě nestačil.','Všimli jsme si různé míry pomoci u dvou dvojic.','Tento okamžik jsme společně ještě nerozebrali.'],['Zachytím první krok žáka po předání pomůcky.','Porovnám reakci dvou dvojic na stejný pokyn.','Zaměřím se na to, co žák po zpětné vazbě změní.']],
+    group:[['Učitel předal měřidlo a žák ukázal první krok.','Po zadání se dvojice zeptala, kterou hodnotu má odečíst.','Učitel požádal o porovnání a žáci si vyměnili výrobky.'],['Po prvním pokynu se žák zeptal, odkud začít.','U jedné dvojice učitel zopakoval ukázku, druhá začala sama.','Z jednoho pozorování zatím závěr neudělám.'],['Zachytím první krok žáka po předání pomůcky.','Porovnám reakci dvou dvojic na stejný pokyn.','Zaměřím se na to, co žák po zpětné vazbě změní.']],
     guided:[['Po otázce žáka učitel znovu předvedl přiložení měřidla.','Když dvojice váhala, učitel rozdělil zadání na dva kroky.'],['Žák opravil přiložení a další vzorek změřil samostatně.','Další pokus jsem neviděl/a. Výklad ověřím s učitelem.'],packs.guided[3]],
     micro:[['Po pokynu „Porovnejte oba vzorky“ dvojice hledaly rozdíl.','Po větě „Začněte měřit“ se skupina zeptala, který vzorek použít.'],['Dvě různé první reakce ukázaly, že první krok nebyl jasný.','Pozorovatel si všiml, že účastníci začali samostatně až po ukázce.'],['Určím první vzorek a budu sledovat, zda dvojice začne bez dalšího dotazu.','Předám pomůcku dřív a porovnám první samostatný pokus.']],
     continuous:[packs.continuous[1],['Učitel i já jsme zaznamenali samostatnou opravu žáka.','Žák zdůvodnil volbu. Zpětnou vazbu učitele potřebuji doplnit.'],['Příště ukážu kritérium předem a porovnám dvě žákovské práce.','Zkrátím ukázku a zaznamenám první samostatné rozhodnutí.']],

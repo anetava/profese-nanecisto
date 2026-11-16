@@ -16,9 +16,9 @@ window.BLOCKS = (() => {
         'Co byste si potřebovali ověřit při další návštěvě nebo v diskusi na IVP?'
       ]),
     block('group', phaseTitles.get('group'), 'Pozorovací arch ke skupinovému náslechu',
-      'U jedné situace zaznamenejte vedle sebe jednání učitele a reakci žáků. Po hodině porovnejte své postřehy s dalšími pozorovateli.', [
+      'U jedné situace zaznamenejte vedle sebe jednání učitele a reakci žáků. Po hodině si označte detail, který váš závěr podporuje.', [
         'Kterou otázku, instrukci nebo ukázku učitel použil a co žáci udělali bezprostředně poté?',
-        'Čeho si všimli ostatní pozorovatelé a jak to ovlivnilo vaše vysvětlení situace?',
+        'Který detail v chování žáků podporuje vaše vysvětlení situace? Co si ještě potřebujete ověřit?',
         'Na jakou reakci žáků se při příštím náslechu zaměříte?'
       ]),
     block('guided', phaseTitles.get('guided'), 'Pozorovací arch k řízenému náslechu',
@@ -28,9 +28,9 @@ window.BLOCKS = (() => {
         'Co konkrétně budete příště sledovat, abyste svůj závěr ověřili?'
       ]),
     block('micro', phaseTitles.get('micro'), 'Příprava a rozbor mikrovýstupu',
-      'Připravte krátkou instruktáž. Po mikrovýstupu se vraťte k prvnímu samostatnému pokusu a k postřehu pozorovatele.', [
+      'Připravte krátkou instruktáž. Po mikrovýstupu se vraťte k prvnímu samostatnému pokusu a k jedné věci, kterou chcete změnit.', [
         'Jak zněl váš první pokyn a co podle něj účastníci skutečně udělali?',
-        'Která reakce nebo připomínka skupiny vám ukázala, co ve vaší ukázce pomohlo a co potřebuje úpravu?',
+        'Která reakce po vašem pokynu vám ukázala, co ve vaší ukázce pomohlo a co potřebuje úpravu?',
         'Jak změníte jednu větu nebo jeden krok ukázky? Podle čeho poznáte rozdíl?'
       ]),
     block('continuous', phaseTitles.get('continuous'), 'Výukový výstup a rozbor hodiny',
@@ -139,7 +139,7 @@ window.BLOCKS = (() => {
   const activity = (id, choice) => get(id)?.activities.find(item => item.id === String(choice));
   const prompts = (id, choice) => activity(id, choice)?.prompts || get(id)?.prompts || [];
   function sheetLink(item) {
-    return '<a class="primary" href="' + item.file + '" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', DOCX">Stáhnout pracovní list <small>· DOCX</small></a>';
+    return '<a class="primary" href="' + item.file + '" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', DOCX">Upravit ve Wordu <small>· DOCX</small></a><a class="secondary" href="materialy/' + item.id + '.pdf" download>Vzít do školy · PDF ↓</a>';
   }
   function sourceLinks(item) {
     const files = window.IVP_DOCUMENTS?.[item.id] || [];
@@ -156,7 +156,7 @@ window.BLOCKS = (() => {
     return '<section class="panel stack" aria-label="Dokumenty k bloku"><div><small class="eyebrow">Dokumenty k bloku</small>' +
       '<h2>' + escape(item.sheet) + '</h2><p>' + escape(item.detail) + '</p></div><div class="actions">' + sheetLink(item) +
       '<a class="secondary" href="#materialy">Všechny dokumenty</a></div><small class="muted">Pracovní list Ateliéru praxí pro vlastní poznámky a reflexi.</small>' +
-      sourceLinks(item) + '</section>';
+      (['continuous','reflection'].includes(id)?'<a href="#materialy">Závěrečný protokol a portfolia →</a>':'') + sourceLinks(item) + '</section>';
   }
   function indexItem(item, role) {
     const student = role === 'student';
@@ -170,9 +170,9 @@ window.BLOCKS = (() => {
       '<div class="actions">' + sheetLink(item) + practiceLink + '</div>' + sourceLinks(item) + reflect + '</article>';
   }
   function catalog(role = 'student') {
-    const section = (title, subset) => '<section class="stack"><h2>' + title + '</h2><div class="grid">' +
+    const section = (title, subset) => '<section class="stack"><h2'+(title==='Studijní praxe IVP'?' id="pracovni-listy" tabindex="-1"':'')+'>' + title + '</h2><div class="grid study-downloads">' +
       subset.map(item => indexItem(item, role)).join('') + '</div></section>';
-    return '<header class="subhead"><h1>Dokumenty k praxím</h1><p>Pracovní list svého bloku si můžete stáhnout před cestou do školy a doplnit ve Wordu. U studijních praxí najdete také zdrojové podklady.</p></header><div class="stack">' +
+    return ATDOC.library(role)+'<div class="stack">' +
       section('Studijní praxe IVP', list.filter(item => phaseTitles.has(item.id))) +
       section('Nácvik a profesní rozvoj', list.filter(item => !phaseTitles.has(item.id))) + '</div>';
   }
