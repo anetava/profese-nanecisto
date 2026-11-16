@@ -3,3 +3,23 @@
 .file-grid,.retry-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:22px 0 34px}.file-card,.retry-before{border:1px solid #adc9c2;background:#e0f4ed;border-radius:13px;padding:clamp(20px,2vw,32px);color:#153533}.file-card:nth-child(2){background:#f8e2e9;border-color:#e3b9ca}.file-card:nth-child(3){background:#f0ece2;border-color:#d9cebb}.file-card:nth-child(4){background:#e0ebed;border-color:#bbced1}.file-card h3,.retry-before h2{font-size:clamp(1.5rem,2.4vw,2.05rem);line-height:1.12;margin:.25em 0}.file-card>small{font-size:.8rem;font-weight:750;color:#395454}.file-card p{margin:10px 0 18px;max-width:51ch}.file-card>div,.export-actions,.calendar-take{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.export-actions,.calendar-take{margin:14px 0}.calendar-take{border-left:4px solid #4ba695;padding:8px 14px}.calendar-take small{color:#385b56}.kit-link{display:block;border:1px solid #9bc8bf;border-left:6px solid #2f9c87;background:#e0f4ed;border-radius:9px;color:#193b37;text-decoration:none;padding:17px 22px;margin:16px 0}.kit-link strong{display:block;font-size:1.2rem}.kit-link span{display:block;margin-top:4px}.retry-before{align-self:start;border-top:6px solid #2c8779}.retry-before label{margin:16px 0}.retry-before blockquote{font-size:1.2rem;line-height:1.4;border-left:3px solid #2c8779;margin:22px 0 0;padding:0 0 0 14px;white-space:pre-line}.retry-grid form{border-top:6px solid #d57899;align-self:start}.retry-grid form h2{margin:3px 0}.retry-intro{max-width:64ch}.retry-before select,.retry-grid>*{min-width:0;max-width:100%}.study-downloads{grid-template-columns:repeat(2,minmax(0,1fr))}.study-downloads .panel{border-top:3px solid #82c4b6}.study-downloads .panel:nth-child(even){border-top-color:#d88aa4}
 @media(max-width:700px){.document-hero,.retry-grid,.file-grid,.study-downloads{grid-template-columns:1fr}.document-hero img{height:145px;min-height:0}.file-grid,.retry-grid{gap:10px}.file-card{padding:19px}.file-card .primary,.file-card .secondary{white-space:normal}.retry-grid label{min-width:0}}
 .file-card .sample-link{margin:12px 0 0;font-size:.84rem}.doc-preview{width:100%;height:82vh;border:1px solid #9cbeb7;border-radius:10px;background:#eaf1ee}.print-frame{position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;border:0;left:0;bottom:0}
+
+@media screen {
+.study-downloads{gap:clamp(14px,2vw,26px);align-items:start}
+.study-downloads>.panel{--paper-card:#abe5d9;--cover:#124943;display:grid;align-content:start;gap:14px;background:var(--paper-card);color:#142f2d;border:0;border-radius:15px;padding:0 0 18px;overflow:hidden}
+.study-downloads>.panel:nth-child(even){--paper-card:#f4c5d5;--cover:#60223d}
+.study-downloads>.panel:nth-child(4n+3){--paper-card:#bfe8e7;--cover:#163b43}
+.study-downloads>.panel:nth-child(4n){--paper-card:#f7d5cd;--cover:#662e37}
+.study-downloads .sheet-cover{display:grid;grid-template-columns:35% 1fr;background:var(--cover);color:white;min-height:150px}
+.study-downloads .sheet-cover img{display:block;width:100%;height:100%;min-height:150px;object-fit:cover;object-position:50% 38%}
+.study-downloads .sheet-cover>div{align-self:center;padding:clamp(16px,2vw,28px)}
+.study-downloads .sheet-cover h3{color:white;font-size:clamp(1.35rem,2.35vw,2.15rem);letter-spacing:-.035em;line-height:1.08;margin:0}
+.study-downloads .sheet-cover p{color:white;margin:.6em 0 0;line-height:1.35}
+.study-downloads>.panel>:not(.sheet-cover){margin:0 18px}
+.study-downloads .actions{display:flex;align-items:stretch;gap:7px;flex-wrap:wrap}
+.study-downloads .actions a{padding:10px 12px;min-height:42px;font-weight:700;border-radius:7px}
+.study-downloads .actions .primary{background:#152e2b;color:white}.study-downloads .actions .secondary{background:transparent;color:#182c29;border:1px solid currentColor}
+.study-downloads details.area-box{background:#ffffff70;color:#162e2b;border:0;border-radius:7px;padding:10px 14px}
+.study-downloads>.panel>p a{color:#183530;font-weight:700;text-underline-offset:4px}
+@media(max-width:440px){.study-downloads .sheet-cover{grid-template-columns:32% 1fr;min-height:122px}.study-downloads .sheet-cover img{min-height:122px}.study-downloads>.panel>:not(.sheet-cover){margin-inline:12px}}
+}

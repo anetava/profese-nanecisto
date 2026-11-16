@@ -166,7 +166,8 @@ window.BLOCKS = (() => {
       '<details class="area-box"><summary>Začít reflexi k vybrané situaci</summary><ul>' +
         item.activities.map(choice => '<li>' + reflectionLink(item, choice, choice.title) + '</li>').join('') + '</ul></details>' :
       '<p>' + reflectionLink(item, null, 'Napsat reflexi k tomuto bloku') + '</p>';
-    return '<article class="panel stack"><div><h3>' + escape(item.title) + '</h3><p>' + escape(item.sheet) + '</p></div>' +
+    const photo={ivp:1,group:2,guided:3,micro:4,continuous:5,reflection:6,nacvik:4,adaptio:6,ss:5,kurzy:1}[item.id]||1;
+    return '<article class="panel stack"><div class="sheet-cover"><img loading="lazy" src="phase-'+photo+'.webp?v=barevne" alt=""><div><h3>' + escape(item.title) + '</h3><p>' + escape(item.sheet) + '</p></div></div>' +
       '<div class="actions">' + sheetLink(item) + practiceLink + '</div>' + sourceLinks(item) + reflect + '</article>';
   }
   function catalog(role = 'student') {
