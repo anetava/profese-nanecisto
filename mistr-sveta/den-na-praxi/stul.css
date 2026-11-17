@@ -45,7 +45,7 @@ body:has(.table-page) .bar { background:#abdcd5; border-color:#203e3b; }
 .table-mode::before { content:""; display:block; width:17px; height:17px; border:1.5px solid #abdad5; }
 .table-mode[aria-pressed=true]::before { content:"✓"; display:grid; place-content:center; background:var(--ticket-mint); color:var(--ticket-ink); font-size:.85rem; }
 .table-send>small { display:block; color:#d5e9df; font-size:.88rem; line-height:1.35; max-width:36ch; margin-bottom:12px; }
-.table-page .ticket-primary,.table-invite .ticket-primary,.table-page .ticket-secondary,.table-plan .ticket-secondary { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:10px 17px; text-align:center; border:1.5px solid var(--ticket-ink); border-radius:2px; background:var(--ticket-ink); color:white; font-weight:710; line-height:1.2; }
+.table-page .ticket-primary,.table-invite .ticket-primary,.table-page .ticket-secondary,.table-plan .ticket-secondary { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:10px 17px; text-align:center; border:1.5px solid var(--ticket-ink); border-radius:0; background:var(--ticket-ink); color:white; font-weight:710; line-height:1.2; }
 .table-page .table-send .ticket-primary { background:var(--ticket-pink); color:var(--ticket-ink); border-color:var(--ticket-pink); }
 .table-page .ticket-secondary,.table-plan .ticket-secondary { background:transparent; color:var(--ticket-ink); }
 .table-page .ticket-primary:disabled { background:#c6c4bc; border-color:#c6c4bc; color:#444f4b; cursor:default; }

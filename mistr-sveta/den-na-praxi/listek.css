@@ -74,7 +74,7 @@ body:has(.menu-page, .menu-practice) .nav-link[aria-current="page"] {
   color: var(--paper);
   background: transparent;
   border: 1px solid #879391;
-  border-radius: 4px;
+  border-radius:0;
 }
 .menu-filters .choice[aria-pressed="true"] {
   color: var(--ink);
@@ -371,7 +371,7 @@ fieldset.menu-pick { min-width: 0; padding: 0; margin: 18px 0; border: 0; overfl
   padding: 9px 13px;
   background: var(--paper);
   border: 1px solid var(--edge);
-  border-radius: 4px;
+  border-radius:0;
   cursor: pointer;
   font-weight: 560;
 }

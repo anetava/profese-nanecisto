@@ -1,21 +1,21 @@
 .lunch-invite,.lunch-page,.lunch-records{color:#30221d}
-.lunch-invite{display:grid;grid-template-columns:minmax(110px,210px) 1fr;gap:clamp(14px,3vw,32px);align-items:center;margin:20px 0;padding:clamp(12px,2vw,22px);background:#fff6eb;border:1px solid #d8c6b6;border-radius:16px}
-.lunch-invite img{width:100%;height:145px;object-fit:cover;border-radius:10px}
+.lunch-invite{display:grid;grid-template-columns:minmax(110px,210px) 1fr;gap:clamp(14px,3vw,32px);align-items:center;margin:20px 0;padding:clamp(12px,2vw,22px);background:#fff6eb;border:1px solid #d8c6b6;border-radius:0}
+.lunch-invite img{width:100%;height:145px;object-fit:cover;border-radius:0}
 .lunch-invite h2,.lunch-records h2{margin:4px 0}.lunch-invite p{margin:6px 0 12px}
 .lunch-page{max-width:760px;margin:0 auto 36px}.lunch-page header{margin:9px 0 14px}
 .lunch-page header p,.lunch-page header h1{margin:0}.lunch-page h1{font-size:clamp(25px,4.4vw,45px);line-height:1.1;letter-spacing:-.035em}
 .lunch-page .peer-line{margin:5px 0}.lunch-stage{font-size:.9rem;margin:0 0 7px;color:#5e4b40}
-.lunch-frame{display:grid;grid-template-columns:44% 1fr;align-items:stretch;border-radius:14px;overflow:hidden;background:#fff7ee;border:1px solid #d8c6b6}
+.lunch-frame{display:grid;grid-template-columns:44% 1fr;align-items:stretch;border-radius:0;overflow:hidden;background:#fff7ee;border:1px solid #d8c6b6}
 .lunch-frame img{width:100%;height:100%;max-height:260px;min-height:150px;object-fit:cover;object-position:50% 42%}
 .lunch-dialog{padding:clamp(12px,2vw,22px);align-self:center}.lunch-dialog>span{font-size:.8rem;font-weight:700;color:#6c4436}
 .lunch-dialog blockquote{font:500 clamp(18px,2.2vw,25px)/1.3 Georgia,serif;margin:4px 0 6px}
 .lunch-quiet{display:inline-flex;align-items:center;min-height:44px;border:0;background:transparent;color:#694233;text-decoration:underline;text-underline-offset:3px;font:inherit;font-weight:600;padding:4px 8px;cursor:pointer}
 .lunch-slip{margin:10px 0;padding:9px 12px;border-left:3px solid #805445;background:#f7f0e5}
 .lunch-decision{display:grid;gap:8px;margin-top:17px}.lunch-decision h2,.lunch-review h2{font-size:clamp(18px,2.3vw,24px);line-height:1.25;margin:0 0 3px}
-.lunch-choice{width:100%;min-height:48px;white-space:normal;text-align:left;font:inherit;font-weight:600;line-height:1.45;border:1px solid #b8a99d;border-radius:9px;color:#30221d;background:#fffdf8;padding:12px 16px;cursor:pointer}.lunch-choice:hover,.lunch-choice:focus-visible{border-color:#783b27;background:#fff1df}
+.lunch-choice{width:100%;min-height:48px;white-space:normal;text-align:left;font:inherit;font-weight:600;line-height:1.45;border:1px solid #b8a99d;border-radius:0;color:#30221d;background:#fffdf8;padding:12px 16px;cursor:pointer}.lunch-choice:hover,.lunch-choice:focus-visible{border-color:#783b27;background:#fff1df}
 .lunch-page .ticket-primary,.lunch-invite .ticket-primary{min-height:44px;white-space:normal}
-.lunch-review,.lunch-records{margin:20px 0;padding:16px;background:#fff9f1;border:1px solid #dccbc2;border-radius:12px}
-.lunch-review label{display:block;font-weight:650}.lunch-review textarea{box-sizing:border-box;display:block;width:100%;margin:7px 0 12px;font:inherit;padding:10px;border:1px solid #b7a79b;border-radius:7px;background:#fff}
+.lunch-review,.lunch-records{margin:20px 0;padding:16px;background:#fff9f1;border:1px solid #dccbc2;border-radius:0}
+.lunch-review label{display:block;font-weight:650}.lunch-review textarea{box-sizing:border-box;display:block;width:100%;margin:7px 0 12px;font:inherit;padding:10px;border:1px solid #b7a79b;border-radius:0;background:#fff}
 .lunch-review li,.lunch-records li{margin:.38em 0}.lunch-records summary{cursor:pointer;padding:8px 0;font-weight:650}
 @media(max-width:560px){.lunch-invite{grid-template-columns:1fr;gap:8px}.lunch-invite img{height:126px}.lunch-frame{grid-template-columns:1fr}.lunch-frame img{height:clamp(134px,38vw,205px);min-height:0;object-position:50% 35%}.lunch-dialog{padding:10px 13px 2px}.lunch-page .back{min-height:36px}.lunch-page .lunch-choice{font-size:16px}.lunch-page header{margin:4px 0 9px}}
 @media print{.lunch-records{break-inside:avoid;background:transparent}}
