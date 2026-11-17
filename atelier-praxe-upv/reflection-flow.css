@@ -3,7 +3,7 @@
     margin-block: clamp(20px,4vw,46px);
     padding: clamp(16px,3vw,33px);
     border: 1px solid #c7d8d1;
-    border-radius: 12px;
+    border-radius:0;
     background: #f3faf6;
     color: #172924;
   }
@@ -11,7 +11,7 @@
   .rf-heading h2 { margin:4px 0 0; }
   .rf-heading .eyebrow { margin:0; }
   .rf-section>p { max-width:67ch; margin-block:12px 18px; }
-  .rf-new, .rf-row, .rf-section [data-rfx-inbox] { margin-top:10px; padding:0; border:1px solid #b6cfc5; border-radius:8px; background:#fff; }
+  .rf-new, .rf-row, .rf-section [data-rfx-inbox] { margin-top:10px; padding:0; border:1px solid #b6cfc5; border-radius:0; background:#fff; }
   .rf-new { background:#d9eee5; }
   .rf-new>summary,.rf-row>summary { padding:14px 16px; cursor:pointer; }
   .rf-row>summary { display:flex; align-items:center; justify-content:space-between; gap:12px; }
