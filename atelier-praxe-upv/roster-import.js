@@ -35,6 +35,43 @@ if(!people.length)throw Error('Tabulka neobsahuje studenty.');
 const schools=rows(getSheet('Skoly')).filter(r=>r.row>=6&&r.values.some(Boolean)).map(({values:r})=>({name:r[0]||'',email:r[1]||'',phone:r[2]||'',contact:r[3]||''}));
 return {people,placements,schools};
 }
-function render(){return '<header class="local-hero"><small>KOORDINÁTOR IVP · 2026/2027</small><h1>Vaši studenti. Jejich praxe.</h1><p>Vyberte vyplněnou tabulku z počítače. Seznam se načte jen do tohoto prohlížeče. Nikomu nic neodešleme.</p></header><section class="local-card"><h2>Načíst studenty z tabulky</h2><label class="primary">Vybrat soubor Excel<input id="ivp-xlsx" type="file" accept=".xlsx" style="display:block;margin-top:16px"></label><div id="import-result" role="status" aria-live="polite"></div><p>Stejná tabulka, kterou jste vyplnila: listy Studenti a praxe a Skoly.</p></section>';}
-function bind(root){const input=root.querySelector('#ivp-xlsx');if(!input)return;input.onchange=async()=>{const result=root.querySelector('#import-result');try{result.textContent='Kontroluji tabulku…';const data=parse(await unzip(input.files[0]));result.innerHTML='<h3>'+data.people.length+' studentů · '+data.placements.length+' praxí</h3><p>Chybějící termíny: '+data.placements.filter(r=>!r.term).length+'. Školy k doplnění: '+data.placements.filter(r=>!r.school).length+'.</p><button id="confirm-import" class="primary">Zobrazit studenty v Ateliéru →</button>';result.querySelector('button').onclick=()=>{try{localStorage.setItem(key,JSON.stringify(data));sessionStorage.setItem('atelier-praxe-upv.live.v1.view','ivp');location.hash='umisteni';location.reload()}catch{result.textContent='Prohlížeč nepovolil uložení. Povolte místní úložiště.'}};}catch(err){result.textContent=err.message;}};}
-return {render,bind,parse,unzip};})();
+const stateKey='atelier-praxe-upv.live.v1';
+function validateBackup(obj){
+const fail=()=>{throw Error('Soubor není úplná koordinátorská záloha Ateliéru pro rok 2026/2027.');};
+const record=v=>v!==null&&typeof v==='object'&&!Array.isArray(v);
+const text=v=>typeof v==='string';
+const identifier=v=>text(v)&&v.length>0&&v.length<=500&&!/[\s/\\<>"']/.test(v)&&!['__proto__','prototype','constructor'].includes(v);
+const modules=new Set(['ivp','group','guided','micro','continuous','reflection','nacvik','adaptio','ss','kurzy']);
+function safe(v,depth=0){if(depth>40)fail();if(v&&typeof v==='object'){for(const k of Object.keys(v)){if(['__proto__','prototype','constructor'].includes(k))fail();safe(v[k],depth+1);}}}
+safe(obj);
+if(!record(obj)||obj.format!=='atelier-private-v2'||obj.scope!=='coordinator'||obj.year!=='2026/2027'||!record(obj.roster)||!record(obj.db))fail();
+const roster=obj.roster;if(!Array.isArray(roster.people)||!roster.people.length||roster.people.length>10000||!Array.isArray(roster.placements)||!Array.isArray(roster.schools))fail();
+const ids=new Set(),mails=new Set();
+for(const p of roster.people){if(!record(p)||!identifier(p.id)||ids.has(p.id)||!text(p.name)||!p.name.trim()||!text(p.email)||!p.email.includes('@')||!text(p.group)||!modules.has(p.stage))fail();const mail=p.email.trim().toLowerCase();if(mails.has(mail))fail();ids.add(p.id);mails.add(mail);}
+if(Object.keys(obj.db).length!==ids.size||Object.keys(obj.db).some(id=>!ids.has(id)))fail();
+const placementIds=new Set();
+for(const p of roster.placements){if(!record(p)||!identifier(p.id)||placementIds.has(p.id)||!ids.has(p.studentId)||!modules.has(p.moduleId)||!['kind','school','term','status'].every(k=>text(p[k])))fail();placementIds.add(p.id);}
+for(const s of roster.schools){if(!record(s)||!['name','email','phone','contact'].every(k=>text(s[k])))fail();}
+for(const id of ids){const entry=obj.db[id];if(!record(entry)||!['records','events','reflections','placements'].every(k=>Array.isArray(entry[k])))fail();
+ for(const key of ['records','events','reflections','placements']){const seen=new Set();for(const row of entry[key]){if(!record(row)||!identifier(row.id)||seen.has(row.id))fail();seen.add(row.id);if(key==='reflections'){if(!modules.has(row.blockId)||!['draft','submitted','returned','confirmed'].includes(row.status))fail();}else if(!modules.has(row.moduleId))fail();}}
+ for(const p of entry.placements){if(p.studentId!==id||!placementIds.has(p.id)||!['kind','school','term','status'].every(k=>text(p[k])))fail();const source=roster.placements.find(r=>r.id===p.id);if(source.studentId!==id||source.moduleId!==p.moduleId)fail();}
+ const expected=roster.placements.filter(r=>r.studentId===id);if(expected.length!==entry.placements.length||expected.some(p=>!entry.placements.some(r=>r.id===p.id)))fail();
+}
+return obj;
+}
+function restoreBackup(input){
+const obj=validateBackup(input),oldRoster=localStorage.getItem(key),oldState=localStorage.getItem(stateKey);
+const nextRoster=JSON.stringify(obj.roster),nextState=JSON.stringify(obj.db);
+try{localStorage.setItem(key,nextRoster);localStorage.setItem(stateKey,nextState);if(localStorage.getItem(key)!==nextRoster||localStorage.getItem(stateKey)!==nextState)throw Error();}
+catch{let restored=true;for(const [name,value] of [[key,oldRoster],[stateKey,oldState]]){try{if(value===null)localStorage.removeItem(name);else localStorage.setItem(name,value);}catch{restored=false;}}
+ throw Error(restored?'Obnova se nepodařila uložit. Původní údaje zůstaly zachované.':'Úložiště odmítlo obnovu i návrat původních údajů. Soubor zálohy zachovejte a obnovte jej v jiném prohlížeči.');}
+return obj;
+}
+function bindRestore(root){
+const input=root.querySelector('#ivp-restore-backup');if(!input)return;
+input.onchange=async()=>{const result=root.querySelector('#restore-result');try{if(!input.files?.[0])return;if(input.files[0].size>12000000)throw Error('Použijte zálohu do 12 MB.');result.textContent='Kontroluji zálohu…';const obj=validateBackup(JSON.parse(await input.files[0].text()));result.innerHTML='<h3>'+obj.roster.people.length+' studentů · '+obj.roster.placements.length+' praxí</h3><p>Obnoví se také záznamy, reflexe, termíny a vaše úpravy. Případné místní pracovní údaje se nahradí.</p><button class="primary">Obnovit úplnou zálohu →</button>';result.querySelector('button').onclick=()=>{try{restoreBackup(obj);try{sessionStorage.setItem(stateKey+'.view','ivp');}catch{}location.hash='umisteni';location.reload();}catch(err){result.textContent=err.message;}};}catch(err){result.textContent=err instanceof SyntaxError?'Soubor není platná záloha JSON.':err.message;}};
+}
+
+function render(){return '<header class="local-hero"><small>KOORDINÁTOR IVP · 2026/2027</small><h1>Vaši studenti. Jejich praxe.</h1><p>Vyberte vyplněnou tabulku z počítače. Seznam se načte jen do tohoto prohlížeče. Nikomu nic neodešleme.</p></header><section class="local-card"><h2>Načíst studenty z tabulky</h2><label class="primary">Vybrat soubor Excel<input id="ivp-xlsx" type="file" accept=".xlsx" style="display:block;margin-top:16px"></label><div id="import-result" role="status" aria-live="polite"></div><p>Stejná tabulka, kterou jste vyplnila: listy Studenti a praxe a Skoly.</p></section><section class="local-card"><h2>Obnovit z uložené zálohy</h2><p>Pro nový počítač nebo prohlížeč použijte úplnou koordinátorskou zálohu JSON. Obnoví studenty i rozpracovanou praxi.</p><label>Vybrat zálohu<input id="ivp-restore-backup" type="file" accept=".json,application/json"></label><div id="restore-result" role="status" aria-live="polite"></div></section>';}
+function bind(root){bindRestore(root);const input=root.querySelector('#ivp-xlsx');if(!input)return;input.onchange=async()=>{const result=root.querySelector('#import-result');try{result.textContent='Kontroluji tabulku…';const data=parse(await unzip(input.files[0]));result.innerHTML='<h3>'+data.people.length+' studentů · '+data.placements.length+' praxí</h3><p>Chybějící termíny: '+data.placements.filter(r=>!r.term).length+'. Školy k doplnění: '+data.placements.filter(r=>!r.school).length+'.</p><button id="confirm-import" class="primary">Zobrazit studenty v Ateliéru →</button>';result.querySelector('button').onclick=()=>{try{localStorage.setItem(key,JSON.stringify(data));sessionStorage.setItem('atelier-praxe-upv.live.v1.view','ivp');location.hash='umisteni';location.reload()}catch{result.textContent='Prohlížeč nepovolil uložení. Povolte místní úložiště.'}};}catch(err){result.textContent=err.message;}};}
+return {render,bind,parse,unzip,validateBackup,restoreBackup};})();

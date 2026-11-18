@@ -51,7 +51,7 @@ window.PRACTICE = (() => {
     const observed = isObservation(m);
     const options = observed ? ['theory','practical'] : m.id==='continuous' ? ['teaching','final'] : ['activity'];
     const hints=Napovedy.packs[m.id];
-    const fieldEditors=(m.fields||[]).map((f,i)=>Volba.field({label:f.label,answer:i,items:Napovedy.fields[f.label],value:r.fields?.[f.label]||'',hint:f.hint})).join('');
+    const fieldEditors=(m.fields||[]).map((f,i)=>Volba.field({label:f.label,answer:i,items:Array.isArray(m.schoolOptions)&&['Škola, obor a třída','Škola a její vedení'].includes(f.label)?m.schoolOptions:Napovedy.fields[f.label],value:r.fields?.[f.label]||'',hint:f.hint})).join('');
     const areas = (window.AREAS||[]).map(a=>'<optgroup label="'+esc(a.name)+'">'+(a.skills||[]).map(s=>'<option value="'+esc(s.code)+'"'+pick(r.competency,s.code)+'>'+esc(s.code+' · '+s.name)+'</option>').join('')+'</optgroup>').join('');
     return '<form class="panel stack" data-rec-form data-id="'+esc(r.id)+'"><h3>'+ (r.id?'Upravit záznam':'Nový záznam')+'</h3>'+
       (r.status==='returned' ? '<div class="notice">'+section('Co doplnit',r.feedback)+'</div>' : '')+
