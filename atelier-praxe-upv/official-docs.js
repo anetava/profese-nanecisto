@@ -1,7 +1,7 @@
 'use strict';
 window.IVP_DOCUMENTS = (() => {
   function material(folder, label, name, purpose, use) {
-    return {label, url:'materialy/'+folder+'/'+name+'?v=dokumenty2627', kind:name.split('.').pop().toUpperCase()+' · 2026/2027', purpose, use};
+    return {label, url:'materialy/'+folder+'/'+name+'?v=atelier-identita1', kind:name.split('.').pop().toUpperCase()+' · 2026/2027', purpose, use};
   }
   const method=(label,file,purpose)=>material('metodiky',label+' · studijní průvodce',file,purpose,'Přečtěte před blokem. K požadavkům se vraťte před odevzdáním.');
   const annexes=[

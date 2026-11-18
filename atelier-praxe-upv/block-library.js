@@ -139,7 +139,7 @@ window.BLOCKS = (() => {
   const activity = (id, choice) => get(id)?.activities.find(item => item.id === String(choice));
   const prompts = (id, choice) => activity(id, choice)?.prompts || get(id)?.prompts || [];
   function sheetLink(item) {
-    return '<a class="primary" href="' + item.file + '?v=dokumenty2627" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', DOCX">Upravit ve Wordu · DOCX ↓</a><a class="secondary" href="materialy/' + item.id + '.pdf?v=dokumenty2627" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', PDF">Vytisknout · PDF ↓</a>';
+    return '<a class="primary" href="' + item.file + '?v=atelier-identita1" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', DOCX">Upravit ve Wordu · DOCX ↓</a><a class="secondary" href="materialy/' + item.id + '.pdf?v=atelier-identita1" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', PDF">Vytisknout · PDF ↓</a>';
   }
   function sourceLinks(item) {
     const files = window.IVP_DOCUMENTS?.[item.id] || [];
