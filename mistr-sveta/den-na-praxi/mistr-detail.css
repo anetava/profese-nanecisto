@@ -12,7 +12,7 @@
 .master-guide footer{background:#172f32;color:white;padding:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}.master-guide footer details{background:transparent;color:white;margin:0;max-width:58ch}.master-guide footer summary{color:white}.master-guide footer .primary{background:var(--pink);color:#080b0b}
 @media(max-width:700px){.master-grid{grid-template-columns:1fr}.master-guide li p{font-size:1.04rem}.master-guide footer .primary{width:100%}}
 
-.ms-patch,.wordmark>span:before{background:transparent url("gastro-znak.svg?v=citrus13") center/contain no-repeat;border:0;border-radius:0;padding:0;aspect-ratio:1;color:transparent}
+.ms-patch,.wordmark>span:before{background:transparent url("gastro-znak.svg?v=citron") center/contain no-repeat;border:0;border-radius:0;padding:0;aspect-ratio:1;color:transparent}
 .wordmark>span:before{content:"";width:1.04em;height:1.04em;margin-right:.21em;vertical-align:-.12em}
 .ms-patch{display:block;width:6.5%;height:auto;font-size:0}
 
@@ -24,7 +24,7 @@
 
 .wordmark{display:grid;grid-template-columns:auto auto;align-items:center;column-gap:9px}
 .wordmark>span:before{content:none}
-.wordmark::before{content:"";grid-column:1;grid-row:1/3;width:60px;height:44px;background:#fff url("gastro-znak.svg?v=citrus13") center/88% auto no-repeat;border-radius:0}
+.wordmark::before{content:"";grid-column:1;grid-row:1/3;width:60px;height:44px;background:#fff url("gastro-znak.svg?v=citron") center/88% auto no-repeat;border-radius:0}
 .wordmark>span,.wordmark>small{grid-column:2}
 @media(max-width:700px){.wordmark{column-gap:6px}.wordmark::before{width:43px;height:34px}}
 
@@ -82,7 +82,7 @@ body .bar.studio-header{background:#fff;border:0;border-bottom:1px solid #dcdedb
 
 /* Field dictionary */
 .page-title:has(+ label #field-find){position:relative;isolation:isolate;overflow:hidden;padding:clamp(24px,4vw,60px);padding-right:34%;border-radius:0;background:#073e40;color:#fff;margin-bottom:24px}
-.page-title:has(+ label #field-find)::after{content:"";position:absolute;z-index:-1;inset:0 0 0 68%;background:#ffdfed url("gastro-znak.svg?v=citrus13") center/auto 82% no-repeat;border-radius:50% 0 0 50%}
+.page-title:has(+ label #field-find)::after{content:"";position:absolute;z-index:-1;inset:0 0 0 68%;background:#ffdfed url("gastro-znak.svg?v=citron") center/auto 82% no-repeat;border-radius:50% 0 0 50%}
 .page-title:has(+ label #field-find) :is(h1,p){color:inherit}.page-title:has(+ label #field-find) .ey{color:#89ecdc}
 label:has(>#field-find){display:block;color:#124540}#field-find{border:2px solid #13796f;border-radius:0;padding:14px 18px}
 .field-terms{display:block;columns:3;column-gap:14px;margin-block:18px}
