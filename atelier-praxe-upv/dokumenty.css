@@ -23,3 +23,4 @@
 .study-downloads>.panel>p a{color:#183530;font-weight:700;text-underline-offset:4px}
 @media(max-width:440px){.study-downloads .sheet-cover{grid-template-columns:32% 1fr;min-height:122px}.study-downloads .sheet-cover img{min-height:122px}.study-downloads>.panel>:not(.sheet-cover){margin-inline:12px}}
 }
+.student-output{padding:24px;background:#b5eadd;border-left:6px solid #147b72;color:#153b37}.student-output strong{font-size:22px}.study-downloads article:nth-child(even) .student-output{background:#f8c6db;border-color:#c42d72}.final-output{margin:28px 0;background:#f6b9d0}.student-output p{max-width:65ch}

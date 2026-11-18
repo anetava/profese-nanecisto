@@ -139,7 +139,7 @@ window.BLOCKS = (() => {
   const activity = (id, choice) => get(id)?.activities.find(item => item.id === String(choice));
   const prompts = (id, choice) => activity(id, choice)?.prompts || get(id)?.prompts || [];
   function sheetLink(item) {
-    return '<a class="primary" href="' + item.file + '?v=rok2627" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', DOCX">Upravit ve Wordu <small>· DOCX</small></a><a class="secondary" href="materialy/' + item.id + '.pdf?v=rok2627" download>Vzít do školy · PDF ↓</a>';
+    return '<a class="primary" href="' + item.file + '?v=rok2627" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', DOCX">Formulář pro studenta · DOCX ↓</a><a class="secondary" href="materialy/' + item.id + '.pdf?v=rok2627" download>Prázdný formulář · PDF ↓</a>';
   }
   function sourceLinks(item) {
     const files = window.IVP_DOCUMENTS?.[item.id] || [];
@@ -150,13 +150,25 @@ window.BLOCKS = (() => {
   }
   const reflectionLink = (item, choice, label) => '<a href="#reflexe/nova/' + item.id +
     (choice ? '/' + choice.id : '') + '">' + escape(label) + '</a>';
+  const outputs = {
+    ivp:'Vyplněná mapa školy, záznam pozorované situace a vlastní reflexe.',
+    group:'Záznam náslechu, konkrétní reakce žáků a rozbor s vlastním dalším krokem.',
+    guided:'Pozorovací arch, podklad z hodiny, rozbor s cvičným učitelem a reflexe.',
+    micro:'Příprava mikrovýstupu, záznam jeho průběhu a úprava pro další pokus.',
+    continuous:'Přípravy vyučovacích jednotek, záznamy výstupů, rozbory a závěrečný souhrn.',
+    reflection:'Dva porovnané doklady z portfolia, závěrečná sebereflexe a plán dalšího rozvoje.'
+  };
+  function submission(item) {
+    const text=outputs[item.id] || 'Vyplněný pracovní list, vlastní reflexe a konkrétní další krok.';
+    return '<div class="student-output"><strong>Co vyplním a uložím do portfolia</strong><p>'+escape(text)+'</p><div class="actions"><a class="primary" href="#'+item.route+'">Vyplnit v aplikaci →</a><a class="secondary" href="#reflexe/nova/'+item.id+'">Vybrat odpovědi v reflexi →</a></div><p><small>Metodika vysvětluje postup. Formulář je váš pracovní dokument. Rozsah odevzdání určuje zadání IVP.</small></p></div>';
+  }
   function docs(id) {
     const item = get(id);
     if (!item) return '';
     return '<section class="panel stack" aria-label="Dokumenty k bloku"><div><small class="eyebrow">Dokumenty k bloku · Akademický rok 2026/2027</small>' +
       '<h2>' + escape(item.sheet) + '</h2><p>' + escape(item.detail) + '</p></div><div class="actions">' + sheetLink(item) +
       '<a class="secondary" href="#materialy">Všechny dokumenty</a></div><small class="muted">Pracovní list Ateliéru praxí pro vlastní poznámky a reflexi.</small>' +
-      (['continuous','reflection'].includes(id)?'<a href="#materialy">Závěrečný protokol a portfolia →</a>':'') + sourceLinks(item) + '</section>';
+      (['continuous','reflection'].includes(id)?'<a href="#materialy">Závěrečný protokol a portfolia →</a>':'') + submission(item) + sourceLinks(item) + '</section>';
   }
   function indexItem(item, role) {
     const student = role === 'student';
@@ -168,7 +180,7 @@ window.BLOCKS = (() => {
       '<p>' + reflectionLink(item, null, 'Napsat reflexi k tomuto bloku') + '</p>';
     const photo={ivp:1,group:2,guided:3,micro:4,continuous:5,reflection:6,nacvik:4,adaptio:6,ss:5,kurzy:1}[item.id]||1;
     return '<article class="panel stack"><div class="sheet-cover"><img loading="lazy" src="phase-'+photo+'.webp?v=barevne" alt=""><div><h3>' + escape(item.title) + '</h3><p>' + escape(item.sheet) + '</p></div></div>' +
-      '<div class="actions">' + sheetLink(item) + practiceLink + '</div>' + sourceLinks(item) + reflect + '</article>';
+      '<div class="actions">' + sheetLink(item) + practiceLink + '</div>' + submission(item) + sourceLinks(item) + reflect + '</article>';
   }
   function catalog(role = 'student') {
     const section = (title, subset) => '<section class="stack"><h2'+(title==='Studijní praxe IVP'?' id="pracovni-listy" tabindex="-1"':'')+'>' + title + '</h2><div class="grid study-downloads">' +
