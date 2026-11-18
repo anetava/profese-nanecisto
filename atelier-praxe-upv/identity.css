@@ -3,7 +3,7 @@
 @media screen {
   :root {
     --brand-forest:#172722;
-    --brand-lime:#c8e75c;
+    --brand-lime:#b2f36a;
     --brand-aqua:#61cdbf;
     --brand-ivory:#f3f3e8;
     --brand-mint:#dcece4;
@@ -19,7 +19,7 @@
     --aqua-soft:#deeee6;
     --rose:var(--brand-rose);
     --rose-soft:#f3e1e6;
-    --sand:#e9edcf;
+    --sand:#e2efda;
     --measure:1320px;
   }
   body { background:var(--brand-ivory);color:var(--brand-forest);font-family:'Aptos','Segoe UI',Arial,sans-serif; }
@@ -76,7 +76,7 @@
   .hero-copy :is(small,.eyebrow,.tag) { color:var(--brand-lime); }
   .hero-copy p { color:#e5ede4; }
   .hero .primary { background:var(--brand-lime);border-color:var(--brand-lime);color:var(--brand-forest); }
-  .hero .primary:hover { background:#daef93; }
+  .hero .primary:hover { background:#c9f89c; }
   .hero-photo figcaption { background:var(--brand-forest);color:white;border-left:5px solid var(--brand-aqua); }
   .subhead { background:var(--brand-lime);border:0;border-bottom:4px solid var(--brand-forest);padding:clamp(24px,3.2vw,42px); }
   .subhead h1 { max-width:22ch; }
@@ -124,7 +124,7 @@
   .study-stripe>span { width:33.333%;background:var(--brand-lime); }
   .study-stripe>span:nth-child(2) { background:var(--brand-aqua); }
   .study-stripe>span:nth-child(3) { background:var(--brand-ivory); }
-  .study-block { background:#e6edc7;border-top:0; }
+  .study-block { background:#def0ce;border-top:0; }
   .study-block[data-tone=rose] { background:#c9e9df;border-color:transparent; }
   .study-block:nth-child(3n) { background:var(--brand-forest);color:#fffef6; }
   .study-block:nth-child(3n) :is(h3,p,.study-records,.study-actions a:not(.primary)) { color:#fffef6; }
@@ -142,7 +142,7 @@
   .study-personal-tools>a:nth-child(2) { background:var(--brand-aqua);border-color:transparent; }
   .study-personal-tools h3 { color:inherit; }
   .tile,.phase-tile { background:#dcece3; }
-  .tile:nth-child(3n+2) { background:#e6edc7; }
+  .tile:nth-child(3n+2) { background:#def0ce; }
   .tile:nth-child(3n) { background:#c9e9df; }
   .tile p { color:#314b3b; }
   .tile .tag,.tile .pill { background:#fffef6;color:var(--brand-forest); }
@@ -154,7 +154,7 @@
   .panel { border-color:#c0cbbb;background:#fffef9; }
   .notice,.plan-placement-note,.record-owner,.record-next { background:#dcece3;border-color:#387e6c;color:var(--brand-forest); }
   .record-next-returned { background:#f3dce5;border-color:#a7476e; }
-  .record-next-submitted { background:#e8edc8;border-color:#718435; }
+  .record-next-submitted { background:#e0efd1;border-color:#718435; }
   .portfolio-final { background:var(--brand-lime);border:0; }
   .local-hero { background:var(--brand-forest); }
   .local-hero small { color:var(--brand-lime); }
@@ -191,13 +191,13 @@
   .lc-row[open] { border-color:#315c48;background:#fffef9; }
   .lc-row[open]>summary { background:#d6e8db; }
   .lc-detail>section { background:#e4eee1; }
-  .lc-detail form { background:#e9edcf; }
+  .lc-detail form { background:#e2efda; }
   .lc-status-options label { border-color:#a4b18d; }
   .lc-status-options label:has(input:checked) { background:var(--brand-forest);border-color:var(--brand-forest); }
   .lc-student-photo figcaption { background:var(--brand-lime); }
   .lc-student-nav { gap:2px; }
   .lc-student-nav a { background:var(--brand-aqua);padding:16px 22px; }
-  .lc-student-nav a:nth-child(even) { background:#e6edc7; }
+  .lc-student-nav a:nth-child(even) { background:#def0ce; }
   .lc-student-card { border-top-color:var(--brand-forest); }
   .lc-student-card>header { background:#dce9de; }
   .lc-next { background:var(--brand-lime); }
@@ -279,7 +279,7 @@
   .adapt-practice { background:var(--brand-lime); }
   .adapt-school { background:var(--brand-aqua); }
   .adapt-situations a { border-color:#7da471;color:var(--brand-forest); }
-  .adapt-question { background:#e6edc7;border-left-color:#71913d; }
+  .adapt-question { background:#def0ce;border-left-color:#71913d; }
   .adapt-question small { color:#355333; }
   .pp-calendar { background:#fffef9;border-top:5px solid var(--brand-forest); }
   .pp-toolbar h2 { color:var(--brand-forest);font-size:1.7rem; }
