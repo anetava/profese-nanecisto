@@ -139,14 +139,14 @@ window.BLOCKS = (() => {
   const activity = (id, choice) => get(id)?.activities.find(item => item.id === String(choice));
   const prompts = (id, choice) => activity(id, choice)?.prompts || get(id)?.prompts || [];
   function sheetLink(item) {
-    return '<a class="primary" href="' + item.file + '?v=rok2627" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', DOCX">Upravit ve Wordu · DOCX ↓</a><a class="secondary" href="materialy/' + item.id + '.pdf?v=rok2627" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', PDF">Vytisknout · PDF ↓</a>';
+    return '<a class="primary" href="' + item.file + '?v=dokumenty2627" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', DOCX">Upravit ve Wordu · DOCX ↓</a><a class="secondary" href="materialy/' + item.id + '.pdf?v=dokumenty2627" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', PDF">Vytisknout · PDF ↓</a>';
   }
   function sourceLinks(item) {
     const files = window.IVP_DOCUMENTS?.[item.id] || [];
     if (!files.length) return '';
     return '<details class="area-box document-sources"><summary>Metodika a přílohy <span class="document-count">' + files.length + '</span></summary><p>Postup, požadavky a podklady k rozboru. Vše pro akademický rok 2026/2027.</p><ul>' +
       files.map(file => '<li><a href="' + escape(file.url) + '" target="_blank" rel="noopener">' +
-        escape(file.label) + ' ↗</a>' + (file.kind ? '<small>' + escape(file.kind) + '</small>' : '') + '</li>').join('') + '</ul></details>';
+        escape(file.label) + ' ↗</a>' + (file.purpose ? '<p>' + escape(file.purpose) + '</p>' : '') + (file.use ? '<p class="document-use">' + escape(file.use) + '</p>' : '') + (file.kind ? '<small>' + escape(file.kind) + '</small>' : '') + '</li>').join('') + '</ul></details>';
   }
   const reflectionLink = (item, choice, label) => '<a href="#reflexe/nova/' + item.id +
     (choice ? '/' + choice.id : '') + '">' + escape(label) + '</a>';
@@ -170,7 +170,7 @@ window.BLOCKS = (() => {
     if (!item) return '';
     return '<section class="panel stack block-document-kit" aria-label="Dokumenty k bloku"><div><small class="eyebrow">Dokumenty k bloku · Akademický rok 2026/2027</small>' +
       '<h2>' + escape(item.sheet) + '</h2><p>' + escape(item.detail) + '</p></div><div class="actions">' + sheetLink(item) +
-      '<a class="secondary" href="#materialy">Všechny dokumenty</a></div><small class="muted">Pracovní list Ateliéru praxí pro vlastní poznámky a reflexi.</small>' +
+      '<a class="secondary" href="#materialy">Všechny dokumenty</a></div><small class="muted">Zaškrtněte odpovídající volby, doplňte konkrétní situaci a vlastní reflexi. Word je k úpravám, PDF k tisku. Co se na vás nevztahuje, označte; nic si nedomýšlejte.</small>' +
       (['continuous','reflection'].includes(id)?'<a href="#materialy/vystupy">Závěrečný protokol a portfolia →</a>':'') + submission(item, role) + sourceLinks(item) + '</section>';
   }
   function indexItem(item, role) {
@@ -183,7 +183,7 @@ window.BLOCKS = (() => {
       '<a class="secondary" href="#reflexe/nova/' + item.id + '">Vybrat odpovědi v reflexi →</a>';
     const photo={ivp:1,group:2,guided:3,micro:4,continuous:5,reflection:6,nacvik:4,adaptio:6,ss:5,kurzy:1}[item.id]||1;
     return '<article class="panel stack document-kit" id="dokumenty-'+item.id+'" tabindex="-1"><div class="sheet-cover"><img loading="lazy" src="phase-'+photo+'.webp?v=barevne" alt=""><div><small>Pracovní sada · 2026/2027</small><h3>' + escape(item.title) + '</h3><p>' + escape(item.sheet) + '</p></div></div>' +
-      '<div class="document-downloads"><h4>'+(student?'Můj formulář k vyplnění':'Formulář pro studenta')+'</h4><p>Word pro úpravy. PDF s sebou do školy.</p><div class="actions">' + sheetLink(item) + '</div></div>' + submission(item, role, true) +
+      '<div class="document-downloads"><h4>'+(student?'Můj formulář k vyplnění':'Formulář pro studenta')+'</h4><p>'+escape(item.detail)+'</p><div class="document-format-note"><strong>Vyberte způsob práce</strong><span>DOCX: vyplňování ve Wordu · PDF: tisk a ruční poznámky.</span></div><div class="actions">' + sheetLink(item) + '</div></div>' + submission(item, role, true) +
       (practiceLink || reflect ? '<div class="document-work actions">' + practiceLink + reflect + '</div>' : '') + sourceLinks(item) + '</article>';
   }
   function catalog(role = 'student') {

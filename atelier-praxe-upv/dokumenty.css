@@ -78,3 +78,12 @@
 @media print{.document-section .final-output{display:block}.document-sources ul{display:block}.document-section-heading{break-after:avoid}.document-kit{break-inside:avoid}}
 
 .document-jumps{display:flex;gap:12px 20px;flex-wrap:wrap;margin-top:22px}.document-jumps a{display:inline-block;padding:10px 12px!important;border:1px solid #a2cebd!important;font-size:14px!important}#dokumenty-vystupy{scroll-margin-top:110px}
+
+/* Document instructions stay close to the relevant download. */
+.document-format-note{display:grid;gap:4px;padding:10px 12px;border-left:3px solid #227c6b;background:#ffffff66;font-size:.84rem;line-height:1.45}
+.document-format-note strong{font-size:.84rem}.document-sources li p{font-size:.88rem;line-height:1.5;margin:7px 0;color:#21443d}
+.document-sources li .document-use{font-weight:650}.document-start{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px;background:#fff;margin:0 0 32px}
+.document-start>div{background:#d5eee6;padding:22px}.document-start>div:nth-child(2){background:#f6dbe5}.document-start>div:nth-child(3){background:#dae9e7}
+.document-start b{display:inline-block;color:#184a40;font-size:.8rem;letter-spacing:.08em}.document-start h2{font-size:1.15rem;margin:8px 0;color:#143c35}.document-start p{font-size:.95rem;line-height:1.5;margin:0;color:#29473f}
+.document-kind{font-weight:700!important;letter-spacing:.06em;text-transform:uppercase;font-size:.72rem!important}.file-card .document-purpose{border-top:1px solid #718e8050;padding-top:12px;font-size:.9rem}
+@media(max-width:700px){.document-start{grid-template-columns:1fr}.document-start>div{padding:18px}}

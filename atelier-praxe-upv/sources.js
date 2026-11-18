@@ -2,10 +2,10 @@
 window.SOURCES = [
   {name:'IVP ČZU · Studijní plán UPV',url:'https://www.ivp.czu.cz/dl/82143?lang=cs',note:'Rozložení předmětů v šesti semestrech, rozsah praxí, způsob zakončení a kredity.'},
   {name:'IVP ČZU · Profil absolventa',url:'https://www.ivp.czu.cz/dl/141454?lang=cs',note:'Tříleté kombinované bakalářské studium. Dvanáct týdnů praxe zahrnuje pozorování, vlastní výuku a reflexi.'},
-  {name:'IVP ČZU · Souvislá řízená pedagogická praxe',url:'materialy/metodiky/05-souvisla-praxe.pdf',note:'Studijní kopie pro akademický rok 2026/2027. Rozsah výstupů, portfolio, závěrečný výstup a odpovědnosti účastníků.'},
+  {name:'Ateliér praxí · Průvodce souvislou praxí podle metodiky IVP',url:'materialy/metodiky/05-souvisla-praxe.pdf?v=dokumenty2627',note:'Studijní zpracování pro akademický rok 2026/2027. Rozsah výstupů, portfolio, závěrečný výstup a odpovědnosti účastníků.'},
   {name:'MŠMT · Kompetenční rámec absolventa a absolventky učitelství',url:'https://msmt.gov.cz/vzdelavani/pedagogicti-pracovnici/priprava-pedagogickych-pracovniku/kompetencni-ramec-absolventa-a-absolventky-ucitelstvi',note:'Mapa zachovává číslování 18 kompetencí a používá stručné pracovní názvy. Při studiu sledujte popis úrovně absolventa. Další stupně patří začínajícím a zkušeným učitelům.'},
   {name:'MŠMT · Oborový rámec pro odborné předměty, praktické vyučování a odborný výcvik',url:'https://msmt.gov.cz/uploads/OSKR/OSKR_Ucitelstvi_odbornych_predmetu_praktickeho_vyucovani_a_odborneho_vycviku.pdf',note:'Příklady pro odborné vzdělávání konkretizují mj. ukázku pracovního postupu, vedení nácviku a vztah školy k praxi.'},
-  {name:'IVP · Metodické pokyny 06 pro UPV',url:'materialy/metodiky/06-reflexe.docx',note:'Studijní kopie pro akademický rok 2026/2027 podle podkladů Foxy Studio. Stanoví rozsah písemné reflexe, odevzdání do Moodlu a podmínky zápočtu.'},
+  {name:'Ateliér praxí · Průvodce reflexí podle metodiky IVP',url:'materialy/metodiky/06-reflexe.docx?v=dokumenty2627',note:'Studijní zpracování pro akademický rok 2026/2027 podle podkladů IVP ve Foxy Studio. Stanoví rozsah písemné reflexe, odevzdání do Moodlu a podmínky zápočtu.'},
   {name:'Foxy Studio · Studentský průvodce IVP',url:'https://foxy-studio-campus-pilot.web.app/',note:'Obsahová inspirace pro orientaci před praxí a práci s podklady.'}
 ];
 // Krátké pracovní názvy; číslování odpovídá KRAAU. Příklady jsou situace pro studenta UPV.

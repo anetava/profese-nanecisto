@@ -157,7 +157,7 @@ window.RFX = (() => {
     const url=URL.createObjectURL(new Blob([JSON.stringify(packet,null,2)],{type:'application/json'}));
     const a=document.createElement('a');
     a.href=url;
-    a.download='atelier-'+(packet.kind==='submission'?'reflexe':'odpoved')+'-'+packet.studentId+'-'+packet.id+'-v'+packet.revision+'.json';
+    a.download='atelier-2026-2027-'+(packet.kind==='submission'?'reflexe':'odpoved')+'-'+packet.studentId+'-'+packet.id+'-v'+packet.revision+'.json';
     document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);
   }
   function bind(root,ctx) {
