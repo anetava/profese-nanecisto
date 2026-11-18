@@ -139,14 +139,14 @@ window.BLOCKS = (() => {
   const activity = (id, choice) => get(id)?.activities.find(item => item.id === String(choice));
   const prompts = (id, choice) => activity(id, choice)?.prompts || get(id)?.prompts || [];
   function sheetLink(item) {
-    return '<a class="primary" href="' + item.file + '?v=rok2627" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', DOCX">Formulář pro studenta · DOCX ↓</a><a class="secondary" href="materialy/' + item.id + '.pdf?v=rok2627" download>Prázdný formulář · PDF ↓</a>';
+    return '<a class="primary" href="' + item.file + '?v=rok2627" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', DOCX">Upravit ve Wordu · DOCX ↓</a><a class="secondary" href="materialy/' + item.id + '.pdf?v=rok2627" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', PDF">Vytisknout · PDF ↓</a>';
   }
   function sourceLinks(item) {
     const files = window.IVP_DOCUMENTS?.[item.id] || [];
     if (!files.length) return '';
-    return '<details class="area-box"><summary>Metodika a přílohy k praxi</summary><ul>' +
+    return '<details class="area-box document-sources"><summary>Metodika a přílohy <span class="document-count">' + files.length + '</span></summary><p>Postup, požadavky a podklady k rozboru. Vše pro akademický rok 2026/2027.</p><ul>' +
       files.map(file => '<li><a href="' + escape(file.url) + '" target="_blank" rel="noopener">' +
-        escape(file.label) + '</a>' + (file.kind ? ' · ' + escape(file.kind) : '') + '</li>').join('') + '</ul></details>';
+        escape(file.label) + ' ↗</a>' + (file.kind ? '<small>' + escape(file.kind) + '</small>' : '') + '</li>').join('') + '</ul></details>';
   }
   const reflectionLink = (item, choice, label) => '<a href="#reflexe/nova/' + item.id +
     (choice ? '/' + choice.id : '') + '">' + escape(label) + '</a>';
@@ -158,36 +158,40 @@ window.BLOCKS = (() => {
     continuous:'Přípravy vyučovacích jednotek, záznamy výstupů, rozbory a závěrečný souhrn.',
     reflection:'Dva porovnané doklady z portfolia, závěrečná sebereflexe a plán dalšího rozvoje.'
   };
-  function submission(item) {
+  const blockRoute=(item,role)=>role==='student'||!phaseTitles.has(item.id)?item.route:'zadani/'+item.id;
+  function submission(item, role = 'student', compact = false) {
     const text=outputs[item.id] || 'Vyplněný pracovní list, vlastní reflexe a konkrétní další krok.';
-    return '<div class="student-output"><strong>Co vyplním a uložím do portfolia</strong><p>'+escape(text)+'</p><div class="actions"><a class="primary" href="#'+item.route+'">Vyplnit v aplikaci →</a><a class="secondary" href="#reflexe/nova/'+item.id+'">Vybrat odpovědi v reflexi →</a></div><p><small>Metodika vysvětluje postup. Formulář je váš pracovní dokument. Rozsah odevzdání určuje zadání IVP.</small></p></div>';
+    const student = role === 'student';
+    const actions = compact ? '' : '<div class="actions"><a class="primary" href="#'+blockRoute(item,role)+'">'+(student?'Otevřít blok a vyplnit':'Prohlédnout zadání bloku')+' →</a>'+(student?'<a class="secondary" href="#reflexe/nova/'+item.id+'">Vybrat odpovědi v reflexi →</a>':'')+'</div>';
+    return '<div class="student-output'+(compact?' document-evidence':'')+'"><strong>'+(student?'Co si uložím do portfolia':'Co má student doložit')+'</strong><p>'+escape(text)+'</p>'+actions+(compact?'':'<p><small>Formulář slouží k vlastnímu záznamu, metodika vysvětluje postup. Rozsah odevzdání určuje zadání IVP.</small></p>')+'</div>';
   }
-  function docs(id) {
+  function docs(id, role = 'student') {
     const item = get(id);
     if (!item) return '';
-    return '<section class="panel stack" aria-label="Dokumenty k bloku"><div><small class="eyebrow">Dokumenty k bloku · Akademický rok 2026/2027</small>' +
+    return '<section class="panel stack block-document-kit" aria-label="Dokumenty k bloku"><div><small class="eyebrow">Dokumenty k bloku · Akademický rok 2026/2027</small>' +
       '<h2>' + escape(item.sheet) + '</h2><p>' + escape(item.detail) + '</p></div><div class="actions">' + sheetLink(item) +
       '<a class="secondary" href="#materialy">Všechny dokumenty</a></div><small class="muted">Pracovní list Ateliéru praxí pro vlastní poznámky a reflexi.</small>' +
-      (['continuous','reflection'].includes(id)?'<a href="#materialy">Závěrečný protokol a portfolia →</a>':'') + submission(item) + sourceLinks(item) + '</section>';
+      (['continuous','reflection'].includes(id)?'<a href="#materialy">Závěrečný protokol a portfolia →</a>':'') + submission(item, role) + sourceLinks(item) + '</section>';
   }
   function indexItem(item, role) {
     const student = role === 'student';
     const canOpen = student || role === 'mentor' || role === 'ivp';
-    const practiceLink = !canOpen ? '' : '<a class="secondary" href="#' + item.route + '">Otevřít blok</a>';
+    const practiceLink = !canOpen ? '' : '<a class="primary" href="#' + blockRoute(item,role) + '">' + (student ? 'Otevřít blok a vyplnit' : 'Prohlédnout zadání bloku') + ' →</a>';
     const reflect = !student ? '' : item.activities.length ?
       '<details class="area-box"><summary>Začít reflexi k vybrané situaci</summary><ul>' +
         item.activities.map(choice => '<li>' + reflectionLink(item, choice, choice.title) + '</li>').join('') + '</ul></details>' :
-      '<p>' + reflectionLink(item, null, 'Napsat reflexi k tomuto bloku') + '</p>';
+      '<a class="secondary" href="#reflexe/nova/' + item.id + '">Vybrat odpovědi v reflexi →</a>';
     const photo={ivp:1,group:2,guided:3,micro:4,continuous:5,reflection:6,nacvik:4,adaptio:6,ss:5,kurzy:1}[item.id]||1;
-    return '<article class="panel stack"><div class="sheet-cover"><img loading="lazy" src="phase-'+photo+'.webp?v=barevne" alt=""><div><h3>' + escape(item.title) + '</h3><p>' + escape(item.sheet) + '</p></div></div>' +
-      '<div class="actions">' + sheetLink(item) + practiceLink + '</div>' + submission(item) + sourceLinks(item) + reflect + '</article>';
+    return '<article class="panel stack document-kit" id="dokumenty-'+item.id+'" tabindex="-1"><div class="sheet-cover"><img loading="lazy" src="phase-'+photo+'.webp?v=barevne" alt=""><div><small>Pracovní sada · 2026/2027</small><h3>' + escape(item.title) + '</h3><p>' + escape(item.sheet) + '</p></div></div>' +
+      '<div class="document-downloads"><h4>'+(student?'Můj formulář k vyplnění':'Formulář pro studenta')+'</h4><p>Word pro úpravy. PDF s sebou do školy.</p><div class="actions">' + sheetLink(item) + '</div></div>' + submission(item, role, true) +
+      (practiceLink || reflect ? '<div class="document-work actions">' + practiceLink + reflect + '</div>' : '') + sourceLinks(item) + '</article>';
   }
   function catalog(role = 'student') {
-    const section = (title, subset) => '<section class="stack"><h2'+(title==='Studijní praxe IVP'?' id="pracovni-listy" tabindex="-1"':'')+'>' + title + '</h2><div class="grid study-downloads">' +
+    const section = (title, subset) => '<section class="stack document-section"><div class="document-section-heading"><div><small class="eyebrow">'+(title==='Studijní praxe IVP'?'FORMULÁŘE · METODIKA · REFLEXE':'DALŠÍ PRACOVNÍ SADY')+'</small><h2'+(title==='Studijní praxe IVP'?' id="pracovni-listy" tabindex="-1"':'')+'>' + title + '</h2></div><p>'+(title==='Studijní praxe IVP'?'Vyberte svůj blok. Dokumenty k vyplnění i postup najdete spolu v jedné kartě.':'Pomůcky pro nácvik výuky, rozhovor s mentorem a další profesní rozvoj.')+'</p></div><div class="grid study-downloads">' +
       subset.map(item => indexItem(item, role)).join('') + '</div></section>';
-    return ATDOC.library(role)+'<div class="stack">' +
+    return ATDOC.library(role, 'header')+'<div class="stack">' +
       section('Studijní praxe IVP', list.filter(item => phaseTitles.has(item.id))) +
-      section('Nácvik a profesní rozvoj', list.filter(item => !phaseTitles.has(item.id))) + '</div>';
+      section('Nácvik a profesní rozvoj', list.filter(item => !phaseTitles.has(item.id))) + '</div>' + ATDOC.library(role, 'outputs');
   }
   return {list, get, activity, prompts, docs, catalog};
 })();

@@ -1,4 +1,54 @@
 <!doctype html><html lang="cs"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Závěrečný výstup · Ateliér praxí</title><style>*{box-sizing:border-box}body{background:#f9e4ec;color:#173b37;font:18px/1.5 Arial,sans-serif;margin:0}header,main{max-width:1100px;margin:auto;padding:28px}header{background:#173b37;color:white}h1{font-size:clamp(32px,5vw,54px);line-height:1.05}h2{font-size:26px}form{display:grid;grid-template-columns:1fr 1fr;gap:20px}section{background:#b5eadd;padding:24px}section:nth-child(even){background:#fac1d7}label{display:block;margin:12px 0}label:has(input[type=checkbox]),label:has(input[type=radio]){background:#fff;padding:14px;border:2px solid transparent;cursor:pointer}label:has(input:checked){background:#173b37;color:white;border-color:#ec3d89}input,textarea{font:inherit;padding:12px;max-width:100%;border:1px solid #8ca49f}input:not([type=checkbox]):not([type=radio]),textarea{width:100%}input[type=checkbox],input[type=radio]{accent-color:#d82370;width:20px;height:20px}button,a{font:inherit}button{padding:15px;background:#173b37;color:white;border:0;cursor:pointer;margin:6px}a{color:inherit}footer{padding:24px;background:white}#status{font-weight:bold}details{margin-top:14px}@media(max-width:650px){form{grid-template-columns:1fr}main{padding:14px}}@media print{body{background:white;font-size:11pt}header,main{padding:10px}button,nav,details:not([open]){display:none}section{break-inside:avoid}form{display:block}label:has(input[type=checkbox]:not(:checked)),label:has(input[type=radio]:not(:checked)){display:none}textarea{height:auto;min-height:80px}*{print-color-adjust:exact}}</style><header><nav><a href="index.html#materialy">← Dokumenty k praxím</a></nav><p>ATELIÉR PRAXÍ / AKADEMICKÝ ROK 2026/2027</p><h1>Co si z praxe odnáším.</h1><p>Podklad studenta k závěrečnému rozboru. Vyberte skutečné odpovědi; vlastní text je volitelný.</p></header><main><form id="form"><section><h2>01 / Moje praxe</h2><label>Jméno studenta<input name="student" autocomplete="name"></label><label>Cvičná škola<input name="school"></label><label>Obor a třída<input name="class"></label><label>Provázející učitel<input name="mentor"></label><label>Skutečné období praxe<input name="period" placeholder="Doplňte podle absolvované praxe"></label></section><section><h2>02 / Co dokládám</h2><p>Vyberte pouze podklady, které skutečně máte v portfoliu.</p><label><input type="checkbox" name="evidence" value="Záznamy náslechů"> Záznamy náslechů</label><label><input type="checkbox" name="evidence" value="Přípravy a vlastní výstupy"> Přípravy a vlastní výstupy</label><label><input type="checkbox" name="evidence" value="Rozbory s cvičným učitelem"> Rozbory s cvičným učitelem</label><label><input type="checkbox" name="evidence" value="Reflexe a další pokus"> Reflexe a další pokus</label><label><input type="checkbox" name="evidence" value="Anonymní ukázky práce žáků"> Anonymní ukázky práce žáků</label><details><summary>Doplnit názvy dokladů</summary><textarea name="documents" placeholder="Například názvy dvou záznamů z portfolia"></textarea></details></section><section><h2>03 / V čem vidím posun</h2><label><input type="checkbox" name="progress" value="Srozumitelně zadávám úkol"> Srozumitelně zadávám úkol</label><label><input type="checkbox" name="progress" value="Ověřuji učení na práci žáků"> Ověřuji učení na práci žáků</label><label><input type="checkbox" name="progress" value="Přizpůsobuji podporu žákovi"> Přizpůsobuji podporu žákovi</label><label><input type="checkbox" name="progress" value="Používám zpětnou vazbu v další hodině"> Používám zpětnou vazbu v další hodině</label><label><input type="checkbox" name="progress" value="Zatím potřebuji další doklad"> Zatím potřebuji další doklad</label><details><summary>Připojit konkrétní situaci</summary><textarea name="example" placeholder="Co jsem udělal(a), co následně udělali žáci a podle čeho poznám změnu."></textarea></details></section><section><h2>04 / Můj další krok</h2><label><input type="radio" name="next" value="Zpřesním cíl a kritérium úspěchu"> Zpřesním cíl a kritérium úspěchu</label><label><input type="radio" name="next" value="Zkrátím ukázku a ověřím samostatný pokus"> Zkrátím ukázku a ověřím samostatný pokus</label><label><input type="radio" name="next" value="Připravím podporu pro různé tempo"> Připravím podporu pro různé tempo</label><label><input type="radio" name="next" value="Domluvím pozorování s mentorem"> Domluvím pozorování s mentorem</label><label><input type="radio" name="next" value="Vlastní další krok"> Vlastní další krok</label><details><summary>Doplnit vlastní plán</summary><textarea name="plan" placeholder="Co zkusím a podle čeho vyhodnotím účinek."></textarea></details></section></form><footer><p>Toto je vlastní sebehodnocení studenta. Nenahrazuje hodnocení pedagoga, podpisy ani schválení praxe IVP.</p><button id="save">Uložit rozpracované</button><button id="download">Stáhnout vyplněný dokument</button><button id="print">Tisk / uložit PDF</button><p id="status" role="status"></p><a href="materialy/foxy/FOXY-STUDIO-protokol-koncept.html">Otevřít závěrečný protokol pro hodnocení →</a></footer></main><script>
-const form=document.querySelector('form'),key='atelier-final-student-2627';let data={};try{data=JSON.parse(localStorage.getItem(key)||'{}')}catch{};for(const el of form.elements){if(!el.name)continue;if(['checkbox','radio'].includes(el.type))el.checked=(data[el.name]||[]).includes(el.value);else if(data[el.name])el.value=data[el.name][0]}
-function collect(){let d={};for(const [k,v] of new FormData(form)) (d[k]??=[]).push(v);return d}document.querySelector('#save').onclick=()=>{try{localStorage.setItem(key,JSON.stringify(collect()));document.querySelector('#status').textContent='Uloženo v tomto prohlížeči.'}catch{document.querySelector('#status').textContent='Uložení není dostupné. Stáhněte dokument.'}};document.querySelector('#print').onclick=()=>window.print();document.querySelector('#download').onclick=()=>{let clone=document.documentElement.cloneNode(true);[...form.elements].forEach((el,i)=>{let c=clone.querySelector('form').elements[i];if(el.type==='checkbox'||el.type==='radio'){if(el.checked)c.setAttribute('checked','');else c.removeAttribute('checked')}else if(el.tagName==='TEXTAREA')c.textContent=el.value;else c.setAttribute('value',el.value)});clone.querySelectorAll('script').forEach(s=>s.remove());clone.querySelectorAll('button').forEach(s=>s.remove());clone.querySelectorAll('details').forEach(d=>d.open=true);const u=URL.createObjectURL(new Blob(['<!doctype html>'+clone.outerHTML],{type:'text/html;charset=utf-8'}));let a=document.createElement('a');a.href=u;a.download='zaverecny-vystup-studenta-2026-2027.html';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)};
+'use strict';
+const form=document.querySelector('form'),legacyKey='atelier-final-student-2627';
+const params=new URLSearchParams(location.search),token=params.get('context');
+let key=legacyKey,profile=null,mode='standalone',data={};
+if(params.get('template')==='1'){
+  mode='template';key=null;
+}else if(params.has('context')){
+  mode='unavailable';key=null;
+  try{
+    if(!/^[a-f0-9-]{20,64}$/i.test(token))throw Error();
+    const context=JSON.parse(sessionStorage.getItem('atelier-final-context.'+token)||'null');
+    if(!context||typeof context.id!=='string'||!context.id||typeof context.name!=='string')throw Error();
+    profile=context;mode='student';key=legacyKey+'.profile.'+encodeURIComponent(context.id);
+  }catch{}
+}
+if(key){try{const saved=JSON.parse(localStorage.getItem(key)||'{}');if(saved&&typeof saved==='object'&&!Array.isArray(saved))data=saved;}catch{}}
+for(const el of form.elements){
+  if(!el.name)continue;
+  const values=Array.isArray(data[el.name])?data[el.name]:[];
+  if(['checkbox','radio'].includes(el.type))el.checked=values.includes(el.value);
+  else if(values.length)el.value=String(values[0]);
+}
+if(profile&&!Array.isArray(data.student))form.elements.student.value=profile.name;
+const banner=document.createElement('p');banner.id='document-context';banner.setAttribute('role','status');
+banner.textContent=mode==='student'?'Pracovní dokument: '+profile.name+'. Ukládá se odděleně pro tento profil.':mode==='template'?'Prázdný vzor pro prohlédnutí. Případné změny můžete stáhnout, vzor se neukládá do žádného profilu.':mode==='unavailable'?'Profil pro tento odkaz není dostupný v této kartě. Vraťte se do Ateliéru a otevřete výstup z náhledu konkrétního studenta.':'Samostatný formulář. Není přiřazený konkrétnímu profilu; případný dřívější koncept zůstává jen v tomto formuláři.';
+banner.style.cssText='padding:16px 20px;background:#b5eadd;color:#173b37;border-left:5px solid #d82370;margin:0 0 24px;';
+form.before(banner);
+const saveButton=document.querySelector('#save');
+if(!key){saveButton.disabled=true;saveButton.textContent=mode==='template'?'Vzor se neukládá':'Nejprve otevřete profil studenta';}
+function collect(){let d={};for(const [k,v] of new FormData(form))(d[k]??=[]).push(v);return d;}
+saveButton.onclick=()=>{
+  if(!key)return;
+  try{localStorage.setItem(key,JSON.stringify(collect()));document.querySelector('#status').textContent=profile?'Uloženo pro profil '+profile.name+'.':'Samostatný koncept je uložený v tomto prohlížeči.';}
+  catch{document.querySelector('#status').textContent='Uložení není dostupné. Stáhněte dokument.';}
+};
+document.querySelector('#print').onclick=()=>window.print();
+document.querySelector('#download').onclick=()=>{
+  let clone=document.documentElement.cloneNode(true);
+  [...form.elements].forEach((el,i)=>{
+    let c=clone.querySelector('form').elements[i];
+    if(el.type==='checkbox'||el.type==='radio'){if(el.checked)c.setAttribute('checked','');else c.removeAttribute('checked');}
+    else if(el.tagName==='TEXTAREA')c.textContent=el.value;
+    else c.setAttribute('value',el.value);
+  });
+  clone.querySelectorAll('script').forEach(s=>s.remove());
+  clone.querySelectorAll('button').forEach(s=>s.remove());
+  clone.querySelectorAll('details').forEach(d=>d.open=true);
+  clone.querySelector('#document-context')?.remove();
+  const u=URL.createObjectURL(new Blob(['<!doctype html>'+clone.outerHTML],{type:'text/html;charset=utf-8'}));
+  let a=document.createElement('a');a.href=u;a.download='zaverecny-vystup-studenta-2026-2027.html';a.click();
+  setTimeout(()=>URL.revokeObjectURL(u),1000);
+};
 </script></html>

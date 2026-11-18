@@ -24,3 +24,57 @@
 @media(max-width:440px){.study-downloads .sheet-cover{grid-template-columns:32% 1fr;min-height:122px}.study-downloads .sheet-cover img{min-height:122px}.study-downloads>.panel>:not(.sheet-cover){margin-inline:12px}}
 }
 .student-output{padding:24px;background:#b5eadd;border-left:6px solid #147b72;color:#153b37}.student-output strong{font-size:22px}.study-downloads article:nth-child(even) .student-output{background:#f8c6db;border-color:#c42d72}.final-output{margin:28px 0;background:#f6b9d0}.student-output p{max-width:65ch}
+
+/* One document set per practice: form, evidence, reflection and methodology. */
+.document-section{margin-block:32px 42px}
+.document-section-heading{display:grid;grid-template-columns:1.15fr .85fr;gap:20px;align-items:end;padding-bottom:16px;border-bottom:2px solid #183c38}
+.document-section-heading h2{font-size:clamp(1.8rem,3.2vw,2.8rem);line-height:1.08;letter-spacing:-.04em;margin:8px 0 0;color:#163b37}
+.document-section-heading p{max-width:43ch;margin:0;line-height:1.55;color:#36534e}
+.document-section-heading .eyebrow{font-size:.76rem;color:#276c60;font-weight:750;letter-spacing:.09em}
+.document-kit{scroll-margin-top:110px}
+.document-kit:focus{outline:3px solid #c42d72;outline-offset:4px}
+.study-downloads>.document-kit{gap:18px;padding-bottom:20px}
+.document-kit .sheet-cover small{display:block;margin:0 0 10px;font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#eaf7f2}
+.document-kit .document-downloads{padding-top:2px}
+.document-downloads h4{font-size:1.12rem;line-height:1.2;margin:0;color:#183c38}
+.document-downloads p{font-size:.94rem;margin:6px 0 12px;color:#294d47}
+.study-downloads .document-downloads .actions{margin-top:12px}
+.study-downloads .document-downloads .actions a{flex:1 1 145px;padding:12px 10px;min-height:46px;font-size:.9rem}
+.study-downloads>.document-kit .document-evidence{padding:15px 16px;background:#ffffff70;border-left:4px solid #27786b}
+.study-downloads>.document-kit:nth-child(even) .document-evidence{background:#ffffff70;border-left-color:#b54673}
+.document-evidence strong{font-size:1rem;line-height:1.25}
+.document-evidence p{margin:7px 0 0;line-height:1.5;font-size:.94rem}
+.study-downloads .document-work{align-items:stretch}
+.study-downloads .document-work>a{flex:1 1 175px;font-size:.88rem}
+.study-downloads .document-work>details{flex-basis:100%}
+.document-sources summary{cursor:pointer;min-height:28px;font-weight:750;line-height:1.45}
+.document-count{display:inline-flex;align-items:center;justify-content:center;min-width:23px;height:23px;margin-left:8px;background:#173c38;color:#fff;font-size:.75rem;vertical-align:middle}
+.document-sources>p{font-size:.9rem;line-height:1.5;margin:12px 0;color:#35564f}
+.document-sources ul{padding:0;margin:12px 0 0;list-style:none}
+.document-sources li{padding:12px 0;border-top:1px solid #8baaa144;line-height:1.4}
+.document-sources li a{display:block;font-weight:650;color:#153d35;text-underline-offset:3px}
+.document-sources li small{display:block;margin-top:4px;color:#3b5a52;font-size:.75rem}
+.block-document-kit{border-top:5px solid #2a9e8b;background:#e3f5ef}
+.block-document-kit>.actions a{min-height:46px}
+.block-document-kit .student-output{background:#c3e9df}
+.block-document-kit .document-sources{background:#fff;border:1px solid #bdd5cb;padding:16px}
+.document-section .final-output{display:grid;grid-template-columns:1.2fr 1fr;column-gap:32px;row-gap:8px;border-left:0;border-top:5px solid #b1386b;padding:26px}
+.document-section .final-output>small,.document-section .final-output>h3,.document-section .final-output>p{grid-column:1;margin:0}
+.document-section .final-output>small{font-size:.74rem;letter-spacing:.08em;font-weight:750;color:#71374e}
+.document-section .final-output h3{font-size:clamp(1.6rem,2.7vw,2.2rem);line-height:1.12;color:#2c2730}
+.document-section .final-output>.actions{grid-column:2;grid-row:1 / 4;align-content:center;margin:0;gap:9px}
+.document-section .final-output>.actions a{width:100%;padding:11px;font-size:.9rem}
+.file-card{border:0;border-top:4px solid #2c8979}
+.file-card:nth-child(2){border-top-color:#be4b79}.file-card:nth-child(3){border-top-color:#a48b54}.file-card:nth-child(4){border-top-color:#50898e}
+.file-card a,.document-kit a{overflow-wrap:anywhere}
+@media(max-width:760px){
+  .document-section-heading{grid-template-columns:1fr;gap:12px}
+  .document-section-heading p{max-width:60ch}
+  .document-section .final-output{grid-template-columns:1fr;padding:22px}
+  .document-section .final-output>.actions{grid-column:1;grid-row:auto;margin-top:12px}
+  .document-kit .sheet-cover small{font-size:.65rem}
+}
+@media(prefers-reduced-motion:no-preference){.document-kit a{transition:background-color .15s,color .15s}}
+@media print{.document-section .final-output{display:block}.document-sources ul{display:block}.document-section-heading{break-after:avoid}.document-kit{break-inside:avoid}}
+
+.document-jumps{display:flex;gap:12px 20px;flex-wrap:wrap;margin-top:22px}.document-jumps a{display:inline-block;padding:10px 12px!important;border:1px solid #a2cebd!important;font-size:14px!important}#dokumenty-vystupy{scroll-margin-top:110px}

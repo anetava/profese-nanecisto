@@ -3,3 +3,43 @@
 @media(max-width:650px){.local-hero{display:block;padding:24px}.lc-queue{margin-top:24px;min-width:0}.lc-phase-grid{grid-template-columns:1fr 1fr;gap:9px}.lc-phase{padding:16px 12px;gap:10px}.lc-phase strong{font-size:29px}.lc-phase span{font-size:14px}.lc-filters{grid-template-columns:1fr;padding:16px}.lc-result{align-items:start;flex-direction:column;gap:0}.lc-row>summary{grid-template-columns:34px 1fr 20px;padding:16px;gap:10px}.lc-initial{width:32px;height:36px}.lc-row .lc-badge{grid-column:2;grid-row:3;justify-self:start}.lc-expand{grid-column:3;grid-row:1/4}.lc-detail,.lc-student-body{grid-template-columns:1fr}.lc-detail{padding:12px;gap:14px}.lc-next,.lc-progress{padding:22px}.lc-preview-bar{align-items:start;flex-direction:column}.lc-student-card header .lc-badge{float:none;margin-bottom:12px}.lc-student-card header small{display:block;margin-bottom:10px}}
 
 .local-hero h1{color:#fff!important}
+
+/* Live data gets the same complete, photographic workspace as the study modules. */
+.local-hero{display:grid;grid-template-columns:1.45fr 1fr;padding:0;gap:0;border:0;background:#173b36}
+.local-hero>div:first-child{padding:36px 40px}.local-hero h1{font-size:clamp(34px,4.1vw,56px)}
+.local-hero .lc-hero-aside{display:flex;flex-direction:column;min-width:0}
+.lc-hero-aside>img{display:block;width:100%;height:185px;object-fit:cover;object-position:50% 38%;flex:1;min-height:0}
+.lc-queue{display:flex;align-items:center;gap:22px;min-width:0;padding:22px 28px;background:#f0a1bf;margin:0}.lc-queue b{font-size:48px}.lc-queue span{font-size:16px;line-height:1.5}.lc-queue strong{display:block;margin-top:4px}
+.lc-resource-links{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:18px 0 26px}
+.lc-resource-links a{display:flex;gap:12px;justify-content:space-between;align-items:center;padding:18px 22px;background:#d5eee5;color:#173a31;text-decoration:none}
+.lc-resource-links a:nth-child(2){background:#f5d6e1}.lc-resource-links strong{font-size:19px}.lc-resource-links span{font-size:14px}
+.lc-phase-grid{margin-bottom:10px}.lc-phase{padding:18px;min-height:88px}.lc-phase strong{font-variant-numeric:tabular-nums}
+.lc-filters{grid-template-columns:1fr 1fr;background:#e1f0ea;padding:24px;gap:18px 24px;border-top:4px solid #51bda5}
+.lc-attention{gap:10px}.lc-attention button{min-height:42px}.lc-result{padding:4px 0 12px}.lc-result h2{letter-spacing:-.035em}
+.lc-rows{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}
+.lc-row{background:#e2f1ec;border:0;border-top:5px solid #43b89e;overflow:hidden}
+.lc-row:nth-child(even){background:#f7e0e8;border-top-color:#e67eaa}
+.lc-row[data-tone=active]{border-top-color:#159b81}.lc-row[data-tone=done]{border-top-color:#d85b91}.lc-row[data-tone=closed]{border-top-color:#518859}.lc-row[data-tone=before]{border-top-color:#c4952b}
+.lc-row>summary{grid-template-columns:48px minmax(0,1fr) 24px;grid-template-rows:auto auto auto;padding:24px;gap:16px 14px;min-height:234px}
+.lc-row .lc-initial{grid-column:1;grid-row:1;background:#173b36;color:#fff;width:46px;height:46px}
+.lc-row:nth-child(even) .lc-initial{background:#75334d}
+.lc-row .lc-identity{grid-column:2;grid-row:1}.lc-row .lc-identity>strong{font-size:23px;line-height:1.2;letter-spacing:-.025em}.lc-row summary small{color:#3d5c50;font-size:13px;line-height:1.45}
+.lc-row .lc-school{grid-column:1/3;grid-row:2;font-size:16px;font-weight:600;line-height:1.45;padding-top:14px;border-top:1px solid #a5c6b980}.lc-school>small{font-size:10px!important;letter-spacing:.07em;font-weight:800!important;margin:0 0 6px!important}
+.lc-row .lc-term{display:block;font-size:15px;margin-top:6px;font-weight:500}
+.lc-row .lc-badge{grid-column:1/3;grid-row:3;justify-self:start;background:#fff9;border:1px solid #607d6c40;padding:7px 11px;font-size:13px}
+.lc-row .lc-expand{grid-column:3;grid-row:1;align-self:start;color:#153b31;font-size:27px}
+.lc-row[open]{grid-column:1/-1;border:2px solid #198b76;border-top-width:5px;background:#fff}
+.lc-row[open]>summary{grid-template-columns:48px minmax(0,1fr) minmax(0,1fr) 24px;grid-template-rows:auto auto;min-height:0;background:#d9eee6}
+.lc-row[open] .lc-school{grid-column:3;grid-row:1/3;padding:0;border:0}.lc-row[open] .lc-badge{grid-column:2;grid-row:2}.lc-row[open] .lc-expand{grid-column:4;grid-row:1/3}
+.lc-detail{gap:20px;padding:22px}.lc-detail>section{background:#e0f2e9}.lc-detail form{background:#f9dce7}.lc-detail h3{letter-spacing:-.035em}.lc-detail :is(input,textarea){border-color:#97afa1}.lc-status-options label{min-height:44px}
+.lc-doc-link{display:block;padding:13px 0;color:#184f40;font-weight:700}.lc-detail form .primary{background:#193b34;color:#fff}
+.lc-student-photo{position:relative;margin:0;min-height:320px}.lc-student-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.lc-student-photo figcaption{position:absolute;bottom:18px;left:18px;right:18px;background:#f2aec6;color:#163a31;padding:11px 14px;font-weight:700;font-size:14px}
+.lc-portfolio-link{background:#71d9c4!important;color:#173a31!important;margin-top:15px}.lc-student-nav a:nth-child(even){background:#f5d6e2}.lc-student-nav a:hover,.lc-resource-links a:hover{outline:2px solid #153b31;outline-offset:-2px}
+.lc-student-card{border:0;border-top:5px solid #35b99f;margin:22px 0}.lc-student-card>header{background:#d4eee3}.lc-student-card header h2{line-height:1.18}.lc-next{background:#f3acc8}.lc-progress{background:#e8f4ed}.lc-next h2{font-size:30px;line-height:1.12}.lc-progress h3{font-size:25px;line-height:1.15;margin:0 0 18px}.lc-checklist{background:#e0efe8}
+.lc-block-actions{display:grid;grid-template-columns:1fr;gap:10px}.lc-block-actions a{padding:12px 14px;background:#fff9;color:#174e3e;font-size:15px;font-weight:700;text-decoration:none}.lc-block-actions a:hover{text-decoration:underline}
+.lc-evidence b{font-size:28px}.lc-tools{border-top:3px solid #789b8c}.lc-caption{max-width:88ch}
+.local-hero:not(.student){align-items:stretch}.local-hero:not(.student)>div:first-child{align-self:center;padding:28px 36px}.local-hero:not(.student) h1{font-size:clamp(32px,3.6vw,48px)}.local-hero:not(.student) p{font-size:16px;line-height:1.5}.lc-hero-aside>img{height:190px;flex:none}.lc-hero-aside .lc-queue{flex:1;min-height:90px;padding:18px 24px}
+.local-hero:has(>small){display:block;padding:32px}.local-card{padding:28px;margin:20px 0;background:#dcefe7;border-top:4px solid #38ac94}.local-card:nth-of-type(even){background:#f8dfe8;border-color:#df719c}.local-card h2{font-size:30px}.local-card>label{display:inline-block;max-width:100%;margin-top:15px}.local-card input{max-width:100%}
+.lc-detail button[data-student]{background:#173b36;color:#fff;font:inherit;font-size:16px;font-weight:700;line-height:1.3;padding:14px 18px;border:0;cursor:pointer;min-height:48px}.lc-preview-bar button{border:1px solid #8c7958;background:#fff8;color:#3c382b;font:inherit;cursor:pointer}.lc-tools button{padding:12px 16px;border:1px solid #809b8e;background:#fff;color:#173b36;font:700 14px/1.3 system-ui;cursor:pointer}
+@media(max-width:900px){.lc-resource-links a{display:block}.lc-resource-links span{display:block;margin-top:7px}.local-hero>div:first-child{padding:28px}.lc-row>summary{padding:20px;gap:12px}.lc-row .lc-identity>strong{font-size:21px}}
+@media(max-width:680px){.local-hero{grid-template-columns:1fr}.lc-hero-aside>img{height:160px;max-height:190px}.local-hero h1{font-size:38px}.lc-hero-aside .lc-queue{padding:18px 26px}.lc-queue b{font-size:40px}.lc-resource-links{gap:10px}.lc-resource-links a{padding:16px}.lc-resource-links strong{font-size:17px}.lc-resource-links span{font-size:12px}.lc-filters{grid-template-columns:1fr;padding:18px}.lc-rows{grid-template-columns:1fr}.lc-row>summary{min-height:0}.lc-row[open]>summary{grid-template-columns:40px minmax(0,1fr) 20px;grid-template-rows:auto auto auto}.lc-row[open] .lc-school{grid-column:1/3;grid-row:2;border-top:1px solid #9cbeac70;padding-top:10px}.lc-row[open] .lc-badge{grid-column:1/3;grid-row:3}.lc-row[open] .lc-expand{grid-column:3;grid-row:1}.lc-detail{grid-template-columns:1fr;padding:12px}.lc-student-photo{min-height:210px}.lc-student-nav{gap:8px}.lc-student-nav a{padding:12px 14px;font-size:14px}.lc-student-body{grid-template-columns:1fr}.lc-next h2{font-size:27px}.lc-student-card>header{padding:22px}}

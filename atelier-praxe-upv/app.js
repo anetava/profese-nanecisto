@@ -108,11 +108,11 @@
       (role==='student'?link('reflexe/nova/'+block,'Otevřít reflexi pro IVP','secondary'):link('reflexe','Přehled předaných reflexí','secondary'))+'</nav>';
   }
   function blockExtras(id){
-    return '<div class="block-extras">'+BLOCKS.docs(id)+IVPREF.block(id,refContext())+'</div>';
+    return '<div class="block-extras">'+BLOCKS.docs(id,role)+IVPREF.block(id,refContext())+'</div>';
   }
   function hub(){
     const personal=RoleDesk.isSpecial(role)?RoleDesk.intro(role):role==='student'?'Připravte se na další hodinu, zkuste si náročnou situaci nebo se vraťte k tomu, co jste viděli při náslechu.':role==='mentor'?'Otevřete si práci studenta, připravte společný rozbor nebo si vyberte situaci pro další setkání.':'Podívejte se, kdo čeká na přijetí na školu a které práce už prošly společným rozborem.';
-    return '<section class="hub-hero"><div class="hub-intro"><small class="eyebrow">Ateliér praxí · IVP ČZU</small><h1>Co právě potřebujete?</h1><p>'+personal+'</p>'+link('ivp',role==='student'?'Moje pedagogická praxe →':role==='mentor'?'Otevřít práce k rozboru →':(RoleDesk.isSpecial(role)?RoleDesk.caption(role):'Otevřít koordinaci praxí →'),'primary')+'</div><figure><img src="hub.webp?v=atelier-foto1" alt="Studující různých generací spolu přicházejí do školy."></figure></section>'+
+    return '<section class="hub-hero"><div class="hub-intro"><small class="eyebrow">Ateliér praxí · IVP ČZU</small><h1>Co právě potřebujete?</h1><p>'+personal+'</p>'+link(window.IVP_ROSTER?'umisteni':'ivp',role==='student'?'Moje pedagogická praxe →':role==='mentor'?'Otevřít práce k rozboru →':(RoleDesk.isSpecial(role)?RoleDesk.caption(role):'Otevřít koordinaci praxí →'),'primary')+'</div><figure><img src="hub.webp?v=atelier-foto1" alt="Studující různých generací spolu přicházejí do školy."></figure></section>'+
     shortcuts()+'<header class="hub-head"><h2>Vyberte si podle situace</h2></header><div class="hub-grid">'+catalog.map(([id,name,kind,title,desc,photo])=>'<a class="hub-card" href="#'+id+'"><img src="'+photo+'" alt=""><div><small>'+e(name)+'</small><h3>'+e(title)+'</h3><p>'+e(desc)+'</p><span aria-hidden="true">↗</span></div></a>').join('')+'</div>';
   }
   function practiceLinks(){
@@ -145,13 +145,13 @@
     return '<section class="hero"><div class="hero-copy"><small>'+e(p.name)+' · Učitelství praktického vyučování</small><h1>'+({group:'Co dnes uvidíte ve výuce?',micro:'Jak povedete první výstup?',continuous:'Co si žáci odnesou z hodiny?'}[p.stage])+'</h1><p>'+({group:'Při náslechu vyberte jeden okamžik. Zapište, co udělal učitel a jak na to žáci reagovali.',micro:'Naplánujte si krátkou instruktáž a určete, podle čeho poznáte, že jí skupina rozumí.',continuous:'Spojte přípravu, vlastní výuku a rozbor s cvičným učitelem do jednoho záznamu.'}[p.stage])+'</p>'+link('praxe/'+target.id+(pending?'/upravit/'+pending.id:''),pending?'Pokračovat v záznamu →':'Otevřít moji praxi →','primary')+'</div><figure class="hero-photo"><img src="praxe.webp?v=atelier-foto1" alt="Student učitelství a mentorka poslouchají, jak žák vysvětluje sestavení dřevěného spoje."><figcaption>'+e(target.title)+'</figcaption></figure></section>'+
     practiceLinks()+'<a class="kit-link" href="#druhy-pokus"><strong>Můj druhý pokus →</strong><span>Otevřete svůj poslední záměr a při další návštěvě školy zaznamenejte, co se změnilo.</span></a><div class="section-head"><div><small class="eyebrow">Studijní cesta</small><h2>Od náslechu k vlastní výuce</h2></div></div><div class="grid">'+modules.map((m,i)=>'<article class="tile phase-tile"><img class="phase-photo" src="phase-'+(i+1)+'.webp?v=zaci-ss1" alt="" loading="lazy"><span class="tag">'+[2,3,4,5,6,6][i]+'. semestr · Praxe '+String(i+1).padStart(2,'0')+'</span><h3>'+e(m.title)+'</h3><p>'+e(m.short)+'</p>'+link('praxe/'+m.id,'Otevřít praxi →')+'</article>').join('')+'</div>';
   }
-  function modulePage(m){
+  function modulePage(m,overview=false){
     const records=current().records.filter(r=>r.moduleId===m.id);
-    const mi=modules.findIndex(item=>item.id===m.id), syl=syllabi[mi], guided=m.id==='guided', chosen=current().guidedPlan||'uis';
+    const mi=modules.findIndex(item=>item.id===m.id), syl=syllabi[mi], guided=m.id==='guided', chosen=overview?'uis':current().guidedPlan||'uis';
     const targets=guided&&chosen==='uis'?{theory:4,practice:6}:m.observationTargets;
     const variant=guided?'<aside class="notice"><strong>Rozsah řízeného náslechu</strong><p>Sylabus UIS pro rok 2026/2027 a dodaná metodika 03 uvádějí různé počty. Po domluvě s garantem vyberte podklad pro své počítadlo.</p><label>Počítat podle<select id="guided-target" '+(role==='student'?'':'disabled')+'><option value="uis" '+(chosen==='uis'?'selected':'')+'>UIS 2026/2027 · 4 teoretické a 6 praktických</option><option value="method" '+(chosen==='method'?'selected':'')+'>Metodika 03 · 10 teoretických a 2 praktické</option></select></label></aside>':'';
-    return section('Praxe '+String(modules.findIndex(item=>item.id===m.id)+1).padStart(2,'0')+' · '+person().name,m.title,m.goal)+blockNav(m.id)+variant+
-    '<details class="area-box"><summary>Jak praxe probíhá a co doložím</summary>'+(syl?'<p><a href="'+e(syl.url)+'" target="_blank" rel="noopener">'+e(syl.name)+'</a><br>'+e(syl.note)+'</p>':'')+'<p>'+e(m.place)+'</p><ol class="steps">'+m.steps.map(x=>'<li>'+e(x)+'</li>').join('')+'</ol><h3>Co předložit</h3><ul>'+m.evidence.map(x=>'<li>'+e(x)+'</li>').join('')+'</ul><p>'+e(m.credit)+'</p><small>'+e((m.source||[]).join(' · '))+'</small></details><div id="record-space">'+PRACTICE.render({...m,observationTargets:targets},records,role)+'</div>'+blockExtras(m.id);
+    return section('Praxe '+String(modules.findIndex(item=>item.id===m.id)+1).padStart(2,'0')+' · '+(overview?'Zadání a podklady':person().name),m.title,m.goal)+blockNav(m.id)+variant+
+    '<details class="area-box"><summary>Jak praxe probíhá a co doložím</summary>'+(syl?'<p><a href="'+e(syl.url)+'" target="_blank" rel="noopener">'+e(syl.name)+'</a><br>'+e(syl.note)+'</p>':'')+'<p>'+e(m.place)+'</p><ol class="steps">'+m.steps.map(x=>'<li>'+e(x)+'</li>').join('')+'</ol><h3>Co předložit</h3><ul>'+m.evidence.map(x=>'<li>'+e(x)+'</li>').join('')+'</ul><p>'+e(m.credit)+'</p><small>'+e((m.source||[]).join(' · '))+'</small></details>'+(overview?BLOCKS.docs(m.id,role):'<div id="record-space">'+PRACTICE.render({...m,observationTargets:targets},records,role)+'</div>'+blockExtras(m.id));
   }
   function skills(){
     const records=visibleRecords();
@@ -193,14 +193,15 @@
     const rawPage=route(), special=RoleDesk.isSpecial(role);
     const scenarioMatch=/^(nacvik|adaptio)\/situace\/([1-3])$/.exec(rawPage);
     const routedPage=special&&!['start','sources','materialy','adaptio'].includes(rawPage)?'ivp':scenarioMatch?scenarioMatch[1]:rawPage;
-    const page=window.IVP_ROSTER && routedPage==='ivp'?'umisteni':routedPage;
+    const page=window.IVP_ROSTER && routedPage==='ivp'?'studium':routedPage;
     const parts=page.split('/'),baseModule=parts[0]==='praxe'?mod(parts[1]):null,m=baseModule&&window.IVP_ROSTER?{...baseModule,schoolOptions:[...new Set((current().placements||[]).filter(r=>r.moduleId===baseModule.id).map(r=>r.school).filter(Boolean))]}:baseModule,refPage=parts[0]==='reflexe';
-    const liveNav=role==='ivp'?[['umisteni','Přehled studentů'],['reflexe','Reflexe k vyřízení'],['materialy','Dokumenty'],['start','Všechny moduly']]:[['umisteni','Moje praxe'],['plan','Můj plán'],['reflexe','Moje reflexe'],['portfolio','Portfolio'],['materialy','Dokumenty']];
+    const liveNav=role==='ivp'?[['umisteni','Přehled studentů'],['studium','Bloky praxí'],['reflexe','Reflexe k vyřízení'],['materialy','Dokumenty'],['start','Všechny moduly']]:[['umisteni','Moje praxe'],['studium','Studijní cesta'],['plan','Můj plán'],['reflexe','Moje reflexe'],['portfolio','Portfolio'],['materialy','Dokumenty']];
     const nav=window.IVP_ROSTER?liveNav:special?[['ivp',role==='method'?'Přehled metodika':'Přehled školy'],['adaptio','Adaptio'],['materialy','Dokumenty'],['sources','Metodiky']]:navItems;
-    const active=nav.some(([id])=>id===page)?page:(special||!['materialy','sources'].includes(page)?'ivp':'');
+    const active=parts[0]==='reflexe'?'reflexe':parts[0]==='materialy'?'materialy':nav.some(([id])=>id===page)?page:(window.IVP_ROSTER&&['praxe','zadani','skills','druhy-pokus'].includes(parts[0])?'studium':special||!['materialy','sources'].includes(page)?'ivp':'');
     let content;
     if(page==='umisteni'||(page==='skola'&&window.IVP_ROSTER)) content=window.IVP_ROSTER?IVP_LOCAL.render(allowedPeople(),db,role):IVP_IMPORT.render();
-    else if(page==='materialy') content=BLOCKS.catalog(role);
+    else if(parts[0]==='materialy') content=BLOCKS.catalog(role);
+    else if(page==='studium')content=STUDY.render({role,person:person(),entry:current(),modules,people:allowedPeople(),db,live:Boolean(window.IVP_ROSTER)});
     else if(page==='sources')content=sources();
     else if(special)content=page==='adaptio'?ATools.adaptioHome(role):RoleDesk.render(role,db,people,modules);
     else if(page==='start')content=hub();
@@ -211,14 +212,17 @@
     }
     else if(page==='skola')content=schoolPage();
     else if(toolPages.includes(page))content=practiceTool(page,scenarioMatch);
+    else if(parts[0]==='zadani'&&mod(parts[1]))content=modulePage(mod(parts[1]),true);
     else if(m)content=modulePage(m);
     else if(parts[0]==='druhy-pokus'&&role==='student')content=DRUHY.render(visibleRecords(),current().retries,parts[1]);
     else if(page==='skills')content=skills();
     else if(parts[0]==='nahled'&&role==='student'&&['full','brief'].includes(parts[1]))content=link('materialy','← Dokumenty k praxím','text-btn')+section(person().name,parts[1]==='brief'?'Moje stručné portfolio':'Moje celé portfolio')+'<div class="export-actions"><button class="primary" data-exp-kind="'+parts[1]+'">Stáhnout HTML ↓</button><button class="secondary" data-preview-print>Tisk / uložit PDF</button></div><iframe class="doc-preview" title="Náhled mého portfolia" id="export-preview"></iframe>';
     else if(page==='portfolio')content=portfolio();
-    else if(page==='plan'&&role==='student')content='<div id="plan-space">'+PLAN.render(current().events,modules)+'</div><div class="calendar-take"><button type="button" class="secondary" data-calendar '+(current().events.length?'':'disabled')+'>Stáhnout termíny do mého kalendáře ↓</button><small>Soubor ICS pro kalendář v telefonu, Outlook nebo Google Kalendář.</small></div>';
+    else if(page==='plan'&&role==='student')content=(window.IVP_ROSTER?'<aside class="plan-placement-note"><strong>Vaše konkrétní dny praxe a rozborů</strong><p>Období ze seznamu umístění najdete v <a href="#umisteni">Moje praxe</a>. Zde si doplníte jednotlivé dny do vlastního kalendáře.</p></aside>':'')+'<div id="plan-space">'+PLAN.render(current().events,modules)+'</div><div class="calendar-take"><button type="button" class="secondary" data-calendar '+(current().events.length?'':'disabled')+'>Stáhnout termíny do mého kalendáře ↓</button><small>Soubor ICS pro kalendář v telefonu, Outlook nebo Google Kalendář.</small></div>';
     else content=role==='student'?studentHome():staff()+practiceLinks()+STAFFTOOLS.render(db,allowedPeople(),role);
     root.innerHTML='<header class="site-head"><a class="brand" href="#start"><img src="mark.svg" alt=""><span>Ateliér praxí<small>Učitelství praktického vyučování</small></span></a><nav aria-label="Hlavní nabídka">'+nav.map(([id,name])=>'<a href="#'+id+'" '+(active===id?'aria-current="page"':'')+'>'+e(name)+'</a>').join('')+'</nav><label class="account"><span class="sr">Pracovní náhled profilu</span><select id="mode">'+[...people.map(p=>['student/'+p.id,p.name+' · student']),...roleProfiles].map(([id,l])=>'<option value="'+id+'" '+(id===(role==='student'?'student/'+who:role)?'selected':'')+'>'+l+'</option>').join('')+'</select></label></header><main id="content" tabindex="-1">'+content+'</main><footer class="appfoot"><span>'+(window.IVP_ROSTER?'Soukromý seznam v tomto prohlížeči · přepínač profilů není přihlášení':'Ukázkové role · údaje se ukládají v tomto prohlížeči')+'</span><a href="#materialy">Dokumenty ke stažení</a><a href="#sources">Metodiky a zdroje</a></footer>';
+    root.querySelectorAll('a[href="zaverecny-vystup.html"]:not([download])').forEach(a=>a.onclick=event=>{event.preventDefault();try{location.href=FINAL_OUTPUT_CONTEXT.link(role==='student'?person():null);}catch(err){toast(err.message);}});
+    if(parts[0]==='materialy'&&parts[1])requestAnimationFrame(()=>{const target=document.getElementById('dokumenty-'+parts[1]);if(target){target.tabIndex=-1;target.focus({preventScroll:true});target.scrollIntoView({block:'start'});}});
     if(page==='umisteni'||(page==='skola'&&window.IVP_ROSTER)){if(window.IVP_ROSTER)IVP_LOCAL.bind(root,db,role,persist,render,toast,id=>{useProfile('student/'+id);try{sessionStorage.setItem(KEY+'.view','student/'+id)}catch{}navigate('umisteni');},allowedPeople(),()=>{useProfile('ivp');try{sessionStorage.setItem(KEY+'.view','ivp')}catch{}navigate('umisteni');});else IVP_IMPORT.bind(root);}
     if(window.IVP_ROSTER && role==='student' && page!=='umisteni' && page!=='skola'){const bar=document.createElement('div');bar.className='lc-preview-bar';bar.innerHTML='<span>Pracovní náhled studenta</span><button type="button">← Zpět ke koordinaci</button>';root.querySelector('#content').prepend(bar);bar.querySelector('button').onclick=()=>{useProfile('ivp');try{sessionStorage.setItem(KEY+'.view','ivp')}catch{}navigate('umisteni');};}
     document.querySelector('#mode').onchange=ev=>{useProfile(ev.target.value);const url=new URL(location.href);url.searchParams.delete('profil');history.replaceState(null,'',url);try{sessionStorage.setItem(KEY+'.view',ev.target.value)}catch{} search='';statusFilter='all';navigate(window.IVP_ROSTER?'umisteni':role==='student'?'start':'ivp')};
@@ -278,7 +282,7 @@
       const edit=[...root.querySelectorAll('[data-rec-edit]')].find(b=>b.dataset.recEdit===page.split('/')[3]);
       if(edit){edit.click();history.replaceState(null,'','#praxe/'+m.id)}
     }
-    if(page==='plan'&&role==='student'){PLAN.bind(document.querySelector('#plan-space'),current().events,modules,{save:ev=>{current().events=ev;persist();render()},open:id=>navigate('praxe/'+id)})}
+    if(page==='plan'&&role==='student'){PLAN.bind(document.querySelector('#plan-space'),current().events,modules,{save:ev=>{const before=current().events;current().events=ev;if(persist()){render();toast('Kalendář je uložený.')}else{current().events=before;render();}},open:id=>navigate('praxe/'+id)})}
     if(page==='portfolio'){
       document.querySelector('#filter-q').oninput=ev=>{search=ev.target.value;document.querySelector('#results').innerHTML=listRecords()};
       document.querySelector('#filter-st').onchange=ev=>{statusFilter=ev.target.value;document.querySelector('#results').innerHTML=listRecords()};
