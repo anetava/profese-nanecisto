@@ -3,8 +3,8 @@
   const modules = [...METHODS, FINAL_METHOD, REFLECTION_METHOD];
   const syllabi=SOURCES.filter(s=>s.name.startsWith('UIS ČZU'));
   const mod = id => modules.find(m => m.id === id);
-  const people = [{id:'alex',name:'Alex',stage:'group'},{id:'ema',name:'Ema',stage:'micro'},{id:'sam',name:'Sam',stage:'continuous'}];
-  const KEY = 'atelier-praxe-upv.demo.v1';
+  const people = window.IVP_ROSTER?.people || [{id:'alex',name:'Alex',stage:'group'},{id:'ema',name:'Ema',stage:'micro'},{id:'sam',name:'Sam',stage:'continuous'}];
+  const KEY = window.IVP_ROSTER ? 'atelier-praxe-upv.live.v1' : 'atelier-praxe-upv.demo.v1';
   const root = document.getElementById('shell');
   const e = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const link = (route,label,cls='secondary') => '<a class="'+cls+'" href="#'+encodeURI(route)+'">'+e(label)+'</a>';
@@ -13,7 +13,7 @@
     micro:{title:'Instruktáž pro první samostatné měření',kind:'activity',status:'submitted',competency:'2.1',reflection:'První zadání popisovalo můj výklad. Přeformulovala jsem cíl jako činnost žáka.',nextStep:'Při příštím výstupu ukážu dvě ukázky měření.'},
     continuous:{title:'Žáci vysvětlují výběr měřidla',kind:'teaching',status:'confirmed',competency:'4.2',feedback:'Při rozboru jsme doložili zpětnou vazbu konkrétní opravou postupu žáka.',reflection:'Po otázce k přesnosti žák sám navrhl jiné měřidlo.',nextStep:'Při druhém pokusu nechám žáky pojmenovat změnu vlastními slovy.'}
   };
-  const fresh = () => Object.fromEntries(people.map((p,i) => {
+  const fresh = () => window.IVP_ROSTER ? Object.fromEntries(people.map(p=>[p.id,{events:[],records:[],reflections:[],retries:[],prep:{status:"draft"},placements:IVP_ROSTER.placements.filter(r=>r.studentId===p.id)}])) : Object.fromEntries(people.map((p,i) => {
     const m=mod(p.stage),sample=fieldExamples[p.stage];
     const firstField=m.fields?.[0]?.label;
     const events=structuredClone(PLAN.sample);
@@ -25,9 +25,10 @@
     const defaults=fresh(), out=data&&typeof data==='object'?data:{};
     for (const p of people) {
       const entry=out[p.id]||=defaults[p.id];
+      if(window.IVP_ROSTER && !Array.isArray(entry.placements))entry.placements=defaults[p.id].placements;
       if (!Array.isArray(entry.records)) entry.records=defaults[p.id].records;
       if (!Array.isArray(entry.events)) entry.events=defaults[p.id].events;
-      if (!Array.isArray(entry.reflections)) entry.reflections=IVPREF.seed(p.id);
+      if (!Array.isArray(entry.reflections)) entry.reflections=window.IVP_ROSTER?[]:IVPREF.seed(p.id);
       if (!Array.isArray(entry.retries)) entry.retries=[];
       if (!entry.prep) entry.prep=RoleDesk.initialPrep(p.id);
     }
@@ -35,8 +36,8 @@
   }
   try {stored=localStorage.getItem(KEY);db=hydrate(JSON.parse(stored));} catch {db=hydrate(null);}
 
-  let role='student',who='alex',search='',statusFilter='all';
-  const roleProfiles=[['mentor','Cvičný učitel'],['ivp','Koordinátor IVP'],...RoleDesk.profiles];
+  let role=window.IVP_ROSTER?'ivp':'student',who=people[0].id,search='',statusFilter='all';
+  const roleProfiles=window.IVP_ROSTER?[['ivp','Koordinátor IVP']]:[['mentor','Cvičný učitel'],['ivp','Koordinátor IVP'],...RoleDesk.profiles];
   const allowedPeople=()=>role==='student'?people.filter(p=>p.id===who):role==='ivp'?people:role==='mentor'?people.filter(p=>p.id!=='sam'):[];
   function useProfile(value){
     const [next,id]=value.split('/');
@@ -44,7 +45,7 @@
     else if(roleProfiles.some(([key])=>key===value)){role=value;if(role==='mentor' && !allowedPeople().some(p=>p.id===who))who=allowedPeople()[0].id;}
   }
   const entryProfile=new URLSearchParams(location.search).get('profil');
-  try {useProfile(entryProfile||sessionStorage.getItem(KEY+'.view')||'student/alex');} catch {if(entryProfile)useProfile(entryProfile);}
+  try {useProfile(entryProfile||sessionStorage.getItem(KEY+'.view')||(window.IVP_ROSTER?'ivp':'student/alex'));} catch {if(entryProfile)useProfile(entryProfile);}
   const refContext=()=>({
     db,who,role,people:allowedPeople(),toast,canSee:id=>allowedPeople().some(p=>p.id===id),
     save:(id,rows)=>{
@@ -57,7 +58,7 @@
   const person=()=>people.find(p=>p.id===who);
   const current=()=>db[who];
   const recordRoute=r=>r.isRetry?'druhy-pokus/'+encodeURIComponent(r.id):r.isBlockReflection?IVPREF.route(r.blockId,r.id):r.tool?r.tool:'praxe/'+r.moduleId+'/zaznam/'+encodeURIComponent(r.id);
-  const navItems=[['start','Všechny moduly'],['ivp','Praxe IVP'],['nacvik','Praxe nanečisto'],['adaptio','Adaptio'],['ss','Praxe SŠ'],['kurzy','Kurzy ČZU']];
+  const navItems=[['umisteni','Studenti a praxe'],['start','Všechny moduly'],['ivp','Praxe IVP'],['nacvik','Praxe nanečisto'],['adaptio','Adaptio'],['ss','Praxe SŠ'],['kurzy','Kurzy ČZU']];
   const names={student:'Student',mentor:'Cvičný učitel',ivp:'Přehled IVP'};
   const section=(ey,title,desc='')=>'<header class="subhead"><small class="eyebrow">'+e(ey)+'</small><h1>'+e(title)+'</h1>'+(desc?'<p>'+e(desc)+'</p>':'')+'</header>';
   const visibleRecords=()=>allowedPeople().some(p=>p.id===who)
@@ -196,7 +197,8 @@
     const nav=special?[['ivp',role==='method'?'Přehled metodika':'Přehled školy'],['adaptio','Adaptio'],['materialy','Dokumenty'],['sources','Metodiky']]:navItems;
     const active=nav.some(([id])=>id===page)?page:(special||!['materialy','sources'].includes(page)?'ivp':'');
     let content;
-    if(page==='materialy') content=BLOCKS.catalog(role);
+    if(page==='umisteni'||(page==='skola'&&window.IVP_ROSTER)) content=window.IVP_ROSTER?IVP_LOCAL.render(allowedPeople(),db,role):IVP_IMPORT.render();
+    else if(page==='materialy') content=BLOCKS.catalog(role);
     else if(page==='sources')content=sources();
     else if(special)content=page==='adaptio'?ATools.adaptioHome(role):RoleDesk.render(role,db,people,modules);
     else if(page==='start')content=hub();
@@ -214,8 +216,9 @@
     else if(page==='portfolio')content=portfolio();
     else if(page==='plan'&&role==='student')content='<div id="plan-space">'+PLAN.render(current().events,modules)+'</div><div class="calendar-take"><button type="button" class="secondary" data-calendar '+(current().events.length?'':'disabled')+'>Stáhnout termíny do mého kalendáře ↓</button><small>Soubor ICS pro kalendář v telefonu, Outlook nebo Google Kalendář.</small></div>';
     else content=role==='student'?studentHome():staff()+practiceLinks()+STAFFTOOLS.render(db,allowedPeople(),role);
-    root.innerHTML='<header class="site-head"><a class="brand" href="#start"><img src="mark.svg" alt=""><span>Ateliér praxí<small>Učitelství praktického vyučování</small></span></a><nav aria-label="Hlavní nabídka">'+nav.map(([id,name])=>'<a href="#'+id+'" '+(active===id?'aria-current="page"':'')+'>'+e(name)+'</a>').join('')+'</nav><label class="account"><span class="sr">Ukázkový profil</span><select id="mode">'+[...people.map(p=>['student/'+p.id,p.name+' · student']),...roleProfiles].map(([id,l])=>'<option value="'+id+'" '+(id===(role==='student'?'student/'+who:role)?'selected':'')+'>'+l+'</option>').join('')+'</select></label></header><main id="content" tabindex="-1">'+content+'</main><footer class="appfoot"><span>Ukázkové role · údaje se ukládají v tomto prohlížeči</span><a href="#materialy">Dokumenty ke stažení</a><a href="#sources">Metodiky a zdroje</a></footer>';
-    document.querySelector('#mode').onchange=ev=>{useProfile(ev.target.value);const url=new URL(location.href);url.searchParams.delete('profil');history.replaceState(null,'',url);try{sessionStorage.setItem(KEY+'.view',ev.target.value)}catch{} search='';statusFilter='all';navigate(role==='student'?'start':'ivp')};
+    root.innerHTML='<header class="site-head"><a class="brand" href="#start"><img src="mark.svg" alt=""><span>Ateliér praxí<small>Učitelství praktického vyučování</small></span></a><nav aria-label="Hlavní nabídka">'+nav.map(([id,name])=>'<a href="#'+id+'" '+(active===id?'aria-current="page"':'')+'>'+e(name)+'</a>').join('')+'</nav><label class="account"><span class="sr">Ukázkový profil</span><select id="mode">'+[...people.map(p=>['student/'+p.id,p.name+' · student']),...roleProfiles].map(([id,l])=>'<option value="'+id+'" '+(id===(role==='student'?'student/'+who:role)?'selected':'')+'>'+l+'</option>').join('')+'</select></label></header><main id="content" tabindex="-1">'+content+'</main><footer class="appfoot"><span>'+(window.IVP_ROSTER?'Soukromý seznam v tomto prohlížeči · přepínač profilů není přihlášení':'Ukázkové role · údaje se ukládají v tomto prohlížeči')+'</span><a href="#materialy">Dokumenty ke stažení</a><a href="#sources">Metodiky a zdroje</a></footer>';
+    if(page==='umisteni'||(page==='skola'&&window.IVP_ROSTER)){if(window.IVP_ROSTER)IVP_LOCAL.bind(root,db,role,persist,render,toast,id=>{useProfile('student/'+id);navigate('umisteni');});else IVP_IMPORT.bind(root);}
+    document.querySelector('#mode').onchange=ev=>{useProfile(ev.target.value);const url=new URL(location.href);url.searchParams.delete('profil');history.replaceState(null,'',url);try{sessionStorage.setItem(KEY+'.view',ev.target.value)}catch{} search='';statusFilter='all';navigate(window.IVP_ROSTER?'umisteni':role==='student'?'start':'ivp')};
     root.querySelector('[data-block-docs]')?.addEventListener('click',()=>{
       const panel=root.querySelector('[aria-label="Dokumenty k bloku"]');
       if(!panel)return;
