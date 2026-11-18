@@ -47,7 +47,7 @@
   const entryProfile=new URLSearchParams(location.search).get('profil');
   try {useProfile(entryProfile||sessionStorage.getItem(KEY+'.view')||(window.IVP_ROSTER?'ivp':'student/alex'));} catch {if(entryProfile)useProfile(entryProfile);}
   const refContext=()=>({
-    db,who,role,people:allowedPeople(),toast,canSee:id=>allowedPeople().some(p=>p.id===id),
+    db,who,role,people:allowedPeople(),toast,openRecord,canSee:id=>allowedPeople().some(p=>p.id===id),
     save:(id,rows)=>{
       if(!allowedPeople().some(p=>p.id===id)||!['ivp','student'].includes(role))return false;
       const before=db[id].reflections;db[id].reflections=rows;
@@ -55,6 +55,14 @@
       db[id].reflections=before;return false;
     }
   });
+  try {const selected=sessionStorage.getItem(KEY+'.selected');if(role!=='student'&&allowedPeople().some(p=>p.id===selected))who=selected;} catch {}
+  function rememberStudent(id){who=id;try{sessionStorage.setItem(KEY+'.selected',id)}catch{}}
+  function openRecord(id,moduleId,recordId){
+    if(!allowedPeople().some(p=>p.id===id))return;
+    const record=db[id]?.records.find(r=>r.id===recordId&&r.moduleId===moduleId);
+    if(!PRACTICE.readable(record,role))return;
+    rememberStudent(id);search='';statusFilter='all';navigate('praxe/'+moduleId+'/zaznam/'+encodeURIComponent(recordId));
+  }
   const person=()=>people.find(p=>p.id===who);
   const current=()=>db[who];
   const recordRoute=r=>r.isRetry?'druhy-pokus/'+encodeURIComponent(r.id):r.isBlockReflection?IVPREF.route(r.blockId,r.id):r.tool?r.tool:'praxe/'+r.moduleId+'/zaznam/'+encodeURIComponent(r.id);
@@ -62,7 +70,7 @@
   const names={student:'Student',mentor:'Cvičný učitel',ivp:'Přehled IVP'};
   const section=(ey,title,desc='')=>'<header class="subhead"><small class="eyebrow">'+e(ey)+'</small><h1>'+e(title)+'</h1>'+(desc?'<p>'+e(desc)+'</p>':'')+'</header>';
   const visibleRecords=()=>allowedPeople().some(p=>p.id===who)
-    ? [...current().records,...(role==='student'?[...Object.values(current().tools||{}).flat(),...current().retries]:[]),...IVPREF.portfolio(refContext())].filter(r=>role==='student'||r.status!=='draft')
+    ? [...current().records.map(r=>PRACTICE.readable(r,role)).filter(Boolean),...(role==='student'?[...Object.values(current().tools||{}).flat(),...current().retries]:[]),...IVPREF.portfolio(refContext())].filter(r=>role==='student'||r.status!=='draft')
     : [];
   const fmt=d=>d?new Intl.DateTimeFormat('cs-CZ',{day:'numeric',month:'long',year:'numeric'}).format(new Date(d+'T12:00:00')):'';
   function toast(msg){const node=document.getElementById('toast');node.textContent=msg;clearTimeout(toast.t);toast.t=setTimeout(()=>node.textContent='',3500);}
@@ -150,8 +158,8 @@
     const mi=modules.findIndex(item=>item.id===m.id), syl=syllabi[mi], guided=m.id==='guided', chosen=overview?'uis':current().guidedPlan||'uis';
     const targets=guided&&chosen==='uis'?{theory:4,practice:6}:m.observationTargets;
     const variant=guided?'<aside class="notice"><strong>Rozsah řízeného náslechu</strong><p>Sylabus UIS pro rok 2026/2027 a dodaná metodika 03 uvádějí různé počty. Po domluvě s garantem vyberte podklad pro své počítadlo.</p><label>Počítat podle<select id="guided-target" '+(role==='student'?'':'disabled')+'><option value="uis" '+(chosen==='uis'?'selected':'')+'>UIS 2026/2027 · 4 teoretické a 6 praktických</option><option value="method" '+(chosen==='method'?'selected':'')+'>Metodika 03 · 10 teoretických a 2 praktické</option></select></label></aside>':'';
-    return section('Praxe '+String(modules.findIndex(item=>item.id===m.id)+1).padStart(2,'0')+' · '+(overview?'Zadání a podklady':person().name),m.title,m.goal)+blockNav(m.id)+variant+
-    '<details class="area-box"><summary>Jak praxe probíhá a co doložím</summary>'+(syl?'<p><a href="'+e(syl.url)+'" target="_blank" rel="noopener">'+e(syl.name)+'</a><br>'+e(syl.note)+'</p>':'')+'<p>'+e(m.place)+'</p><ol class="steps">'+m.steps.map(x=>'<li>'+e(x)+'</li>').join('')+'</ol><h3>Co předložit</h3><ul>'+m.evidence.map(x=>'<li>'+e(x)+'</li>').join('')+'</ul><p>'+e(m.credit)+'</p><small>'+e((m.source||[]).join(' · '))+'</small></details>'+(overview?BLOCKS.docs(m.id,role):'<div id="record-space">'+PRACTICE.render({...m,observationTargets:targets},records,role)+'</div>'+blockExtras(m.id));
+    return (!overview&&role==='ivp'?'<nav class="record-owner"><a href="#podklady">← Podklady k rozboru</a><strong>'+e(person().name)+'</strong><a href="#portfolio">Portfolio studenta →</a></nav>':'')+section('Praxe '+String(modules.findIndex(item=>item.id===m.id)+1).padStart(2,'0')+' · '+(overview?'Zadání a podklady':person().name),m.title,m.goal)+blockNav(m.id)+variant+
+    '<details class="area-box"><summary>Jak praxe probíhá a co doložím</summary>'+(syl?'<p><a href="'+e(syl.url)+'" target="_blank" rel="noopener">'+e(syl.name)+'</a><br>'+e(syl.note)+'</p>':'')+'<p>'+e(m.place)+'</p><ol class="steps">'+m.steps.map(x=>'<li>'+e(x)+'</li>').join('')+'</ol><h3>Co předložit</h3><ul>'+m.evidence.map(x=>'<li>'+e(x)+'</li>').join('')+'</ul><p>'+e(m.credit)+'</p><small>'+e((m.source||[]).join(' · '))+'</small></details>'+(overview?BLOCKS.docs(m.id,role):'<div id="record-space">'+PRACTICE.render({...m,observationTargets:targets},records,role,{reflections:current().reflections})+'</div>'+blockExtras(m.id));
   }
   function skills(){
     const records=visibleRecords();
@@ -167,8 +175,11 @@
     return out.length?out.map(r=>'<details class="area-box entry"><summary>'+e(r.title||'Rozepsaný záznam')+' · '+e(fmt(r.date))+'</summary>'+exportBody(r)+link(recordRoute(r),r.isRetry?'Otevřít srovnání':r.isBlockReflection?'Otevřít reflexi a odpověď':r.tool?'Otevřít modul':'Otevřít v praxi')+(role==='student'&&!r.isBlockReflection&&!r.isRetry?' '+link(sourceRef(r.tool||r.moduleId,r.id),'Navázat reflexí pro IVP','text-btn'):'')+(role==='student'&&r.nextStep&&!r.isRetry?' '+link('druhy-pokus/'+encodeURIComponent(r.id),'Porovnat s druhým pokusem','text-btn'):'')+'</details>').join(''):'<p class="empty">Žádný odpovídající záznam.</p>';
   }
   function portfolio(){
+    let finalDraft=null,finalUnreadable=false;
+    if(role==='student')try{finalDraft=FINAL_OUTPUT_CONTEXT.read(person().id)}catch{finalUnreadable=true}
+    const finalCard=role==='student'?'<aside class="portfolio-final"><div><h2>Můj závěrečný souhrn</h2><p>'+(finalUnreadable?'Uložený souhrn teď nelze načíst. Otevřete jej a zkontrolujte uložené údaje.':finalDraft?'Máte uložený koncept souhrnu. Můžete se vrátit k volbám, doplnit ho a stáhnout pro závěrečný rozbor.':'Až budete uzavírat praxi, vyberete zde své doklady a shrnete, v čem jste se posunuli.')+' Jde o samostatný dokument k portfoliu.</p></div><a class="primary" href="zaverecny-vystup.html">'+(finalDraft?'Pokračovat v souhrnu':'Otevřít závěrečný souhrn')+' →</a></aside>':'';
     return section(person().name,role==='student'?'Moje portfolio':'Portfolio studujícího','Na jednom místě najdete záznamy, vlastní reflexe a zpětnou vazbu z praxí.')+
-    (role==='student'?'<div class="export-actions"><button class="secondary" data-exp-kind="full">Stáhnout celé portfolio</button><button class="secondary" data-exp-kind="brief">Stáhnout stručné portfolio · 4 strany</button></div>':'')+'<div class="panel portfolio-toolbar"><label>Hledat v portfoliu<input type="search" id="filter-q" placeholder="Téma, datum, kompetence…" value="'+e(search)+'"></label><label>Stav<select id="filter-st">'+[['all','Všechny záznamy'],...['draft','submitted','returned','confirmed'].map(s=>[s,statusName(s)])].map(([v,l])=>'<option value="'+v+'"'+(v===statusFilter?' selected':'')+'>'+e(l)+'</option>').join('')+'</select></label><button class="primary" data-print>Vytisknout celé portfolio / PDF</button></div><div class="records-list" id="results">'+listRecords()+'</div>';
+    (role==='student'?'<div class="export-actions"><button class="secondary" data-exp-kind="full">Stáhnout celé portfolio</button><button class="secondary" data-exp-kind="brief">Stáhnout stručné portfolio · 4 strany</button></div>':'')+finalCard+'<div class="panel portfolio-toolbar"><label>Hledat v portfoliu<input type="search" id="filter-q" placeholder="Téma, datum, kompetence…" value="'+e(search)+'"></label><label>Stav<select id="filter-st">'+[['all','Všechny záznamy'],...['draft','submitted','returned','confirmed'].map(s=>[s,statusName(s)])].map(([v,l])=>'<option value="'+v+'"'+(v===statusFilter?' selected':'')+'>'+e(l)+'</option>').join('')+'</select></label><button class="primary" data-print>Vytisknout celé portfolio / PDF</button></div><div class="records-list" id="results">'+listRecords()+'</div>';
   }
   function staff(){
     const pending=allowedPeople().flatMap(p=>db[p.id].records.filter(r=>r.status==='submitted').map(r=>({p,r})));
@@ -194,12 +205,20 @@
     const scenarioMatch=/^(nacvik|adaptio)\/situace\/([1-3])$/.exec(rawPage);
     const routedPage=special&&!['start','sources','materialy','adaptio'].includes(rawPage)?'ivp':scenarioMatch?scenarioMatch[1]:rawPage;
     const page=window.IVP_ROSTER && routedPage==='ivp'?'studium':routedPage;
-    const parts=page.split('/'),baseModule=parts[0]==='praxe'?mod(parts[1]):null,m=baseModule&&window.IVP_ROSTER?{...baseModule,schoolOptions:[...new Set((current().placements||[]).filter(r=>r.moduleId===baseModule.id).map(r=>r.school).filter(Boolean))]}:baseModule,refPage=parts[0]==='reflexe';
-    const liveNav=role==='ivp'?[['umisteni','Přehled studentů'],['studium','Bloky praxí'],['reflexe','Reflexe k vyřízení'],['materialy','Dokumenty'],['start','Všechny moduly']]:[['umisteni','Moje praxe'],['studium','Studijní cesta'],['plan','Můj plán'],['reflexe','Moje reflexe'],['portfolio','Portfolio'],['materialy','Dokumenty']];
+    const parts=page.split('/').map(part=>{try{return decodeURIComponent(part)}catch{return part}});
+    let recordUnavailable=false;
+    if(parts[0]==='praxe'&&parts[2]==='zaznam'&&role!=='student'){
+      const owners=allowedPeople().filter(p=>db[p.id].records.some(r=>r.id===parts[3]&&r.moduleId===parts[1]&&PRACTICE.readable(r,role)));
+      if(owners.length===1)rememberStudent(owners[0].id);else recordUnavailable=true;
+    }
+    const baseModule=parts[0]==='praxe'?mod(parts[1]):null,m=baseModule&&window.IVP_ROSTER?{...baseModule,schoolOptions:[...new Set((current().placements||[]).filter(r=>r.moduleId===baseModule.id).map(r=>r.school).filter(Boolean))]}:baseModule,refPage=parts[0]==='reflexe';
+    const liveNav=role==='ivp'?[['umisteni','Přehled studentů'],['studium','Bloky praxí'],['podklady','Podklady k rozboru'],['materialy','Dokumenty'],['start','Všechny moduly']]:[['umisteni','Moje praxe'],['studium','Studijní cesta'],['plan','Můj plán'],['reflexe','Moje reflexe'],['portfolio','Portfolio'],['materialy','Dokumenty']];
     const nav=window.IVP_ROSTER?liveNav:special?[['ivp',role==='method'?'Přehled metodika':'Přehled školy'],['adaptio','Adaptio'],['materialy','Dokumenty'],['sources','Metodiky']]:navItems;
-    const active=parts[0]==='reflexe'?'reflexe':parts[0]==='materialy'?'materialy':nav.some(([id])=>id===page)?page:(window.IVP_ROSTER&&['praxe','zadani','skills','druhy-pokus'].includes(parts[0])?'studium':special||!['materialy','sources'].includes(page)?'ivp':'');
+    let active=parts[0]==='reflexe'?(role==='ivp'&&window.IVP_ROSTER?'podklady':'reflexe'):parts[0]==='materialy'?'materialy':nav.some(([id])=>id===page)?page:(window.IVP_ROSTER&&['praxe','zadani','skills','druhy-pokus'].includes(parts[0])?'studium':special||!['materialy','sources'].includes(page)?'ivp':'');
+    if(window.IVP_ROSTER&&role==='ivp'&&(page==='portfolio'||(parts[0]==='praxe'&&parts[2]==='zaznam')))active='podklady';
     let content;
     if(page==='umisteni'||(page==='skola'&&window.IVP_ROSTER)) content=window.IVP_ROSTER?IVP_LOCAL.render(allowedPeople(),db,role):IVP_IMPORT.render();
+    else if(page==='podklady'&&role==='ivp')content=REVIEW.render({people:allowedPeople(),db});
     else if(parts[0]==='materialy') content=BLOCKS.catalog(role);
     else if(page==='studium')content=STUDY.render({role,person:person(),entry:current(),modules,people:allowedPeople(),db,live:Boolean(window.IVP_ROSTER)});
     else if(page==='sources')content=sources();
@@ -208,12 +227,12 @@
     else if(refPage){
       if(parts[1]==='nova' && role==='student' && BLOCKS.get(parts[2])){
         content=link('reflexe','← Moje reflexe','text-btn')+IVPREF.block(parts[2],refContext(),{compose:true,activityId:parts[3]==='zaznam'?undefined:parts[3],sourceId:parts[3]==='zaznam'?parts[4]:undefined});
-      }else content=IVPREF.queue(refContext(),{focus:parts[1]});
+      }else content=(role==='ivp'?'<p><a class="text-btn" href="#podklady">← Všechny podklady k rozboru</a></p>':'')+IVPREF.queue(refContext(),{focus:parts[1]});
     }
     else if(page==='skola')content=schoolPage();
     else if(toolPages.includes(page))content=practiceTool(page,scenarioMatch);
     else if(parts[0]==='zadani'&&mod(parts[1]))content=modulePage(mod(parts[1]),true);
-    else if(m)content=modulePage(m);
+    else if(m)content=recordUnavailable?section('Podklady studenta','Tento záznam nelze jednoznačně otevřít','Vyberte jej znovu z přehledu předaných podkladů.')+link('podklady','Otevřít podklady k rozboru'):modulePage(m);
     else if(parts[0]==='druhy-pokus'&&role==='student')content=DRUHY.render(visibleRecords(),current().retries,parts[1]);
     else if(page==='skills')content=skills();
     else if(parts[0]==='nahled'&&role==='student'&&['full','brief'].includes(parts[1]))content=link('materialy','← Dokumenty k praxím','text-btn')+section(person().name,parts[1]==='brief'?'Moje stručné portfolio':'Moje celé portfolio')+'<div class="export-actions"><button class="primary" data-exp-kind="'+parts[1]+'">Stáhnout HTML ↓</button><button class="secondary" data-preview-print>Tisk / uložit PDF</button></div><iframe class="doc-preview" title="Náhled mého portfolia" id="export-preview"></iframe>';
@@ -249,10 +268,11 @@
       });
       return;
     }
-    root.querySelectorAll('[data-person]').forEach(b=>b.onclick=()=>{who=b.dataset.person;search='';statusFilter='all';navigate(b.dataset.stage?'praxe/'+b.dataset.stage+'/zaznam/'+encodeURIComponent(b.dataset.entry):'portfolio')});
+    if(page==='podklady'&&role==='ivp')REVIEW.bind(root,{openRecord,openReflection:id=>navigate('reflexe/'+encodeURIComponent(id))});
+    root.querySelectorAll('[data-person]').forEach(b=>b.onclick=()=>{if(!allowedPeople().some(p=>p.id===b.dataset.person))return;if(b.dataset.stage)return openRecord(b.dataset.person,b.dataset.stage,b.dataset.entry);rememberStudent(b.dataset.person);search='';statusFilter='all';navigate('portfolio')});
     if(page==='skola'){
       const select=root.querySelector('#school-user');if(select)select.onchange=()=>{who=select.value;render()};
-      if(root.querySelector('#prep-space'))PREP.bind(root.querySelector('#prep-space'),current().prep||{},role,state=>{current().prep=state;const ok=persist();render();if(ok)toast('Změna je uložená.')});
+      if(root.querySelector('#prep-space'))PREP.bind(root.querySelector('#prep-space'),current().prep||{},role,state=>{const before=current().prep;current().prep=state;if(!persist()){current().prep=before;return;}render();toast('Změna je uložená.')});
     }
     if(page==='ivp' && role!=='student')STAFFTOOLS.bind(root,{openStudent:(id,dest='portfolio')=>{if(!allowedPeople().some(p=>p.id===id))return;who=id;navigate(dest)},go:navigate});
     if(toolPages.includes(page)){
@@ -271,15 +291,23 @@
       else tool.bind(root.querySelector('#tool-space'),page,notes,save,role,page==='adaptio'&&scenarioMatch?Number(scenarioMatch[2])-1:null);
       if(scenarioMatch&&page==='nacvik')root.querySelector('[data-scenario="'+(Number(scenarioMatch[2])-1)+'"]')?.click();
     }
-    if(m?.id==='guided'&&role==='student')document.querySelector('#guided-target').onchange=ev=>{current().guidedPlan=ev.target.value;persist();render()};
-    if(m){PRACTICE.bind(document.querySelector('#record-space'),m,current().records.filter(r=>r.moduleId===m.id),{role:role,save:items=>{if(parts[2]==='novy')history.replaceState(null,'','#praxe/'+m.id);current().reviewLog=STAFFTOOLS.logChanges(current().records.filter(r=>r.moduleId===m.id),items,current().reviewLog);current().records=[...current().records.filter(r=>r.moduleId!==m.id),...items];const ok=persist();render();if(ok)toast('Záznam je uložený.')},go:navigate})}
-    if(m && page.split('/')[2]==='zaznam'){
-      const sel=[...root.querySelectorAll('[data-record-id]')].find(el=>el.dataset.recordId===page.split('/')[3]);
+    if(m?.id==='guided'&&role==='student')document.querySelector('#guided-target').onchange=ev=>{const before=current().guidedPlan;current().guidedPlan=ev.target.value;if(!persist()){current().guidedPlan=before;ev.target.value=before||'uis';return;}render()};
+    if(m&&!recordUnavailable){PRACTICE.bind(document.querySelector('#record-space'),m,current().records.filter(r=>r.moduleId===m.id),{role,save:items=>{
+      const beforeRecords=current().records,beforeLog=current().reviewLog;
+      const changed=items.find(r=>beforeRecords.find(old=>old.id===r.id)!==r);
+      current().reviewLog=STAFFTOOLS.logChanges(beforeRecords.filter(r=>r.moduleId===m.id),items,beforeLog);
+      current().records=[...beforeRecords.filter(r=>r.moduleId!==m.id),...items];
+      if(!persist()){current().records=beforeRecords;current().reviewLog=beforeLog;return false;}
+      if(changed)history.replaceState(null,'','#praxe/'+m.id+'/zaznam/'+encodeURIComponent(changed.id));
+      render();toast(role==='student'?(changed?.status==='submitted'?'Záznam je ve frontě koordinátora v tomto prohlížeči.':'Rozepsaný záznam je uložený.'):(changed?.status==='returned'?'Záznam je vrácený k doplnění.':'Rozbor záznamu je uzavřený.'));return true;
+    },go:navigate})}
+    if(m && parts[2]==='zaznam'){
+      const sel=[...root.querySelectorAll('[data-record-id]')].find(el=>el.dataset.recordId===parts[3]);
       if(sel){sel.open=true;requestAnimationFrame(()=>sel.scrollIntoView({block:'start'}))}
     }
     if(m && parts[2]==='novy' && role==='student')root.querySelector('[data-rec-new]')?.click();
-    if(m && page.split('/')[2]==='upravit' && role==='student'){
-      const edit=[...root.querySelectorAll('[data-rec-edit]')].find(b=>b.dataset.recEdit===page.split('/')[3]);
+    if(m && parts[2]==='upravit' && role==='student'){
+      const edit=[...root.querySelectorAll('[data-rec-edit]')].find(b=>b.dataset.recEdit===parts[3]);
       if(edit){edit.click();history.replaceState(null,'','#praxe/'+m.id)}
     }
     if(page==='plan'&&role==='student'){PLAN.bind(document.querySelector('#plan-space'),current().events,modules,{save:ev=>{const before=current().events;current().events=ev;if(persist()){render();toast('Kalendář je uložený.')}else{current().events=before;render();}},open:id=>navigate('praxe/'+id)})}

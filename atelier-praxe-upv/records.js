@@ -10,14 +10,30 @@ window.PRACTICE = (() => {
   const formatDate = v => /^\d{4}-\d{2}-\d{2}$/.test(v || '') ? v.split('-').reverse().join('. ') : v || '';
   const pick = (v, w) => v === w ? ' selected' : '';
   const section = (label, text) => text ? '<p><strong>'+esc(label)+'</strong><br>'+esc(text).replace(/\n/g,'<br>')+'</p>' : '';
+  const canReview = role => ['mentor','ivp'].includes(role);
+  const snapshot = r => Object.fromEntries(['title','date','kind','fields','timeline','reflection','nextStep','competency'].map(k=>[k,structuredClone(r[k]??(['fields'].includes(k)?{}:k==='timeline'?[]:''))]));
+  function readable(r,role='student') {
+    if(!r || !Object.hasOwn(statuses,r.status))return null;
+    if(role==='student')return r;
+    if(!canReview(role)||r.status==='draft')return null;
+    return r.status==='returned'&&r.submittedVersion?{...r,...snapshot(r.submittedVersion)}:r;
+  }
+  function nextAction(r,context={}) {
+    const reflection=(context.reflections||[]).find(x=>x.sourceId===r.id&&x.blockId===r.moduleId);
+    const href=reflection?'reflexe/'+encodeURIComponent(reflection.id):'reflexe/nova/'+r.moduleId+'/zaznam/'+encodeURIComponent(r.id);
+    const text={draft:'Záznam zatím vidíte jen vy. Až bude hotový, předejte jej k rozboru.',submitted:'Záznam čeká na rozbor. Zpětná vazba se objeví tady i ve vašem portfoliu.',returned:'Doplňte záznam podle zpětné vazby a znovu jej předejte k rozboru.',confirmed:'Rozbor tohoto záznamu je uzavřený. Doklad i zpětná vazba jsou ve vašem portfoliu.'}[r.status];
+    return '<aside class="record-next record-next-'+r.status+'"><strong>'+esc(text)+'</strong>'+(['submitted','confirmed'].includes(r.status)?'<div class="actions"><a class="secondary" href="#'+esc(href)+'">'+(reflection?'Otevřít navazující reflexi':'Navázat reflexí pro IVP')+' →</a><a class="text-btn" href="#portfolio">Moje portfolio →</a></div>':'')+'</aside>';
+  }
 
   function recordBody(r) {
+    const skill=(window.AREAS||[]).flatMap(area=>area.skills||[]).find(item=>item.code===r.competency);
+    const competency=skill?r.competency+' · '+skill.name:r.competency;
     const answers = Object.entries(r.fields || {}).map(([label,val])=>section(label,val)).join('');
     const timeline = (r.timeline || []).map(row=>'<li>'+[row.time,row.event,row.pupils,row.note].filter(Boolean).map(esc).join(' · ')+'</li>').join('');
     const review = Object.entries(r.review||{}).map(([label,val])=>section(label,val)).join('');
     return '<div class="record-body">'+section('Datum',formatDate(r.date))+section('Druh záznamu',kinds[r.kind])+answers+
       (timeline ? '<h4>Průběh hodiny</h4><ol>'+timeline+'</ol>' : '')+section('Moje reflexe',r.reflection)+
-      section('Můj další krok',r.nextStep)+section('Vazba na kompetenci',r.competency)+review+section('Zpětná vazba',r.feedback)+'</div>';
+      section('Můj další krok',r.nextStep)+section('Vazba na kompetenci',competency)+review+section('Zpětná vazba',r.feedback)+'</div>';
   }
 
   function progress(m, rows) {
@@ -27,14 +43,14 @@ window.PRACTICE = (() => {
     return '<p class="muted">Předané záznamy · teoretická výuka '+completed.filter(r=>r.kind==='theory').length+' z '+m.observationTargets.theory+' · praktické vyučování '+completed.filter(r=>r.kind==='practical').length+' z '+m.observationTargets.practice+'</p>';
   }
 
-  function render(m, records=[], role='student') {
+  function render(m, records=[], role='student', context={}) {
     const student = role==='student';
-    const recordsToShow = records.filter(r => student || r.status !== 'draft').slice().sort((a,b)=>(b.date || '').localeCompare(a.date || ''));
+    const recordsToShow = records.map(r=>readable(r,role)).filter(Boolean).sort((a,b)=>(b.date || '').localeCompare(a.date || ''));
     const rows = recordsToShow.map(r=>{
       const editable = student && ['draft','returned'].includes(r.status);
       return '<details class="panel" data-record-id="'+esc(r.id)+'"><summary><b>'+esc(r.title || 'Rozepsaný záznam')+'</b> · '+esc(formatDate(r.date))+' <span class="pill">'+esc(statusLabel(r.status))+'</span></summary>'+
-        recordBody(r)+(editable ? '<button class="secondary" type="button" data-rec-edit="'+esc(r.id)+'">Upravit záznam</button>' : '')+
-        (role==='mentor' && r.status==='submitted' ? reviewForm(m,r) : '')+'</details>';
+        recordBody(r)+(student?nextAction(r,context):'')+(editable ? '<button class="secondary" type="button" data-rec-edit="'+esc(r.id)+'">'+(r.status==='returned'?'Doplnit podle zpětné vazby':'Pokračovat v záznamu')+'</button>' : '')+
+        (canReview(role) && r.status==='submitted' ? reviewForm(m,r,role) : '')+'</details>';
     }).join('');
     return '<section class="stack" data-practice-records><div class="section-head"><h2>'+ (student?'Moje záznamy':'Záznamy k rozboru')+'</h2>'+
       (student ? '<button class="primary" type="button" data-rec-new>'+ (isObservation(m)?'Zapsat náslech':isTeaching(m)?'Zapsat výstup':'Přidat záznam')+'</button>' : '')+'</div>'+
@@ -66,18 +82,18 @@ window.PRACTICE = (() => {
       (observed?'<details class="rec-timeline" '+(r.timeline?.length?'open':'')+'><summary>Časová osa náslechu</summary><p>Ke stejnému okamžiku zachyťte činnost učitele i reakci žáků.</p><div class="stack" data-time-rows>'+(r.timeline?.length?r.timeline:[{}]).map(timelineRow).join('')+'</div><button type="button" class="secondary" data-rec-moment>Přidat další okamžik</button></details>':'')+
       '<div class="fields">'+
       (areas?'<label>Kompetence, kterou zde dokládám<select name="competency"><option value="">Vyberu později</option>'+areas+'</select></label>':'')+'</div>'+
-      '<p class="notice" data-rec-msg role="status" hidden></p><div class="actions"><button type="submit" class="primary" value="submit">Předat k rozboru</button><button type="submit" value="draft" class="secondary">Uložit rozepsané</button><button type="button" class="secondary" data-rec-close>Zavřít formulář</button></div></form>';
+      '<p class="notice" data-rec-msg role="status" hidden></p><div class="actions"><button type="submit" class="primary" value="submit">'+(r.status==='returned'?'Znovu předat k rozboru':'Předat k rozboru')+'</button><button type="submit" value="draft" class="secondary" formnovalidate>Uložit rozepsané</button><button type="button" class="secondary" data-rec-close>Zavřít formulář</button></div><small>Předání zpřístupní záznam v pracovním přehledu koordinátora v tomto prohlížeči. E-mail se neposílá.</small></form>';
   }
 
-  function reviewForm(m,r) {
+  function reviewForm(m,r,role) {
     const rubrics = ['Srozumitelnost cíle hodiny','Návaznost metod na cíl',...(r.kind==='theory'?['Otázky vedoucí k porozumění']:['Instruktáž a kontrola samostatné práce žáků']), 'Závěrečné vyhodnocení učení'];
-    return '<form class="fields" data-review="'+esc(r.id)+'"><h3>Společný rozbor</h3>'+
+    return '<form class="fields record-review" data-review="'+esc(r.id)+'"><h3>'+(role==='ivp'?'Rozbor záznamu s IVP':'Společný rozbor')+'</h3><p>Zachyťte zpětnou vazbu ke konkrétní práci. Uzavření tohoto záznamu nemění stav celé praxe.</p>'+
       (isTeaching(m)?'<details><summary>Pozorované projevy výuky</summary>'+rubrics.map(label=>'<label>'+esc(label)+'<select data-rubric="'+esc(label)+'">'+['Neposuzováno','Ano','Částečně','Ne'].map(v=>'<option'+pick(v,r.review?.[label])+'>'+v+'</option>').join('')+'</select></label>').join('')+'</details>':'')+
-      Volba.field({label:'Zpětná vazba studujícímu',name:'feedback',items:Napovedy.feedback,value:r.feedback||'',required:true})+'<div class="actions"><button class="primary" value="confirm">Uzavřít rozbor</button><button class="secondary" value="return">Vrátit k doplnění</button></div><p class="muted">Splnění předmětu posuzuje IVP podle podmínek příslušné praxe.</p></form>';
+      Volba.field({label:'Zpětná vazba studujícímu',name:'feedback',items:Napovedy.feedback,value:r.feedback||'',required:true})+'<div class="actions"><button class="primary" value="confirm">Uzavřít rozbor</button><button class="secondary" value="return">Vrátit k doplnění</button></div><p class="notice" data-rec-msg role="alert" hidden></p><p class="muted">Splnění předmětu posuzuje IVP podle podmínek příslušné praxe.</p></form>';
   }
 
   function bind(root,m,records,callbacks) {
-    const box = root.matches?.('[data-practice-records]')?root:root.querySelector('[data-practice-records]');
+    const box = root?.matches?.('[data-practice-records]')?root:root?.querySelector('[data-practice-records]');
     if (!box) return;
     const editorBox = box.querySelector('[data-rec-editor]');
     const student = (callbacks.role || 'student')==='student';
@@ -86,7 +102,7 @@ window.PRACTICE = (() => {
       if (!target || !student) return;
       if (target.hasAttribute('data-rec-moment')) {
         const rows = box.querySelector('[data-time-rows]');
-        rows.insertAdjacentHTML('beforeend', timelineRow());rows.lastElementChild.querySelector('select').focus();
+        rows.insertAdjacentHTML('beforeend', timelineRow());rows.lastElementChild.querySelector('input[type=radio],select')?.focus();
       }
       if (target.hasAttribute('data-rec-close')) {editorBox.replaceChildren();box.querySelector('[data-rec-new]').focus();}
       if (target.hasAttribute('data-rec-new')||target.hasAttribute('data-rec-edit')) {
@@ -94,15 +110,18 @@ window.PRACTICE = (() => {
         const r=id?records.find(v=>v.id===id):{};
         if (!r || (id && !['draft','returned'].includes(r.status))) return;
         editorBox.innerHTML=editor(m,r);
-        editorBox.querySelector('[data-pick-options]').focus({preventScroll:true});editorBox.scrollIntoView({block:'start'});
+        editorBox.querySelector('[data-pick-options] input,select[data-pick-options]')?.focus({preventScroll:true});editorBox.scrollIntoView({block:'start'});
       }
     };
     box.onsubmit = e=>{
       e.preventDefault();
       const f=e.target, data=new FormData(f);
       const val=name=>String(data.get(name)||'').trim();
+      const save=items=>{if(callbacks.save(items)===false){const msg=f.querySelector('[data-rec-msg]');if(msg){msg.hidden=false;msg.textContent='Změnu se nepodařilo uložit. Vyplněné údaje zůstávají ve formuláři.';}}};
       if (student && f.matches('[data-rec-form]')) {
+        if(!['submit','draft'].includes(e.submitter?.value))return;
         const old=records.find(r=>r.id===f.dataset.id);
+        if(f.dataset.id&&!old)return;
         if (old&&!['draft','returned'].includes(old.status))return;
         const submit=e.submitter?.value==='submit';
         const r={...old,id:old?.id || (globalThis.crypto?.randomUUID?.() || 'r'+Date.now().toString(36)+Math.random().toString(36).slice(2)),moduleId:m.id,date:val('date'),kind:val('kind'),title:val('title'),status:submit?'submitted':(old?.status==='returned'?'returned':'draft'),fields:{},timeline:[],reflection:val('reflection'),nextStep:val('nextStep'),competency:val('competency'),feedback:old?.feedback || ''};
@@ -111,15 +130,18 @@ window.PRACTICE = (() => {
         if (submit && (!r.title || !r.date || !r.reflection || (!Object.values(r.fields).some(Boolean) && !r.timeline.length))) {
           const msg=f.querySelector('[data-rec-msg]');msg.hidden=false;msg.textContent='K rozboru doplňte téma, datum, vlastní reflexi a alespoň jeden konkrétní podklad nebo okamžik z hodiny.';msg.scrollIntoView({block:'nearest'});return;
         }
-        callbacks.save(old? records.map(v=>v.id===r.id?r:v):[...records,r]);return;
+        r.updatedAt=new Date().toISOString();
+        if(submit){r.submittedAt=r.updatedAt;r.submittedVersion=snapshot(r);}
+        else if(old?.status==='returned'&&!old.submittedVersion)r.submittedVersion=snapshot(old);
+        save(old? records.map(v=>v.id===r.id?r:v):[...records,r]);return;
       }
-      if (callbacks.role==='mentor' && f.matches('[data-review]')) {
+      if (canReview(callbacks.role) && f.matches('[data-review]')) {
         const r=records.find(v=>v.id===f.dataset.review);
-        if(!r || r.status!=='submitted' || !val('feedback'))return;
+        if(!r || r.status!=='submitted' || !val('feedback') || !['confirm','return'].includes(e.submitter?.value))return;
         const review={};f.querySelectorAll('[data-rubric]').forEach(el=>{review[el.dataset.rubric]=el.value});
-        callbacks.save(records.map(v=>v.id===r.id?{...v,review,feedback:val('feedback'),status:e.submitter?.value==='return'?'returned':'confirmed'}:v));
+        save(records.map(v=>v.id===r.id?{...v,submittedVersion:v.submittedVersion||snapshot(v),review,feedback:val('feedback'),reviewedBy:callbacks.role,reviewedAt:new Date().toISOString(),status:e.submitter?.value==='return'?'returned':'confirmed'}:v));
       }
     };
   }
-  return { render,bind,recordBody,statusLabel };
+  return { render,bind,recordBody,statusLabel,readable };
 })();

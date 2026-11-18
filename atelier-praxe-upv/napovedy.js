@@ -71,7 +71,7 @@ window.Napovedy=(()=>{
     'Co ukazují mé dvě ukázky?':packs.reflection[1], 'Co se změnilo v mém rozhodování?':packs.reflection[2], 'Na co se zaměřím dál?':packs.reflection[3]
   };
   const moment={time:['Na začátku hodiny','Při prvním pokusu','Při závěrečném rozboru'],event:['Učitel předvedl první krok.','Učitel položil doplňující otázku.','Učitel požádal o porovnání výsledků.'],pupils:['Žák zopakoval postup samostatně.','Dvojice si vyžádala upřesnění.','Žák vysvětlil důvod své volby.'],note:['Ověřit, proč učitel vyčkal.','Porovnat s druhým pokusem.','Zeptat se žáka, co mu pomohlo.']};
-  const feedback=['Doplňte, co konkrétně udělal žák po vašem pokynu.','Při dalším pokusu porovnejte dvě reakce žáků.','U příštího výstupu se vraťme ke stejnému cíli.'];
+  const feedback=['Závěr je podložený konkrétní situací z hodiny. Pokračujte navrženým dalším krokem.','V záznamu je zřetelná vazba mezi postupem učitele a reakcí žáka.','Doplňte, co konkrétně udělal žák po vašem pokynu.','Při dalším pokusu porovnejte dvě reakce žáků.','U příštího výstupu se vraťme ke stejnému cíli.'];
   // Each set follows the three questions in the block's reflection sheet.
   const specific={
     nacvik:[

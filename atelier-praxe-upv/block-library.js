@@ -171,7 +171,7 @@ window.BLOCKS = (() => {
     return '<section class="panel stack block-document-kit" aria-label="Dokumenty k bloku"><div><small class="eyebrow">Dokumenty k bloku · Akademický rok 2026/2027</small>' +
       '<h2>' + escape(item.sheet) + '</h2><p>' + escape(item.detail) + '</p></div><div class="actions">' + sheetLink(item) +
       '<a class="secondary" href="#materialy">Všechny dokumenty</a></div><small class="muted">Pracovní list Ateliéru praxí pro vlastní poznámky a reflexi.</small>' +
-      (['continuous','reflection'].includes(id)?'<a href="#materialy">Závěrečný protokol a portfolia →</a>':'') + submission(item, role) + sourceLinks(item) + '</section>';
+      (['continuous','reflection'].includes(id)?'<a href="#materialy/vystupy">Závěrečný protokol a portfolia →</a>':'') + submission(item, role) + sourceLinks(item) + '</section>';
   }
   function indexItem(item, role) {
     const student = role === 'student';

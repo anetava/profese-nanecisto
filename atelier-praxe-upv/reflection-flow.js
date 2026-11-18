@@ -24,7 +24,7 @@ window.IVPREF = (() => {
     if(row.status==='draft')return null;
     // A student may save a revised draft while the coordinator still sees the last submitted version.
     const sent=history(row).filter(event=>event.type==='submitted').at(-1);
-    return sent?{...row,topic:sent.topic||row.topic,observation:sent.observation,meaning:sent.meaning,next:sent.next}:null;
+    return sent?{...row,topic:sent.topic||row.topic,observation:sent.observation,meaning:sent.meaning,next:sent.next,sourceId:sent.sourceId??row.submittedReference??(row.status==='submitted'?row.sourceId:'')}:null;
   }
   function allVisible(ctx) {
     return ctx.people.flatMap(p=>rows(ctx,p.id).map(row=>({p,row:readable(ctx,p.id,row)})).filter(x=>x.row))
@@ -81,13 +81,20 @@ window.IVPREF = (() => {
     const choices=sourceChoices(ctx,p,block),selected=selection(row||{sourceId},choices,activity);
     return '<form class="fields rf-form" data-rf-compose data-source-key="'+esc(selected.value)+'" data-owner="'+esc(p)+'" data-block="'+esc(block)+'" data-id="'+esc(row?.id)+'"><label>Čeho se reflexe týká<select name="source">'+choices.map(o=>option(o.value,o.record?o.topic+' · '+displayDate(o.record.date):o.topic,selected.value)).join('')+'</select></label><div data-rf-source>'+sourcePreview(selected)+'</div>'+
       '<div class="rf-picks" data-rf-answers>'+responseFields(block,selected,row||{})+'</div>'+
-      '<div class="actions"><button type="submit" class="primary" value="submit">'+(row?.status==='returned'?'Znovu předat koordinátorovi':'Předat koordinátorovi IVP')+'</button><button class="secondary" type="submit" value="draft" formnovalidate>Uložit rozepsané</button></div><small>Rozepsanou reflexi vidíte jen vy. Po předání ji uvidí koordinátor IVP a váš cvičný učitel.</small><p class="notice" data-rf-error role="alert" hidden></p></form>';
+      '<div class="actions"><button type="submit" class="primary" value="submit">'+(row?.status==='returned'?'Znovu předat koordinátorovi':'Předat koordinátorovi IVP')+'</button><button class="secondary" type="submit" value="draft" formnovalidate>Uložit rozepsané</button></div><small>Rozepsanou reflexi vidíte jen vy. Předání ji zpřístupní koordinátorovi v této místní pracovní kopii. E-mail se neposílá.</small><p class="notice" data-rf-error role="alert" hidden></p></form>';
+  }
+  function submittedSource(ctx,p,row) {
+    if(ctx.role==='student'||!row.sourceId||!phaseIds.includes(row.blockId))return '';
+    const source=(ctx.db[p]?.records||[]).find(r=>r.id===row.sourceId&&r.moduleId===row.blockId);
+    const visible=window.PRACTICE?.readable(source,ctx.role);
+    if(!visible)return '<p class="muted">Navazující záznam zatím není předaný k rozboru. Zde posuzujete předanou reflexi.</p>';
+    return '<details class="rf-linked-source"><summary>Podklad k této reflexi · '+esc(visible.title)+'</summary>'+PRACTICE.recordBody(visible)+'<button type="button" class="secondary" data-rf-open-record data-owner="'+esc(p)+'" data-module="'+esc(row.blockId)+'" data-record="'+esc(source.id)+'">Otevřít záznam a jeho rozbor →</button></details>';
   }
   function thread(ctx,p,row) {
     const answer=history(row).filter(e=>['returned','confirmed'].includes(e.type)).at(-1);
     const editable=ctx.role==='student'&&['draft','returned'].includes(row.status);
     const exchange=window.RFX?.item(row,ctx.role,p)||'';
-    return '<div class="rf-thread" data-rf-row="'+esc(row.id)+'">'+
+    return '<div class="rf-thread" data-rf-row="'+esc(row.id)+'">'+submittedSource(ctx,p,row)+
       (answer?'<div class="rf-answer"><strong>'+esc(answer.type==='returned'?(row.status==='returned'?'Koordinátor IVP žádá o doplnění':'Poslední podnět koordinátora k doplnění'):'Zpětná vazba koordinátora IVP')+'</strong><p>'+esc(answer.message)+'</p></div>':'')+
       (editable?form(ctx,p,row.blockId,row):'<dl class="rf-body">'+bodyLines(row)+'</dl>')+
       (ctx.role==='ivp'&&row.status==='submitted'?'<form class="fields rf-review" data-rf-review data-owner="'+esc(p)+'" data-id="'+esc(row.id)+'">'+Volba.field({label:'Moje odpověď studentovi',name:'message',items:Napovedy.feedback,required:true})+'<div class="actions"><button class="primary" value="confirmed">Uzavřít se zpětnou vazbou</button><button class="secondary" value="returned">Vrátit k doplnění</button></div><p class="notice" data-rf-error role="alert" hidden></p></form>':'')+
@@ -166,12 +173,14 @@ window.IVPREF = (() => {
         f.querySelector('[data-rf-source]').innerHTML=sourcePreview(chosen);
       });
       box.addEventListener('click',event=>{
+        const source=event.target.closest('[data-rf-open-record]');
+        if(source){if(canSee(ctx,source.dataset.owner))ctx.openRecord?.(source.dataset.owner,source.dataset.module,source.dataset.record);return;}
         const b=event.target.closest('[data-rf-copy]');if(!b)return;
         const f=b.closest('[data-rf-compose]'), item=choicesFor(f)?.record;
         if(!item)return;
         const values={observation:f.elements.observation.value || String(item.reflection||Object.values(item.fields||{}).find(Boolean)||'').slice(0,1600),meaning:f.elements.meaning.value,next:f.elements.next.value||String(item.nextStep||'').slice(0,1600)};
         f.querySelector('[data-rf-answers]').innerHTML=responseFields(f.dataset.block,choicesFor(f),values);
-        f.elements.meaning.closest('fieldset').querySelector('select').focus();
+        f.elements.meaning.closest('fieldset').querySelector('input[type=radio],select')?.focus();
       });
       box.addEventListener('submit',event=>{
         const f=event.target;
@@ -190,9 +199,10 @@ window.IVPREF = (() => {
           if(submit&&(!observation||!meaning||!next))return error('Před předáním doplňte odpověď na všechny tři otázky.');
           if(!observation&&!meaning&&!next)return error('Vyberte alespoň jednu možnost nebo přidejte vlastní poznámku.');
           const revision=(Number(old?.revision)||0)+(submit?1:0);
-          const snapshot={topic:chosen.topic,observation,meaning,next};
+          const snapshot={topic:chosen.topic,observation,meaning,next,sourceId:chosen.sourceId,activityId:chosen.activityId};
           record={...old,...snapshot,id:old?.id||id(),blockId,sourceId:chosen.sourceId,activityId:chosen.activityId,status:submit?'submitted':(old?.status||'draft'),date:old?.date||localDate(clock),updatedAt:at,revision,
             history:submit?[...history(old||{}),{type:'submitted',at,author:'student',revision,...snapshot}]:history(old||{})};
+          if(!submit&&old?.status==='returned')record.submittedReference=old.submittedReference??old.sourceId??'';
           notice=submit?'Reflexe je ve frontě koordinátora v tomto prohlížeči.':'Rozepsaná reflexe je uložená.';
         }else{
           if(ctx.role!=='ivp'||!old||old.status!=='submitted'||!['returned','confirmed'].includes(action))return;
