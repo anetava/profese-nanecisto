@@ -1,0 +1,65 @@
+/* Reference palette: light photographic cards, burgundy for small accents. */
+@media screen {
+  :root { --pastel-mint:#bcebe1;--pastel-blue:#d9eaed;--pastel-vanilla:#f2e7c7;--pastel-pink:#f7c5d6;--pastel-blush:#f3dfe1;--burgundy:#78364e;--brand-aqua:var(--pastel-mint);--brand-lime:var(--pastel-mint);--brand-rose:var(--pastel-pink);--rose:var(--pastel-pink);--rose-soft:var(--pastel-blush);--sand:var(--pastel-vanilla);--muted:#40565c; }
+  body { background:#fcfaf7; }
+  .hub-card:nth-child(1){--tint:var(--pastel-pink)}
+  .hub-card:nth-child(2){--tint:var(--pastel-mint)}
+  .hub-card:nth-child(3){--tint:var(--pastel-vanilla)}
+  .hub-card:nth-child(4){--tint:var(--pastel-blue)}
+  .hub-card:nth-child(5){--tint:var(--pastel-blush)}
+  .hero,.hub-hero,.hub-intro,.study-hero,.study-hero>div:first-child,.local-hero,.document-hero,.rv-hero { background:var(--pastel-mint);color:var(--ink); }
+  .hero h1,.hero-copy h1,.local-hero h1,.document-hero h1,.rv-hero h1 { color:var(--ink)!important; }
+  .hero-copy :is(p,small,.eyebrow,.tag),.local-hero :is(p,small,a),.document-hero :is(p,.eyebrow),.rv-hero :is(p,small,a,h2) { color:var(--muted); }
+  .hero-photo figcaption,.hub-hero figcaption { background:var(--pastel-vanilla);color:var(--ink); }
+  .study-hero-editorial>.study-hero-aside,.study-hero-editorial .study-next { background:var(--pastel-blue);color:var(--ink); }
+  .study-hero-editorial .study-next :is(h2,h3,p,small),.study-metrics span,.study-next-link { color:var(--ink); }
+  .study-metrics b { color:var(--burgundy); }
+  .study-metrics,.study-hero-editorial .study-current { border-color:#afc9c8; }
+  .study-block,.study-block[data-tone=rose],.study-block:nth-child(3n) { background:var(--pastel-mint); }
+  .study-block:nth-child(6n+2){background:var(--pastel-blue)}
+  .study-block:nth-child(6n+3){background:var(--pastel-vanilla)}
+  .study-block:nth-child(6n+4){background:var(--pastel-blush)}
+  .study-block:nth-child(6n+5){background:var(--pastel-blue)}
+  .study-block:nth-child(6n){background:var(--pastel-vanilla)}
+  .study-support>a,.study-support>a:nth-child(3){background:var(--pastel-blue);color:var(--ink)}
+  .study-support>a:nth-child(2){background:var(--pastel-vanilla);color:var(--ink)}
+  .study-support>a:nth-child(4){background:var(--pastel-blush);color:var(--ink)}
+  .study-support h3,.study-support p {color:inherit}
+  .rv-hero aside {background:var(--pastel-vanilla);border-color:var(--burgundy);color:var(--ink)}
+  .rv-hero aside :is(p,a,summary,h3){color:var(--ink)}
+  .document-jumps a {color:var(--burgundy);background:#fff9;border-color:#b6ceca!important}
+  .document-jumps a:hover {background:white}
+  .study-downloads>.panel,.study-downloads>.panel:nth-child(even),.study-downloads>.panel:nth-child(4n+3),.study-downloads>.panel:nth-child(4n){--paper-card:#f3f8f6;--cover:var(--pastel-mint)}
+  .study-downloads>.panel:nth-child(4n+2){--cover:var(--pastel-blue)}
+  .study-downloads>.panel:nth-child(4n+3){--cover:var(--pastel-vanilla)}
+  .study-downloads>.panel:nth-child(4n){--cover:var(--pastel-blush)}
+  .document-kit .sheet-cover,.document-kit .sheet-cover :is(h3,p,small){color:var(--ink)}
+  .study-downloads .sheet-cover{border-bottom-color:#fff}
+  .student-output,.study-downloads article:nth-child(even) .student-output,.block-document-kit {background:#edf5f2;border-color:#a8c9c1}
+  .file-card,.file-card:nth-child(3){background:var(--pastel-vanilla);border-color:#c5bd9f}
+  .file-card:nth-child(even){background:var(--pastel-blue);border-color:#b7cdd0}
+  .lc-phase.all,.lc-phase.closed {background:var(--pastel-blue);color:var(--ink)!important}
+  .lc-phase.all *, .lc-phase.closed * {color:inherit}
+  .lc-row:nth-child(even) .lc-initial,.lc-row .lc-initial{background:var(--pastel-blush);color:var(--burgundy)}
+  .lc-filters,.rv-filters{background:#eaf4f1;border-top-color:#a9cfc5}
+  .sheet-table th{background:var(--pastel-blue);color:var(--ink)}
+  .sheet-tools{background:var(--pastel-vanilla)}
+  .sheet-section{background:var(--pastel-blue);border-color:var(--burgundy)}
+  .sheet-workspace>header{background:var(--pastel-mint);border-color:#9bcfc1}
+  .sheet-workflow span:nth-child(2){background:var(--pastel-vanilla)}
+  .sheet-workflow span:nth-child(3){background:var(--pastel-blush)}
+  .primary,.actions .primary,.tile .primary,.hero .primary,.hub-intro .primary,.study-hero .primary,.study-downloads .actions .primary {background:var(--burgundy);border-color:var(--burgundy);color:white}
+  .primary:hover,.actions .primary:hover,.tile .primary:hover,.hero .primary:hover,.study-hero .primary:hover {background:#602b3e;border-color:#602b3e;color:white}
+  .site-head nav :is([aria-current=page],.active){background:var(--pastel-blue);color:var(--ink);box-shadow:inset 0 -3px var(--burgundy)}
+  .site-head nav :is(a,button):hover{background:var(--pastel-mint);color:var(--ink)}
+  .pick-list label.pick-tile:has(input:checked),.lc-status-options label:has(input:checked){background:var(--pastel-mint);color:var(--ink);border-color:var(--burgundy)}
+  .pick-list .pick-tile:has(input:checked)::after{color:var(--burgundy)}
+  input[type=radio],input[type=checkbox]{accent-color:var(--burgundy)}
+}
+@media screen {
+  .site-head nav a[aria-current=page]{background:var(--pastel-blue);color:var(--ink)}
+  .adapt-hero,.identity-banner-aside,.competency-intro>aside{background:var(--pastel-vanilla);color:var(--ink)}
+  .adapt-hero :is(h1,p,.eyebrow),.identity-banner-aside :is(h2,h3,p,small),.competency-intro>aside :is(small,span,strong,a){color:var(--ink)}
+  .competency-area>summary{background:var(--pastel-vanilla);color:var(--ink)}
+  .case-options .reaction[aria-pressed=true]{background:var(--pastel-mint);color:var(--ink);border-color:var(--burgundy)}
+}
