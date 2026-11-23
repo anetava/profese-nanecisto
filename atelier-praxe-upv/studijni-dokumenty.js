@@ -64,6 +64,8 @@ footer,.year-footer{background:#f2e7c7;color:#172722}
 .band,.purpose,.excerpt{background:#eaf4f0;border-color:#78364e}
 @media print{header,section,section:nth-child(even),footer{background:white;color:#172722}}
 
+
+.portfolio-growth{background:#d9eaed;padding:20px;margin:20px 0}.portfolio-growth h2{font-size:26px}.growth-numbers{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.growth-numbers>div{background:#ffffffa0;padding:12px}.growth-numbers b{display:block;font-size:30px}.growth-numbers span{display:block;font-size:12px}.growth-areas{display:grid;grid-template-columns:1fr 1fr;gap:8px}.growth-areas>div{padding:10px;background:#ffffff80;font-size:12px}.growth-areas strong{float:right}.growth-areas meter{display:block;width:100%}.growth-kinds{font-size:12px}.sheet{border-top-color:#bcebe1}.sheet:nth-child(even){border-top-color:#d9eaed}.purpose,.band{background:#f2e7c7}.area{background:#e6f3ee;border-color:#78aa9a}.area:nth-child(even){background:#d9eaed;border-color:#9cbfc4}@media print{.portfolio-growth{padding:10pt;break-inside:avoid}.growth-areas meter{display:none}}
 `;
   function today(){const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');}
   const short=(s,n=220)=>{s=String(s||'').trim();return esc(s.length>n?s.slice(0,n-1).trimEnd()+'…':s);};

@@ -22,14 +22,14 @@ window.COMPETENCY = (() => {
     const field=(code,name,kind,reason)=>add(code,name,fields[name],kind,reason);
     const explicit=r.competencyEvidence;
     if(explicit && validCode(explicit.code) && ['practice','observed','reflection','plan'].includes(explicit.kind) && text(explicit.text)) {
-      const kind=(r.tool || r.kind==='practice-tool') ? 'plan' : explicit.kind;
+      const kind=(r.tool || r.kind==='practice-tool' || r.sheet==='nacvik') ? 'plan' : explicit.kind;
       add(explicit.code,'Konkrétní doklad ke kompetenci',explicit.text,kind,
         kind==='practice'?'Student výslovně popisuje vlastní provedení; pedagog ověří tento konkrétní projev.':
         kind==='observed'?'Student označil pozorování výkonu jiného učitele; nejde o jeho vlastní výuku.':
         kind==='reflection'?'Student výslovně dokládá vlastní reflexi; pedagog ověří její obsah.':
         'Student označil přípravu nebo model; uskutečnění ve výuce není doloženo.');
     }
-    if(r.isSheet && window.SHEET_COMP) for(const l of SHEET_COMP.links(r)) add(l.code,l.sourceField,l.excerpt,l.kind,l.reason);
+    if(r.isSheet && window.SHEET_COMP) for(const l of SHEET_COMP.links(r)) { if(!out.has(l.code))out.set(l.code,l); }
     const observation=['ivp','group','guided'].includes(r.moduleId);
     const teaching=['micro','continuous'].includes(r.moduleId);
     // A simulation or plan remains a plan even if its legacy moduleId says teaching.
