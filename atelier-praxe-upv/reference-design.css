@@ -75,3 +75,12 @@
 }
 @media screen and (max-width:1000px){.sheet-workspace[data-practice]>header{gap:20px;padding:28px}.sheet-workspace[data-practice] .sheet-body{gap:18px;grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr)}}
 @media screen and (max-width:850px){.sheet-workspace[data-practice]>header{display:block}.sheet-workspace[data-practice]>header h1{margin:16px 0}.sheet-workspace[data-practice]>header small{display:block}.sheet-workspace[data-practice] .sheet-methods{position:static;max-height:none}.sheet-workspace[data-practice] .sheet-side-tabs{position:static}.sheet-workspace[data-practice] .sheet-body{display:flex}}
+
+/* Compact writing rows; long entries expand without losing their text. */
+@media screen {
+ .sheet-workspace .sheet-table table{table-layout:fixed;min-width:580px}
+ .sheet-workspace .sheet-table table[data-time-column] th:first-child{width:14%}
+ .sheet-workspace .sheet-table th{padding:14px 12px;text-align:left;font-size:16px}
+ .sheet-workspace .sheet-table td{padding:8px;vertical-align:top;font-size:16px;line-height:1.5;overflow-wrap:anywhere}
+ .sheet-workspace .sheet-table textarea{display:block;box-sizing:border-box;min-width:0;min-height:46px;height:auto;field-sizing:content;width:100%;padding:10px 9px;font-size:17px;line-height:1.45;resize:vertical;overflow-y:hidden;border-radius:3px}
+}
