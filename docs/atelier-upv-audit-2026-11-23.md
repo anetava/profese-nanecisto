@@ -49,3 +49,16 @@ Uživatelka výslovně zvolila rozsah bloku 03: 10 teoretických + 2 praktické 
 - Bordó sazba, bez původního obrázkového loga; účel, načasování, konkrétní postup a další krok. Příklady odlišují pozorování od interpretace.
 - Zpřesněna návaznost na videomonitoring, portfolio, plán souvislé praxe a Moodle. Tyto studijní pomůcky nenahrazují závazné zadání předmětu.
 - Zkontrolováno všech 49 stran renderovaných PDF; Word a PDF pocházejí ze stejného obsahu. Úplný soulad s neveřejným zadáním v Moodle nadále nebyl ověřen.
+
+
+## Doplnění úplné studijní cesty
+
+Všech deset unikátních dodaných URL vrací stejný vstupní HTML soubor. Parametr `v` zde nevybírá archivovanou verzi; `profil` mění profil a hash sekci. Zachováno barevné rozložení úvodu a fotografické karty z odkazu `v=obalky`, s bordó, růžovými a tyrkysovými akcenty.
+
+Na úvod a do studijní cesty vrácena mapa 1.–3. ročníku a 2.–6. semestru podle veřejného plánu UPV. Každý ze šesti bloků má pět kroků, vlastní osobní kontrolní políčka, odkazy na průvodce, sylabus 2026/27, archy a reflexi. Ročník a semestr doplněn do šesti metodických průvodců a šesti hlavních pracovních listů (Word i PDF). Úplné portfolio, stručné portfolio a protokol jsou dostupné v dokumentech a z kroku před odevzdáním.
+
+Ověření: všech šest cest v prohlížeči, návaznost reflexe, uložení osobního kroku po obnovení stránky, syntaktická kontrola JS, 21 PDF / 49 stran vizuálně zkontrolováno.
+
+Limity: soubory file:///C:/Users/... nejsou dostupné; zachovány odpovídající vzory v repozitáři, nikoli tvrzení o shodě se soubory uživatelky. Novější neveřejné zadání Moodle nebylo poskytnuto. Rozpor řízených náslechů 10+2 podle metodiky03 a 4+6 ve veřejném UIS je výslovně přiznán; aplikace drží uživatelkou stanovených 10+2. Profily a reflexe jsou místní pracovní kopie, nikoli serverový systém odevzdání.
+
+Při obnově dokumentů spusťte po `scripts/style_practice_documents.py` také `scripts/label_practice_documents.py`, potom znovu vyrenderujte PDF.

@@ -2,10 +2,10 @@
    Screen-only layer: printed student documents keep their prepared page layout. */
 @media screen {
   :root {
-    --brand-forest:#172722;
-    --brand-lime:#b2f36a;
+    --brand-forest:#4b2030;
+    --brand-lime:#efb7c9;
     --brand-aqua:#61cdbf;
-    --brand-ivory:#f3f3e8;
+    --brand-ivory:#fcf9fa;
     --brand-mint:#dcece4;
     --brand-rose:#efb7c9;
     --paper:var(--brand-ivory);
@@ -422,3 +422,6 @@
 @media screen {
   .lc-preview-bar { background:#e2e8d6;color:#172722;border-left:4px solid #617e62; }
 }
+
+/* Shared Ateliér identity: burgundy, turquoise and rose; preserve cover layouts. */
+@media screen { .hub-intro {background:#762b46;color:#fff} .hub-intro h1,.hub-intro p,.hub-intro :is(.eyebrow,small){color:#fff} .hub-intro :is(.eyebrow,small)::before{background:#61cdbf}.hub-intro .primary{background:#f3cbd8;color:#4b2030;border-color:#f3cbd8}.site-head .account{background:#622c42;border-color:#b88096}.site-head nav :is(a,button):hover{background:#762b46}.orientation{display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin:12px 0 22px}.primary:hover{background:#762b46;border-color:#762b46}.document-hero{background:#762b46}.document-hero :is(h1,p,.eyebrow){color:white}.study-downloads>.document-kit{--cover:#762b46}.study-downloads>.document-kit:nth-child(even){--cover:#246b64} }

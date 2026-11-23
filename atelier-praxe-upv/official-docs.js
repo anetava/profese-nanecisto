@@ -1,7 +1,7 @@
 'use strict';
 window.IVP_DOCUMENTS = (() => {
   function material(folder, label, name, purpose, use) {
-    return {label, url:'materialy/'+folder+'/'+name+'?v=dokumenty-bordo-20261123', pdfUrl:'materialy/'+folder+'/'+name.replace(/\.(docx|pdf)$/,'.pdf')+'?v=dokumenty-bordo-20261123', docxUrl:'materialy/'+folder+'/'+name.replace(/\.(docx|pdf)$/,'.docx')+'?v=dokumenty-bordo-20261123', kind:name.split('.').pop().toUpperCase()+' · 2026/2027', purpose, use};
+    return {label, url:'materialy/'+folder+'/'+name+'?v=komplet-202627', pdfUrl:'materialy/'+folder+'/'+name.replace(/\.(docx|pdf)$/,'.pdf')+'?v=komplet-202627', docxUrl:'materialy/'+folder+'/'+name.replace(/\.(docx|pdf)$/,'.docx')+'?v=komplet-202627', kind:name.split('.').pop().toUpperCase()+' · 2026/2027', purpose, use};
   }
   const method=(label,file,purpose)=>material('metodiky',label+' · studijní průvodce',file,purpose,'Přečtěte před blokem. K požadavkům se vraťte před odevzdáním.');
   const annexes=[

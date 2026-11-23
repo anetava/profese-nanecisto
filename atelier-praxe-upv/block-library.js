@@ -139,7 +139,7 @@ window.BLOCKS = (() => {
   const activity = (id, choice) => get(id)?.activities.find(item => item.id === String(choice));
   const prompts = (id, choice) => activity(id, choice)?.prompts || get(id)?.prompts || [];
   function sheetLink(item) {
-    return '<a class="primary" href="' + item.file + '?v=dokumenty-bordo-20261123" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', DOCX">Upravit ve Wordu · DOCX ↓</a><a class="secondary" href="materialy/' + item.id + '.pdf?v=dokumenty-bordo-20261123" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', PDF">Vytisknout · PDF ↓</a>';
+    return '<a class="primary" href="' + item.file + '?v=komplet-202627" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', DOCX">Upravit ve Wordu · DOCX ↓</a><a class="secondary" href="materialy/' + item.id + '.pdf?v=komplet-202627" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', PDF">Vytisknout · PDF ↓</a>';
   }
   function sourceLinks(item) {
     const files = window.IVP_DOCUMENTS?.[item.id] || [];
@@ -182,7 +182,7 @@ window.BLOCKS = (() => {
         item.activities.map(choice => '<li>' + reflectionLink(item, choice, choice.title) + '</li>').join('') + '</ul></details>' :
       '<a class="secondary" href="#reflexe/nova/' + item.id + '">Vybrat odpovědi v reflexi →</a>';
     const photo={ivp:1,group:2,guided:3,micro:4,continuous:5,reflection:6,nacvik:4,adaptio:6,ss:5,kurzy:1}[item.id]||1;
-    return '<article class="panel stack document-kit" id="dokumenty-'+item.id+'" tabindex="-1"><div class="sheet-cover"><img loading="lazy" src="phase-'+photo+'.webp?v=barevne" alt=""><div><small>Pracovní sada · 2026/2027</small><h3>' + escape(item.title) + '</h3><p>' + escape(item.sheet) + '</p></div></div>' +
+    return '<article class="panel stack document-kit" id="dokumenty-'+item.id+'" tabindex="-1"><div class="sheet-cover"><img loading="lazy" src="phase-'+photo+'.webp?v=barevne" alt=""><div><small>Pracovní sada · 2026/2027</small><h3>' + escape(item.title) + '</h3><p>' + escape(item.sheet) + '</p>'+(STUDY_GUIDE.get(item.id)?'<p>'+escape(STUDY_GUIDE.label(item.id))+'</p>':'')+'</div></div>' +
       '<div class="document-downloads"><h4>'+(student?'Můj formulář k vyplnění':'Formulář pro studenta')+'</h4><p>'+escape(item.detail)+'</p><div class="document-format-note"><strong>Vyberte způsob práce</strong><span>DOCX: vyplňování ve Wordu · PDF: tisk a ruční poznámky.</span></div><div class="actions">' + sheetLink(item) + '</div></div>' + submission(item, role, true) +
       (practiceLink || reflect ? '<div class="document-work actions">' + practiceLink + reflect + '</div>' : '') + sourceLinks(item) + '</article>';
   }
