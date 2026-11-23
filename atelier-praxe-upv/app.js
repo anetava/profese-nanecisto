@@ -157,7 +157,7 @@
     const mi=modules.findIndex(item=>item.id===m.id), syl=syllabi[mi];
     const targets=m.observationTargets;
 
-    return (!overview&&role==='ivp'?'<nav class="record-owner"><a href="#podklady">← Podklady k rozboru</a><strong>'+e(person().name)+'</strong><a href="#portfolio">Portfolio studenta →</a></nav>':'')+section('Praxe '+String(modules.findIndex(item=>item.id===m.id)+1).padStart(2,'0')+' · '+(overview?'Zadání a podklady':person().name),m.title,m.goal)+STUDY_GUIDE.panel(m,{role,entry:current(),syllabus:syl})+
+    return (!overview&&role==='ivp'?'<nav class="record-owner"><a href="#podklady">← Podklady k rozboru</a><strong>'+e(person().name)+'</strong><a href="#portfolio">Portfolio studenta →</a></nav>':'')+section('Praxe '+String(modules.findIndex(item=>item.id===m.id)+1).padStart(2,'0')+' · '+(overview?'Zadání a podklady':person().name),m.title,m.goal)+
     '<details class="area-box"><summary>Podrobné požadavky a podmínky splnění</summary>'+'<p>'+e(m.place)+'</p><ol class="steps">'+m.steps.map(x=>'<li>'+e(x)+'</li>').join('')+'</ol><h3>Co předložit</h3><ul>'+m.evidence.map(x=>'<li>'+e(x)+'</li>').join('')+'</ul><p>'+e(m.credit)+'</p><small>'+e((m.source||[]).join(' · '))+'</small></details>'+(overview?BLOCKS.docs(m.id,role):'<details class="legacy-records"'+(/\/(novy|upravit)\//.test(location.hash)||location.hash.endsWith('/novy')?' open':'')+'><summary>Dřívější krátké záznamy a jejich rozbory</summary><div id="record-space">'+PRACTICE.render({...m,observationTargets:targets},records,role,{reflections:current().reflections})+'</div></details>'+blockExtras(m.id));
   }
   function skills(){
@@ -203,7 +203,7 @@
     const routedPage=special&&!['start','sources','materialy','adaptio'].includes(rawPage)?'ivp':scenarioMatch?scenarioMatch[1]:rawPage;
     const page=window.IVP_ROSTER && routedPage==='ivp'?'studium':routedPage;
     const parts=page.split('/').map(part=>{try{return decodeURIComponent(part)}catch{return part}});
-    const sheetPractice=role==='student'&&parts.length===2&&parts[0]==='praxe'&&STUDY_GUIDE.get(parts[1])?parts[1]:null;
+    const sheetPractice=role==='student'&&parts.length===2&&['praxe','zadani'].includes(parts[0])&&STUDY_GUIDE.get(parts[1])?parts[1]:null;
     if(sheetPractice){parts[0]='arch';parts[1]=['group','guided'].includes(sheetPractice)?'arch-naslechu':sheetPractice;}
     let recordUnavailable=false;
     if(parts[0]==='praxe'&&parts[2]==='zaznam'&&role!=='student'){
