@@ -24,7 +24,7 @@
   .rf-status { display:inline-block; font-size:.75rem; font-weight:700; line-height:1.25; border-radius:999px; padding:5px 9px; text-align:center; }
   .rf-draft { background:#e8ece9; color:#35453a; }
   .rf-submitted { background:#bcebe0; color:#124234; }
-  .rf-returned { background:#f9d4df; color:#65213b; }
+  .rf-returned { background:#f9d4df; color:#244d47; }
   .rf-confirmed { background:#cbe6c1; color:#214b27; }
   .rf-thread,.rf-new>.rf-form { margin:0; padding:14px 16px 18px; border-top:1px solid #cedbd5; }
   .rf-section .rf-form,.rf-section .rf-review { display:grid; grid-template-columns:1fr; gap:12px; }
@@ -37,7 +37,7 @@
   .rf-body dt { font-weight:700; }
   .rf-body dd { margin:3px 0 0; }
   .rf-body dd,.rf-answer p,.rf-history p { white-space:pre-line; overflow-wrap:anywhere; }
-  .rf-answer { background:#fbe0e8; border-left:4px solid #c94e78; padding:12px 14px; margin:0 0 14px; }
+  .rf-answer { background:#fbe0e8; border-left:4px solid #7c8846; padding:12px 14px; margin:0 0 14px; }
   .rf-answer p { margin:5px 0 0; }
   .rf-history,.rf-review { margin-top:18px; }
   .rf-filters { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:14px; }

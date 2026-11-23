@@ -54,7 +54,7 @@ main { width:min(var(--measure), calc(100% - 48px)); min-height:65vh; margin:cla
 .hero-copy p { max-width:50ch; color:#f3e5ee; margin:16px 0 0; font-size:clamp(1rem,1.25vw,1.16rem); line-height:1.48; }
 .hero-copy :is(.actions,.primary,.secondary) { margin-top:24px; }
 .hero-copy .actions :is(.primary,.secondary) { margin-top:0; }
-.hero .primary { background:var(--rose); color:#32192a; }
+.hero .primary { background:var(--rose); color:#244d47; }
 .hero .primary:hover { background:#ffb4cb; }
 .hero .secondary { border-color:#c9b2c2; color:white; background:transparent; }
 .hero-photo { position:relative; min-height:100%; align-self:stretch; overflow:hidden; background:#274d47; }
@@ -85,7 +85,7 @@ main > :first-child:is(.subhead,.section-head) { margin-top:0; }
 .primary,.secondary,.tile button,.actions button { display:inline-flex; align-items:center; justify-content:center; gap:7px; min-height:43px; padding:9px 18px; border:1px solid transparent; border-radius:0; font-weight:680; line-height:1.35; text-align:center; text-decoration:none; }
 .primary,.tile .primary,.actions .primary { background:var(--plum); color:white; }
 .secondary,.tile button:not(.primary),.actions button:not(.primary) { background:#fffdfb; color:var(--plum); border-color:#bfb4bb; }
-.primary:hover,.tile .primary:hover,.actions .primary:hover { background:#563252; }
+.primary:hover,.tile .primary:hover,.actions .primary:hover { background:#244d47; }
 .secondary:hover,.tile button:not(.primary):hover,.actions button:not(.primary):hover { background:#f5eaf0; }
 button:disabled { opacity:.55; cursor:not-allowed; }
 .actions { display:flex; align-items:center; flex-wrap:wrap; gap:10px; margin-top:18px; }

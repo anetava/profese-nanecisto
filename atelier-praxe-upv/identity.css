@@ -153,7 +153,7 @@
   .skill-count { background:var(--brand-lime);color:var(--brand-forest); }
   .panel { border-color:#c0cbbb;background:#fffef9; }
   .notice,.plan-placement-note,.record-owner,.record-next { background:#dcece3;border-color:#387e6c;color:var(--brand-forest); }
-  .record-next-returned { background:#f3dce5;border-color:#a7476e; }
+  .record-next-returned { background:#f3dce5;border-color:#7c8846; }
   .record-next-submitted { background:#e0efd1;border-color:#718435; }
   .portfolio-final { background:var(--brand-lime);border:0; }
   .local-hero { background:var(--brand-forest); }
@@ -219,10 +219,10 @@
   .rv-card { background:#dcebe1;border-color:#43816d; }
   .rv-card[data-kind=reflection] { background:#e7edcb;border-top-color:#80934c; }
   .rv-card[data-kind=reflection] .rv-person { color:#365439; }
-  .rv-card[data-status=returned] { background:#f1dce3;border-top-color:#a7476e; }
+  .rv-card[data-status=returned] { background:#f1dce3;border-top-color:#7c8846; }
   .rv-card[data-status=confirmed] { background:#dcebe1;border-top-color:#43816d; }
   .rv-state,.rv-card-bottom button { background:var(--brand-forest); }
-  .rv-card[data-status=returned] .rv-state { background:#863959; }
+  .rv-card[data-status=returned] .rv-state { background:#244d47; }
   .document-hero { background:var(--brand-forest);border-bottom:9px solid var(--brand-aqua);margin-top:0; }
   .document-hero .eyebrow { color:var(--brand-lime); }
   .document-hero h1 { font-size:clamp(2.6rem,4.7vw,4.5rem);color:#fffef6; }
@@ -425,4 +425,4 @@
 /* Restore the user's light, pastel design reference. */
 @media screen{ :root{--brand-lime:#b9e9df;--brand-ivory:#faf9f6;--brand-forest:#172722}.site-head{background:#faf9f6;color:#172722}.site-head .brand,.site-head .brand small,.site-head nav a{color:#172722}.site-head nav{border-color:#d8e6df}.site-head nav a[aria-current=page]{background:#172722;color:white}.site-head .account{background:#d9eee7;border-color:#d9eee7;color:#172722}.site-head .account select{color:#172722}.hub-intro{background:#b9e9df;color:#172722}.hub-intro h1,.hub-intro p,.hub-intro .eyebrow{color:#172722}.orientation{display:flex;gap:18px;flex-wrap:wrap;margin:12px 0 22px}.hub-intro .primary{background:#172722;color:white}.brand-symbol{display:inline-flex}.brand-symbol img{object-fit:contain}.guide-banner{background:#d9eee7;color:#172722}.guide-banner h2,.guide-banner p,.guide-banner small{color:#172722}}
 /* FOXY STUDIO: turquoise and blue surfaces, burgundy only as a small accent. */
-@media screen{ :root{--brand-rose:#dce9ef;--rose:#dce9ef;--rose-soft:#edf3f5}.site-head .brand{gap:18px}.foxy-wordmark{display:flex;flex-direction:column;line-height:.95;border-left:4px solid #76344c;padding:4px 0 4px 12px;color:#172722;font-weight:850;letter-spacing:.06em;font-size:26px}.foxy-wordmark b{font-size:12px;letter-spacing:.3em;margin-top:7px}.hub-card:nth-child(1){--tint:#d8e9ed}.hub-card:nth-child(2){--tint:#b9e9df}.hub-card:nth-child(3){--tint:#eee6c9;color:#172722}.hub-card:nth-child(3) :is(h3,p,small,div>span:last-child){color:#172722}.hub-card:nth-child(4){--tint:#d9e9ed}.hub-card:nth-child(5){--tint:#e2e9d9}.desk-link.reflection-action{background:#e0ebef;color:#172722}.subhead{background:#e4efeb;border-bottom-color:#76344c}.guide-years>section:nth-child(odd),.guide-year-card{background:#edf3f0}.kraau-map .competency-area:nth-child(even)>summary{background:#dce9ef;color:#172722}.competency-evidence,.evidence-item{background:#f1f5f3}.guide-map{background:#faf9f6}@media(max-width:600px){.foxy-wordmark{font-size:21px}.foxy-wordmark b{font-size:10px}}}
+@media screen{ :root{--brand-rose:#dce9ef;--rose:#dce9ef;--rose-soft:#edf3f5}.site-head .brand{gap:18px}.foxy-wordmark{display:flex;flex-direction:column;line-height:.95;border-left:4px solid #244d47;padding:4px 0 4px 12px;color:#172722;font-weight:850;letter-spacing:.06em;font-size:26px}.foxy-wordmark b{font-size:12px;letter-spacing:.3em;margin-top:7px}.hub-card:nth-child(1){--tint:#d8e9ed}.hub-card:nth-child(2){--tint:#b9e9df}.hub-card:nth-child(3){--tint:#eee6c9;color:#172722}.hub-card:nth-child(3) :is(h3,p,small,div>span:last-child){color:#172722}.hub-card:nth-child(4){--tint:#d9e9ed}.hub-card:nth-child(5){--tint:#e2e9d9}.desk-link.reflection-action{background:#e0ebef;color:#172722}.subhead{background:#e4efeb;border-bottom-color:#244d47}.guide-years>section:nth-child(odd),.guide-year-card{background:#edf3f0}.kraau-map .competency-area:nth-child(even)>summary{background:#dce9ef;color:#172722}.competency-evidence,.evidence-item{background:#f1f5f3}.guide-map{background:#faf9f6}@media(max-width:600px){.foxy-wordmark{font-size:21px}.foxy-wordmark b{font-size:10px}}}

@@ -1,6 +1,6 @@
 /* Reference palette: light photographic cards, burgundy for small accents. */
 @media screen {
-  :root { --pastel-mint:#bcebe1;--pastel-blue:#d9eaed;--pastel-vanilla:#f2e7c7;--pastel-pink:#f7c5d6;--pastel-blush:#f3dfe1;--burgundy:#78364e;--brand-aqua:var(--pastel-mint);--brand-lime:var(--pastel-mint);--brand-rose:var(--pastel-pink);--rose:var(--pastel-pink);--rose-soft:var(--pastel-blush);--sand:var(--pastel-vanilla);--muted:#40565c; }
+  :root { --pastel-mint:#bcebe1;--pastel-blue:#d9eaed;--pastel-vanilla:#f2e7c7;--pastel-pink:#f7c5d6;--pastel-blush:#f3dfe1;--burgundy:#244d47;--brand-aqua:var(--pastel-mint);--brand-lime:var(--pastel-mint);--brand-rose:var(--pastel-pink);--rose:var(--pastel-pink);--rose-soft:var(--pastel-blush);--sand:var(--pastel-vanilla);--muted:#40565c; }
   body { background:#fcfaf7; }
   .hub-card:nth-child(1){--tint:var(--pastel-pink)}
   .hub-card:nth-child(2){--tint:var(--pastel-mint)}
@@ -49,7 +49,7 @@
   .sheet-workflow span:nth-child(2){background:var(--pastel-vanilla)}
   .sheet-workflow span:nth-child(3){background:var(--pastel-blush)}
   .primary,.actions .primary,.tile .primary,.hero .primary,.hub-intro .primary,.study-hero .primary,.study-downloads .actions .primary {background:var(--burgundy);border-color:var(--burgundy);color:white}
-  .primary:hover,.actions .primary:hover,.tile .primary:hover,.hero .primary:hover,.study-hero .primary:hover {background:#602b3e;border-color:#602b3e;color:white}
+  .primary:hover,.actions .primary:hover,.tile .primary:hover,.hero .primary:hover,.study-hero .primary:hover {background:#244d47;border-color:#244d47;color:white}
   .site-head nav :is([aria-current=page],.active){background:var(--pastel-blue);color:var(--ink);box-shadow:inset 0 -3px var(--burgundy)}
   .site-head nav :is(a,button):hover{background:var(--pastel-mint);color:var(--ink)}
   .pick-list label.pick-tile:has(input:checked),.lc-status-options label:has(input:checked){background:var(--pastel-mint);color:var(--ink);border-color:var(--burgundy)}
