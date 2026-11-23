@@ -62,3 +62,16 @@ Ověření: všech šest cest v prohlížeči, návaznost reflexe, uložení oso
 Limity: soubory file:///C:/Users/... nejsou dostupné; zachovány odpovídající vzory v repozitáři, nikoli tvrzení o shodě se soubory uživatelky. Novější neveřejné zadání Moodle nebylo poskytnuto. Rozpor řízených náslechů 10+2 podle metodiky03 a 4+6 ve veřejném UIS je výslovně přiznán; aplikace drží uživatelkou stanovených 10+2. Profily a reflexe jsou místní pracovní kopie, nikoli serverový systém odevzdání.
 
 Při obnově dokumentů spusťte po `scripts/style_practice_documents.py` také `scripts/label_practice_documents.py`, potom znovu vyrenderujte PDF.
+
+
+## KRAAU – automatické vazby dokladů
+
+Zdroj: uživatelkou přiložený Kompetenční rámec absolventa a absolventky učitelství, MŠMT, platnost od října 2023. Převzato 18 přesných názvů v šesti oblastech; 68 bodů úrovně 1 převedeno do označených stručných parafrází se stranami a původním číslem bodu. Odkaz na plný dokument vede na oficiální PDF MŠMT. Nejde o novou verzi rámce 2026/27.
+
+`competency-evidence.js` odvozuje tematické vazby z vyplněných pojmenovaných polí, nikoli skórováním klíčových slov. Výstup je dohledatelný k podkladu. Náslechová pozorování, plány, modelové situace, vlastní pokusy a reflexe mají odlišné stavy. Pro dosud nepokryté projevy všech 18 kompetencí lze doplnit explicitní vlastní doklad s kontextem. Starší ruční přiřazení se zachovává jako vazba k doložení.
+
+Potvrzení konkrétního projevu je samostatný úkon pedagoga s komentářem, rolí, časem a kontrolou nezměněného dokladu. Uzavření rozboru ani počet hodin nejsou potvrzením kompetence. Úprava studentova záznamu ruší předchozí potvrzení. Mapa se odvozuje při zobrazení i u starších záznamů, takže nevyžaduje nevratnou migraci. Oba exporty portfolia používají stejnou logiku.
+
+Ověření: testy pro prázdné záznamy, všech 18 explicitních kódů, rozlišení pozorování a vlastní práce, neplatná posouzení, změněné důkazy, simulace a deduplikaci. V prohlížeči ověřeno živé přiřazení2.1/2.5 při vyplňování, předání testovacího záznamu, posouzení2.1, uzavření rozboru, přetrvání po reloadu a mapa ve stručném portfoliu. Testovací data pouze v místním testovacím profilu.
+
+Omezení: automatika propojuje strukturované podklady, nezjišťuje pravdivost tvrzení a neurčuje celkovou úroveň MŠMT. Stávající aplikace stále ukládá data lokálně, přepínač role není autentizace a nepotvrzuje identitu pedagoga. Produkční společná práce napříč zařízeními vyžaduje samostatný backend s přihlášením; tato úprava jej nezavádí.

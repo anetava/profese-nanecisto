@@ -11,7 +11,7 @@ window.PRACTICE = (() => {
   const pick = (v, w) => v === w ? ' selected' : '';
   const section = (label, text) => text ? '<p><strong>'+esc(label)+'</strong><br>'+esc(text).replace(/\n/g,'<br>')+'</p>' : '';
   const canReview = role => ['mentor','ivp'].includes(role);
-  const snapshot = r => Object.fromEntries(['title','date','kind','fields','timeline','reflection','nextStep','competency'].map(k=>[k,structuredClone(r[k]??(['fields'].includes(k)?{}:k==='timeline'?[]:''))]));
+  const snapshot = r => Object.fromEntries(['title','date','kind','fields','timeline','reflection','nextStep','competency','competencyEvidence'].map(k=>[k,structuredClone(r[k]??(['fields'].includes(k)?{}:k==='timeline'?[]:''))]));
   function readable(r,role='student') {
     if(!r || !Object.hasOwn(statuses,r.status))return null;
     if(role==='student')return r;
@@ -33,7 +33,7 @@ window.PRACTICE = (() => {
     const review = Object.entries(r.review||{}).map(([label,val])=>section(label,val)).join('');
     return '<div class="record-body">'+section('Datum',formatDate(r.date))+section('Druh záznamu',kinds[r.kind])+answers+
       (timeline ? '<h4>Průběh hodiny</h4><ol>'+timeline+'</ol>' : '')+section('Moje reflexe',r.reflection)+
-      section('Můj další krok',r.nextStep)+section('Vazba na kompetenci',competency)+review+section('Zpětná vazba',r.feedback)+'</div>';
+      section('Můj další krok',r.nextStep)+section('Vazba na kompetenci',competency)+review+section('Zpětná vazba',r.feedback)+COMPUI.record(r)+'</div>';
   }
 
   function progress(m, rows) {
@@ -50,7 +50,7 @@ window.PRACTICE = (() => {
       const editable = student && ['draft','returned'].includes(r.status);
       return '<details class="panel" data-record-id="'+esc(r.id)+'"><summary><b>'+esc(r.title || 'Rozepsaný záznam')+'</b> · '+esc(formatDate(r.date))+' <span class="pill">'+esc(statusLabel(r.status))+'</span></summary>'+
         recordBody(r)+(student?nextAction(r,context):'')+(editable ? '<button class="secondary" type="button" data-rec-edit="'+esc(r.id)+'">'+(r.status==='returned'?'Doplnit podle zpětné vazby':'Pokračovat v záznamu')+'</button>' : '')+
-        (canReview(role) && r.status==='submitted' ? reviewForm(m,r,role) : '')+'</details>';
+        (canReview(role) && r.status==='submitted' ? reviewForm(m,r,role) : '')+(canReview(role)&&['submitted','confirmed'].includes(r.status)?COMPUI.review(r):'')+'</details>';
     }).join('');
     return '<section class="stack" data-practice-records><div class="section-head"><h2>'+ (student?'Moje záznamy':'Záznamy k rozboru')+'</h2>'+
       (student ? '<button class="primary" type="button" data-rec-new>'+ (isObservation(m)?'Zapsat náslech':isTeaching(m)?'Zapsat výstup':'Přidat záznam')+'</button>' : '')+'</div>'+
@@ -81,8 +81,8 @@ window.PRACTICE = (() => {
       '<details open class="rec-evidence"><summary>Podklady z praxe</summary><p>Zaznamenejte skutečný průběh a vlastní rozbor. Krátké volby jsou nápověda; nenahrazují kompletní náslechový arch, přípravu na hodinu ani požadovaný rozsah závěrečné reflexe.</p><div class="fields">'+fieldEditors+'</div></details>'+
       (observed?'<details class="rec-timeline" '+(r.timeline?.length?'open':'')+'><summary>Časová osa náslechu</summary><p>Ke stejnému okamžiku zachyťte činnost učitele i reakci žáků.</p><div class="stack" data-time-rows>'+(r.timeline?.length?r.timeline:[{}]).map(timelineRow).join('')+'</div><button type="button" class="secondary" data-rec-moment>Přidat další okamžik</button></details>':'')+
       '<div class="fields">'+
-      (areas?'<label>Kompetence, kterou zde dokládám<select name="competency"><option value="">Vyberu později</option>'+areas+'</select></label>':'')+'</div>'+
-      '<p class="notice" data-rec-msg role="status" hidden></p><div class="actions"><button type="submit" class="primary" value="submit">'+(r.status==='returned'?'Znovu předat k rozboru':'Předat k rozboru')+'</button><button type="submit" value="draft" class="secondary" formnovalidate>Uložit rozepsané</button><button type="button" class="secondary" data-rec-close>Zavřít formulář</button></div><small>Předání zpřístupní záznam v pracovním přehledu koordinátora v tomto prohlížeči. E-mail se neposílá.</small></form>';
+      (areas?'<details class="competency-supplement"><summary>Doplnit další vlastní doklad · volitelné</summary><p>Hlavní vazby vznikají automaticky. Tady můžete doplnit zkušenost, kterou ostatní pole nezachytila. Popište vlastní činnost a její výsledek.</p><label>Další kompetence<select name="competency"><option value="">Bez dalšího přiřazení</option>'+areas+'</select></label><p data-competency-hint></p><label>Jak zkušenost vznikla<select name="competencyKind">'+[['plan','Zatím jen plán'],['observed','Pozoroval/a jsem učitele'],['practice','Sám/sama jsem činnost provedl/a'],['reflection','Vlastní analýza a reflexe']].map(([v,t])=>'<option value="'+v+'"'+pick(r.competencyEvidence?.kind||'plan',v)+'>'+t+'</option>').join('')+'</select></label><label>Konkrétní činnost a výsledek<textarea name="competencyText" placeholder="Co jste udělali, co následovalo a kde je doklad?">'+esc(r.competencyEvidence?.text||'')+'</textarea></label></details>':'')+'</div>'+
+      '<div class="competency-preview" data-competency-preview></div><p class="notice" data-rec-msg role="status" hidden></p><div class="actions"><button type="submit" class="primary" value="submit">'+(r.status==='returned'?'Znovu předat k rozboru':'Předat k rozboru')+'</button><button type="submit" value="draft" class="secondary" formnovalidate>Uložit rozepsané</button><button type="button" class="secondary" data-rec-close>Zavřít formulář</button></div><small>Předání zpřístupní záznam v pracovním přehledu koordinátora v tomto prohlížeči. E-mail se neposílá.</small></form>';
   }
 
   function reviewForm(m,r,role) {
@@ -97,6 +97,16 @@ window.PRACTICE = (() => {
     if (!box) return;
     const editorBox = box.querySelector('[data-rec-editor]');
     const student = (callbacks.role || 'student')==='student';
+    function formEvidence(f){
+      const data=new FormData(f),val=name=>String(data.get(name)||'').trim();
+      const r={moduleId:m.id,kind:val('kind'),fields:{},timeline:[],reflection:val('reflection'),nextStep:val('nextStep'),competency:val('competency'),status:'draft',competencyEvidence:{code:val('competency'),kind:val('competencyKind'),text:val('competencyText')}};
+      f.querySelectorAll('[data-answer]').forEach(el=>{r.fields[m.fields[Number(el.dataset.answer)].label]=el.value.trim();});
+      f.querySelectorAll('[data-time-row]').forEach(row=>{const item={};row.querySelectorAll('[data-moment]').forEach(el=>item[el.dataset.moment]=el.value.trim());r.timeline.push(item);});
+      return r;
+    }
+    function updatePreview(f){const pane=f.querySelector('[data-competency-preview]');if(!pane)return;const r=formEvidence(f);pane.innerHTML=COMPUI.record(r);const hint=f.querySelector('[data-competency-hint]');if(hint)hint.textContent=KRAAU.get(r.competency)?.evidencePrompt||'';}
+    box.addEventListener('input',ev=>{const f=ev.target.closest('[data-rec-form]');if(f)updatePreview(f);});
+    box.addEventListener('change',ev=>{const f=ev.target.closest('[data-rec-form]');if(f)updatePreview(f);});
     box.onclick = e=>{
       const target = e.target.closest('button');
       if (!target || !student) return;
@@ -109,7 +119,7 @@ window.PRACTICE = (() => {
         const id=target.dataset.recEdit;
         const r=id?records.find(v=>v.id===id):{};
         if (!r || (id && !['draft','returned'].includes(r.status))) return;
-        editorBox.innerHTML=editor(m,r);
+        editorBox.innerHTML=editor(m,r);updatePreview(editorBox.querySelector('form'));
         editorBox.querySelector('[data-pick-options] input,select[data-pick-options]')?.focus({preventScroll:true});editorBox.scrollIntoView({block:'start'});
       }
     };
@@ -130,10 +140,21 @@ window.PRACTICE = (() => {
         if (submit && (!r.title || !r.date || !r.reflection || (!Object.values(r.fields).some(Boolean) && !r.timeline.length))) {
           const msg=f.querySelector('[data-rec-msg]');msg.hidden=false;msg.textContent='K rozboru doplňte téma, datum, vlastní reflexi a alespoň jeden konkrétní podklad nebo okamžik z hodiny.';msg.scrollIntoView({block:'nearest'});return;
         }
+        r.competencyEvidence=formEvidence(f).competencyEvidence;
+        r.competencyReview={};
         r.updatedAt=new Date().toISOString();
         if(submit){r.submittedAt=r.updatedAt;r.submittedVersion=snapshot(r);}
         else if(old?.status==='returned'&&!old.submittedVersion)r.submittedVersion=snapshot(old);
         save(old? records.map(v=>v.id===r.id?r:v):[...records,r]);return;
+      }
+      if(canReview(callbacks.role)&&f.matches('[data-competency-review]')){
+        const r=records.find(v=>v.id===f.dataset.competencyReview);
+        if(!r||!['submitted','confirmed'].includes(r.status))return;
+        const competencyReview={};let invalid=false;
+        const eligible=COMPETENCY.links(r).filter(l=>['practice','reflection'].includes(l.kind));
+        for(const l of eligible){const verdict=f.querySelector('[data-competency-verdict="'+l.code+'"]')?.value;const note=f.querySelector('[data-competency-note="'+l.code+'"]')?.value.trim();if(!verdict)continue;if(!note){invalid=true;break;}competencyReview[l.code]={verdict,note,reviewerRole:callbacks.role,reviewedAt:new Date().toISOString(),evidenceSignature:COMPETENCY.signature(r,l)};}
+        if(invalid){const msg=f.querySelector('[data-rec-msg]');msg.hidden=false;msg.textContent='U každého posouzeného projevu doplňte konkrétní doklad a doporučení.';return;}
+        save(records.map(v=>v.id===r.id?{...v,competencyReview}:v));return;
       }
       if (canReview(callbacks.role) && f.matches('[data-review]')) {
         const r=records.find(v=>v.id===f.dataset.review);

@@ -130,7 +130,7 @@ window.IVPREF = (() => {
       const exchanges=history(row).filter(e=>e.type!=='submitted');
       const fields={'Blok':blockName(row.blockId),'Pozorovaná situace':row.observation,'Stav reflexe':labels[row.status]};
       if(exchanges.length>1)fields['Dřívější zpětná vazba']=exchanges.slice(0,-1).map(e=>displayDate(e.at)+' · '+e.message).join('\n');
-      return {id:row.id,isBlockReflection:true,blockId:row.blockId,title:'Reflexe · '+row.topic,status:row.status,date:row.date,fields,reflection:row.meaning,nextStep:row.next,feedback:exchanges.at(-1)?.message||'',timeline:[]};
+      return {id:row.id,isBlockReflection:true,sourceId:row.sourceId,blockId:row.blockId,title:'Reflexe · '+row.topic,status:row.status,date:row.date,fields,reflection:row.meaning,nextStep:row.next,feedback:exchanges.at(-1)?.message||'',timeline:[]};
     });
   }
   function bind(root,ctx) {
