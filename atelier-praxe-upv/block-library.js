@@ -139,7 +139,7 @@ window.BLOCKS = (() => {
   const activity = (id, choice) => get(id)?.activities.find(item => item.id === String(choice));
   const prompts = (id, choice) => activity(id, choice)?.prompts || get(id)?.prompts || [];
   function sheetLink(item,role='student') {
-    return (role==='student'?'<a class="primary" href="#arch/'+item.id+'">Vyplnit přímo v nástroji</a>':'')+'<a class="secondary" href="' + item.file + '?v=komplet-202627" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', DOCX">Upravit ve Wordu · DOCX ↓</a><a class="secondary" href="materialy/' + item.id + '.pdf?v=komplet-202627" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', PDF">Vytisknout · PDF ↓</a>';
+    return (role==='student'?'<a class="primary" href="#arch/'+item.id+'">Vyplnit arch online</a>':'')+'<a class="secondary" href="' + item.file + '?v=sjednoceno1" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', DOCX">Upravit ve Wordu · DOCX ↓</a><a class="secondary" href="materialy/' + item.id + '.pdf?v=sjednoceno1" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', PDF">Prázdný arch pro ruční vyplnění · PDF ↓</a>';
   }
   function sourceLinks(item,role,annexesOnly=false) {
     const allFiles = window.IVP_DOCUMENTS?.[item.id] || [];
@@ -185,7 +185,7 @@ window.BLOCKS = (() => {
     const photo={ivp:1,group:2,guided:3,micro:4,continuous:5,reflection:6,nacvik:4,adaptio:6,ss:5,kurzy:1}[item.id]||1;
     return '<article class="panel stack document-kit" id="dokumenty-'+item.id+'" tabindex="-1"><div class="sheet-cover"><img loading="lazy" src="phase-'+photo+'.webp?v=barevne" alt=""><div><small>Pracovní sada · 2026/2027</small><h3>' + escape(item.title) + '</h3><p>' + escape(item.sheet) + '</p>'+(STUDY_GUIDE.get(item.id)?'<p>'+escape(STUDY_GUIDE.label(item.id))+'</p>':'')+'</div></div>' +
       '<div class="document-downloads"><h4>'+(student?'Můj formulář k vyplnění':'Formulář pro studenta')+'</h4><p>'+escape(item.detail)+'</p><div class="actions">' + sheetLink(item,role) + '</div></div>' + submission(item, role, true) +
-      (practiceLink || reflect ? '<div class="document-work actions">' + practiceLink + reflect + '</div>' : '') + sourceLinks(item,role) + '</article>';
+      (practiceLink || reflect ? '<div class="document-work actions">' + practiceLink + '</div>' : '') + sourceLinks(item,role) + '</article>';
   }
   function catalog(role = 'student') {
     const section = (title, subset) => '<section class="stack document-section"><div class="document-section-heading"><div><small class="eyebrow">'+(title==='Studijní praxe IVP'?'FORMULÁŘE · METODIKA · REFLEXE':'DALŠÍ PRACOVNÍ SADY')+'</small><h2'+(title==='Studijní praxe IVP'?' id="pracovni-listy" tabindex="-1"':'')+'>' + title + '</h2></div><p>'+(title==='Studijní praxe IVP'?'Vyberte svůj blok. Dokumenty k vyplnění i postup najdete spolu v jedné kartě.':'Pomůcky pro nácvik výuky, rozhovor s mentorem a další profesní rozvoj.')+'</p></div><div class="grid study-downloads">' +

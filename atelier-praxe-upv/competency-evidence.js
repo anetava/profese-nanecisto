@@ -29,6 +29,7 @@ window.COMPETENCY = (() => {
         kind==='reflection'?'Student výslovně dokládá vlastní reflexi; pedagog ověří její obsah.':
         'Student označil přípravu nebo model; uskutečnění ve výuce není doloženo.');
     }
+    if(r.isSheet && window.SHEET_COMP) for(const l of SHEET_COMP.links(r)) add(l.code,l.sourceField,l.excerpt,l.kind,l.reason);
     const observation=['ivp','group','guided'].includes(r.moduleId);
     const teaching=['micro','continuous'].includes(r.moduleId);
     // A simulation or plan remains a plan even if its legacy moduleId says teaching.
