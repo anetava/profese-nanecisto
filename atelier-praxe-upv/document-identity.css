@@ -1,6 +1,6 @@
 /* Shared identity for online sheets and self-contained document exports. */
 :root{--ivp-ink:#172722;--ivp-mint:#bcebe1;--ivp-blue:#d9eaed;--ivp-cream:#f2e7c7;--ivp-burgundy:#78364e}
-.ivp-watermark{position:fixed;pointer-events:none;left:25%;top:36%;width:50%;text-align:center;font:900 clamp(120px,25vw,280px)/1 Arial,sans-serif;color:rgba(74,130,115,.045);transform:rotate(-25deg);z-index:0;user-select:none}
+.ivp-watermark{position:fixed;pointer-events:none;left:25%;top:36%;width:50%;text-align:center;font:900 clamp(120px,25vw,280px)/1 Arial,sans-serif;color:rgba(74,130,115,.045);transform:rotate(-25deg);z-index:10;user-select:none}
 .foxy-doc-brand{display:inline-block;font:bold 20px/1.1 Arial,sans-serif;border-left:4px solid #78364e;padding:4px 12px;color:#172722;background:transparent}
 .foxy-doc-brand small{display:block;font-size:10px;letter-spacing:.25em;color:inherit}
 .sheet-kraau{background:#f2e7c7;padding:24px;margin:24px 0;border-top:4px solid #78364e}
@@ -11,7 +11,7 @@
 .kraau-map .competency-guide{background:#f2e7c7;padding:24px;border-left:5px solid #78364e}
 .sheet-print-brand{display:none}
 @media print{
- .ivp-watermark{position:fixed;font-size:150pt;color:#edf3f0;left:15%;top:38%;width:70%;z-index:0;opacity:.45;print-color-adjust:exact}
+ .ivp-watermark{position:fixed;font-size:150pt;color:#edf3f0;left:15%;top:38%;width:70%;z-index:10;opacity:.45;print-color-adjust:exact}
  .sheet-print-brand{display:block;font:bold 11pt Arial;margin-bottom:12pt}
  .sheet-save,.sheet-kraau>a{display:none!important}
 }
