@@ -129,3 +129,27 @@
  .portfolio-growth .growth-areas>div:nth-child(even){background:#edf1d7;border-color:#8c984d}
  .portfolio-growth .growth-areas meter{accent-color:#75813d}
 }
+
+/* Shared framing for competency maps, saved portfolios and reflection panels. */
+@media screen {
+ main:has(>.kraau-map)>.subhead,main:has(>.portfolio-final)>.subhead{background:#e3eddf;border:2px solid #879147;border-top-width:7px}
+ .kraau-map .competency-guide{background:#f4edc5;border:2px solid #aa963e;border-left-width:6px;padding:clamp(20px,3vw,36px);color:#172722}
+ .kraau-map .kraau-legend span{background:#fffdf1;border:1px solid #a39755;color:#172722}
+ .kraau-map .competency-area{border:2px solid #aa963e;border-top-width:6px;background:#fffdf3;overflow:hidden}
+ .kraau-map .competency-area:nth-child(even){border-color:#879147;background:#f8faed}
+ .kraau-map .competency-area>summary{background:#f1e6b5;color:#172722}
+ .kraau-map .competency-area:nth-child(even)>summary{background:#e2e9bf;color:#172722}
+ .kraau-map .competency-item{margin:12px;border:1px solid #b9bb87;background:#fffef9}
+ .kraau-map .competency-item[open]{border-left:4px solid #879147}
+ .competency-evidence,.evidence-item{background:#f7f3dd;border:1px solid #b2a154;border-left:5px solid #a18d38}
+ .competency-review{background:#f0f4e0;border:2px solid #879147}
+ .portfolio-final{background:#f4edc5;border:2px solid #aa963e;border-left-width:6px;color:#172722}
+ .portfolio-toolbar{background:#dcece2;border:2px solid #719481}
+ .records-list>.entry{background:#fffbed;border:2px solid #aa963e;border-left-width:6px;margin-block:16px}
+ .records-list>.entry:nth-child(even){background:#f0f4df;border-color:#879147}
+ .rf-section[data-rf-widget="block"]{background:#f0f4df;border:2px solid #879147;border-top-width:6px}
+ .rf-section .rf-row,.rf-section .rf-thread{border:2px solid #a39851;border-left-width:6px;background:#fffdf3}
+ .rf-section .rf-source,.rf-section .rf-answer{background:#e2eee3;border:1px solid #829e79}
+ .sheet-workspace[data-practice] .sheet-question{border:2px solid var(--practice-accent,#879147);border-top-width:5px}
+ .sheet-workspace[data-practice] .sheet-methods{border:2px solid var(--practice-accent,#879147);border-top-width:6px}
+}
