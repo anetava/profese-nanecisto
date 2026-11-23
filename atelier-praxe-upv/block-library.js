@@ -141,8 +141,9 @@ window.BLOCKS = (() => {
   function sheetLink(item,role='student') {
     return (role==='student'?'<a class="primary" href="#arch/'+item.id+'">Vyplnit přímo v nástroji</a>':'')+'<a class="secondary" href="' + item.file + '?v=komplet-202627" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', DOCX">Upravit ve Wordu · DOCX ↓</a><a class="secondary" href="materialy/' + item.id + '.pdf?v=komplet-202627" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', PDF">Vytisknout · PDF ↓</a>';
   }
-  function sourceLinks(item,role) {
-    const files = window.IVP_DOCUMENTS?.[item.id] || [];
+  function sourceLinks(item,role,annexesOnly=false) {
+    const allFiles = window.IVP_DOCUMENTS?.[item.id] || [];
+    const files = annexesOnly ? allFiles.slice(1) : allFiles;
     if (!files.length) return '';
     return '<details class="area-box document-sources"><summary>Metodika a přílohy <span class="document-count">' + files.length + '</span></summary><p>Jde o studijní průvodce a pracovní pomůcky Ateliéru, nikoli originály metodik IVP. Závazné zadání a termíny ověřte u předmětu v Moodlu; původ podkladů najdete v sekci Metodiky a zdroje.</p><ul>' +
       files.map(file => '<li>'+((file.url.includes('arch-naslechu')&&role==='student')?'<a class="primary" href="#arch/arch-naslechu">Vyplnit celý náslechový arch online</a>':file.url.includes('rozbor-cvicny-ucitel')&&['mentor','ivp'].includes(role)?'<a class="primary" href="#arch/rozbor-cvicny-ucitel">Vyplnit pedagogický rozbor online</a>':'')+'<a href="' + escape(file.url) + '" target="_blank" rel="noopener">' +
@@ -171,19 +172,19 @@ window.BLOCKS = (() => {
     return '<section class="panel stack block-document-kit" aria-label="Dokumenty k bloku"><div><small class="eyebrow">Dokumenty k bloku · Akademický rok 2026/2027</small>' +
       '<h2>' + escape(item.sheet) + '</h2><p>' + escape(item.detail) + '</p></div><div class="actions">' + sheetLink(item,role) +
       '<a class="secondary" href="#materialy">Všechny dokumenty</a></div><small class="muted">Zaškrtněte odpovídající volby, doplňte konkrétní situaci a vlastní reflexi. Online arch se ukládá do vašeho portfolia. Co se na vás nevztahuje, označte; nic si nedomýšlejte.</small>' +
-      (['continuous','reflection'].includes(id)?'<a href="#materialy/vystupy">Závěrečný protokol a portfolia →</a>':'') + submission(item, role) + sourceLinks(item,role) + '</section>';
+      (['continuous','reflection'].includes(id)?'<a href="#materialy/vystupy">Závěrečný protokol a portfolia →</a>':'') + sourceLinks(item,role,phaseTitles.has(item.id)) + '</section>';
   }
   function indexItem(item, role) {
     const student = role === 'student';
     const canOpen = student || role === 'mentor' || role === 'ivp';
-    const practiceLink = !canOpen ? '' : '<a class="primary" href="#' + blockRoute(item,role) + '">' + (student ? 'Otevřít blok a vyplnit' : 'Prohlédnout zadání bloku') + ' →</a>';
+    const practiceLink = !canOpen ? '' : '<a class="primary" href="#' + blockRoute(item,role) + '">' + (student ? 'Průvodce praxí a požadavky' : 'Prohlédnout zadání bloku') + ' →</a>';
     const reflect = !student ? '' : item.activities.length ?
       '<details class="area-box"><summary>Začít reflexi k vybrané situaci</summary><ul>' +
         item.activities.map(choice => '<li>' + reflectionLink(item, choice, choice.title) + '</li>').join('') + '</ul></details>' :
       '<a class="secondary" href="#reflexe/nova/' + item.id + '">Vybrat odpovědi v reflexi →</a>';
     const photo={ivp:1,group:2,guided:3,micro:4,continuous:5,reflection:6,nacvik:4,adaptio:6,ss:5,kurzy:1}[item.id]||1;
     return '<article class="panel stack document-kit" id="dokumenty-'+item.id+'" tabindex="-1"><div class="sheet-cover"><img loading="lazy" src="phase-'+photo+'.webp?v=barevne" alt=""><div><small>Pracovní sada · 2026/2027</small><h3>' + escape(item.title) + '</h3><p>' + escape(item.sheet) + '</p>'+(STUDY_GUIDE.get(item.id)?'<p>'+escape(STUDY_GUIDE.label(item.id))+'</p>':'')+'</div></div>' +
-      '<div class="document-downloads"><h4>'+(student?'Můj formulář k vyplnění':'Formulář pro studenta')+'</h4><p>'+escape(item.detail)+'</p><div class="document-format-note"><strong>Vyberte způsob práce</strong><span>Vyplňte online a uložte do portfolia. Word a PDF jsou doplňkové možnosti.</span></div><div class="actions">' + sheetLink(item,role) + '</div></div>' + submission(item, role, true) +
+      '<div class="document-downloads"><h4>'+(student?'Můj formulář k vyplnění':'Formulář pro studenta')+'</h4><p>'+escape(item.detail)+'</p><div class="actions">' + sheetLink(item,role) + '</div></div>' + submission(item, role, true) +
       (practiceLink || reflect ? '<div class="document-work actions">' + practiceLink + reflect + '</div>' : '') + sourceLinks(item,role) + '</article>';
   }
   function catalog(role = 'student') {

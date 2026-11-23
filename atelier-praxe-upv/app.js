@@ -112,8 +112,7 @@
     return 'reflexe/nova/'+block+'/zaznam/'+encodeURIComponent(id);
   }
   function blockNav(block){
-    return '<nav class="block-nav" aria-label="K tomuto bloku"><button type="button" class="secondary" data-block-docs>Dokumenty k bloku ↓</button>'+
-      (role==='student'?link('reflexe/nova/'+block,'Otevřít reflexi pro IVP','secondary'):link('reflexe','Přehled předaných reflexí','secondary'))+'</nav>';
+    return '<nav class="block-nav" aria-label="K tomuto bloku"><button type="button" class="secondary" data-block-docs>Dokumenty k bloku ↓</button></nav>';
   }
   function blockExtras(id){
     return '<div class="block-extras">'+BLOCKS.docs(id,role)+IVPREF.block(id,refContext())+'</div>';
@@ -155,11 +154,11 @@
   }
   function modulePage(m,overview=false){
     const records=current().records.filter(r=>r.moduleId===m.id);
-    const mi=modules.findIndex(item=>item.id===m.id), syl=syllabi[mi], guided=m.id==='guided';
+    const mi=modules.findIndex(item=>item.id===m.id), syl=syllabi[mi];
     const targets=m.observationTargets;
-    const variant=guided?'<aside class="notice"><strong>Rozsah řízeného náslechu: 10 + 2</strong><p>Absolvujte 10 náslechů teoretické výuky a 2 náslechy praktického vyučování. Rozsah je stanoven podle metodiky 03; student si jej nevolí. Počítadlo je orientační a samo nepotvrzuje splnění praxe.</p></aside>':'';
-    return (!overview&&role==='ivp'?'<nav class="record-owner"><a href="#podklady">← Podklady k rozboru</a><strong>'+e(person().name)+'</strong><a href="#portfolio">Portfolio studenta →</a></nav>':'')+section('Praxe '+String(modules.findIndex(item=>item.id===m.id)+1).padStart(2,'0')+' · '+(overview?'Zadání a podklady':person().name),m.title,m.goal)+STUDY_GUIDE.panel(m,{role,entry:current(),syllabus:syl})+blockNav(m.id)+variant+
-    '<details open class="area-box"><summary>Jak praxe probíhá a co doložím</summary>'+(syl?'<p><a href="'+e(syl.url)+'" target="_blank" rel="noopener">'+e(syl.name)+'</a><br>'+e(syl.note)+'</p>':'')+'<p>'+e(m.place)+'</p><ol class="steps">'+m.steps.map(x=>'<li>'+e(x)+'</li>').join('')+'</ol><h3>Co předložit</h3><ul>'+m.evidence.map(x=>'<li>'+e(x)+'</li>').join('')+'</ul><p>'+e(m.credit)+'</p><small>'+e((m.source||[]).join(' · '))+'</small></details>'+(overview?BLOCKS.docs(m.id,role):'<div id="record-space">'+PRACTICE.render({...m,observationTargets:targets},records,role,{reflections:current().reflections})+'</div>'+blockExtras(m.id));
+
+    return (!overview&&role==='ivp'?'<nav class="record-owner"><a href="#podklady">← Podklady k rozboru</a><strong>'+e(person().name)+'</strong><a href="#portfolio">Portfolio studenta →</a></nav>':'')+section('Praxe '+String(modules.findIndex(item=>item.id===m.id)+1).padStart(2,'0')+' · '+(overview?'Zadání a podklady':person().name),m.title,m.goal)+STUDY_GUIDE.panel(m,{role,entry:current(),syllabus:syl})+
+    '<details class="area-box"><summary>Podrobné požadavky a podmínky splnění</summary>'+'<p>'+e(m.place)+'</p><ol class="steps">'+m.steps.map(x=>'<li>'+e(x)+'</li>').join('')+'</ol><h3>Co předložit</h3><ul>'+m.evidence.map(x=>'<li>'+e(x)+'</li>').join('')+'</ul><p>'+e(m.credit)+'</p><small>'+e((m.source||[]).join(' · '))+'</small></details>'+(overview?BLOCKS.docs(m.id,role):'<div id="record-space">'+PRACTICE.render({...m,observationTargets:targets},records,role,{reflections:current().reflections})+'</div>'+blockExtras(m.id));
   }
   function skills(){
     return section(person().name+' · Rámec MŠMT','Co už dokládá moje praxe?','Mapa se průběžně doplňuje z vašich záznamů, reflexí a posouzení pedagoga.')+COMPUI.map(visibleRecords(),recordRoute);
