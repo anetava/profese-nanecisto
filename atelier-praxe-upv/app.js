@@ -203,6 +203,8 @@
     const routedPage=special&&!['start','sources','materialy','adaptio'].includes(rawPage)?'ivp':scenarioMatch?scenarioMatch[1]:rawPage;
     const page=window.IVP_ROSTER && routedPage==='ivp'?'studium':routedPage;
     const parts=page.split('/').map(part=>{try{return decodeURIComponent(part)}catch{return part}});
+    const sheetPractice=role==='student'&&parts.length===2&&parts[0]==='praxe'&&STUDY_GUIDE.get(parts[1])?parts[1]:null;
+    if(sheetPractice){parts[0]='arch';parts[1]=['group','guided'].includes(sheetPractice)?'arch-naslechu':sheetPractice;}
     let recordUnavailable=false;
     if(parts[0]==='praxe'&&parts[2]==='zaznam'&&role!=='student'){
       const owners=allowedPeople().filter(p=>db[p.id].records.some(r=>r.id===parts[3]&&r.moduleId===parts[1]&&PRACTICE.readable(r,role)));
@@ -217,7 +219,7 @@
     let content;
     if(page==='umisteni'||(page==='skola'&&window.IVP_ROSTER)) content=window.IVP_ROSTER?IVP_LOCAL.render(allowedPeople(),db,role):IVP_IMPORT.render();
     else if(page==='podklady'&&role==='ivp')content=REVIEW.render({people:allowedPeople(),db});
-    else if(parts[0]==='arch'&&!special)content=SHEETS.render(parts[1],current(),role);
+    else if(parts[0]==='arch'&&!special)content=SHEETS.render(parts[1],current(),role,sheetPractice);
     else if(parts[0]==='materialy') content=BLOCKS.catalog(role);
     else if(page==='studium')content=STUDY.render({role,person:person(),entry:current(),modules,people:allowedPeople(),db,live:Boolean(window.IVP_ROSTER)});
     else if(page==='sources')content=sources();
