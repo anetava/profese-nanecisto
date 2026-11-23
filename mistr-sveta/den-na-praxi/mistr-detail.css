@@ -81,60 +81,16 @@ body .bar.studio-header{background:#fff;border:0;border-bottom:1px solid #dcdedb
 .wordmark>span:before{background-size:contain}
 
 /* Field dictionary */
-#field-find{border:2px solid #13796f;border-radius:0;padding:14px 18px}
+.page-title:has(+ label #field-find){position:relative;isolation:isolate;overflow:hidden;padding:clamp(24px,4vw,60px);padding-right:34%;border-radius:0;background:#073e40;color:#fff;margin-bottom:24px}
+.page-title:has(+ label #field-find)::after{content:"";position:absolute;z-index:-1;inset:0 0 0 68%;background:#ffdfed url("gastro-znak.svg?v=citron") center/auto 82% no-repeat;border-radius:50% 0 0 50%}
+.page-title:has(+ label #field-find) :is(h1,p){color:inherit}.page-title:has(+ label #field-find) .ey{color:#89ecdc}
+label:has(>#field-find){display:block;color:#124540}#field-find{border:2px solid #13796f;border-radius:0;padding:14px 18px}
 .field-terms{display:block;columns:3;column-gap:14px;margin-block:18px}
 .field-terms>details:nth-child(n){display:inline-block;vertical-align:top;box-sizing:border-box;width:100%;break-inside:avoid;margin:0 0 12px;border:0;border-radius:0;padding:16px 20px;background:#d0f4e9;color:#103c39}
 .field-terms>details:nth-child(3n+2){background:#ffe0e9}.field-terms>details:nth-child(3n){background:#fff0c8}
 .field-terms>details summary{font-size:1.25rem;cursor:pointer;line-height:1.25}.field-terms>details[hidden]{display:none}.field-terms a{overflow-wrap:anywhere}
 @media(max-width:850px){.field-terms{columns:2}}
-@media(max-width:600px){.field-terms{columns:1}}
-
-/* One practice workspace: dates, terminology and confirmed skills. */
-.practice-page{padding-top:24px}
-.practice-layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:clamp(20px,2.5vw,34px);align-items:start}
-.practice-planning,.practice-glossary{min-width:0}
-.practice-page .shift-spot{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}
-.practice-page .shift-spot>div{padding:clamp(20px,2.3vw,32px)}
-.practice-page .shift-spot h1{font-size:clamp(2.2rem,4vw,3.5rem);margin:14px 0 24px}
-.practice-page .shift-spot h2{font-size:1rem;letter-spacing:0;margin:0 0 8px}
-.practice-next{font-size:clamp(1.1rem,1.6vw,1.35rem);line-height:1.25;font-weight:650}
-.practice-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
-.practice-page .practice-actions .button{margin:0;min-height:44px}
-.practice-jump{display:inline-block;color:#fff;font-size:.9rem;margin-top:16px;padding-block:5px}
-.practice-page .shift-spot>img{height:100%;min-height:320px;max-height:none}
-.practice-upcoming{margin-top:22px}
-.practice-upcoming h2{font-size:1.1rem;letter-spacing:0}
-.practice-page .shift-ribbon{margin:10px 0 16px}
-.practice-page .shift-ribbon b{font-size:1.2rem}
-.practice-page .shift-ribbon span{font-size:.92rem}
-.practice-page .season-plan{margin-bottom:0;scroll-margin-block:20px}
-.practice-glossary{background:#f3f7f5;border-top:4px solid var(--mint);padding:clamp(18px,2.1vw,28px);scroll-margin-block:20px}
-.practice-glossary h2{font-size:clamp(1.5rem,2.4vw,2rem);margin:8px 0 12px}
-.practice-glossary header p{color:#435651;margin-bottom:22px}
-.practice-glossary label{display:block;font-weight:650;color:#124540;margin-bottom:6px}
-.practice-glossary #field-find{width:100%;min-width:0}
-.practice-glossary .field-terms{display:grid;columns:auto;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:18px 0 0}
-.practice-glossary .field-terms>details:nth-child(n){min-width:0;margin:0;padding:14px;overflow-wrap:anywhere}
-.practice-glossary .field-terms summary{font-size:1.08rem;min-height:24px}
-.practice-glossary .field-terms .button{white-space:normal;text-align:left;max-width:100%}
-.practice-glossary #field-empty{margin-top:18px}
-.practice-progress{border-top:1px solid var(--rule);margin-top:30px;padding-top:24px}
-.practice-progress>h2{font-size:1.5rem}
-@media(max-width:1050px){
- .practice-layout{grid-template-columns:1fr}
- .practice-page .shift-spot{grid-template-columns:1.1fr 1fr}
- .practice-page .shift-spot>img{max-height:380px}
-}
-@media(max-width:620px){
- .practice-page{padding-top:14px}
- .practice-page .shift-spot{grid-template-columns:1fr}
- .practice-page .shift-spot>img{grid-row:1;height:140px;min-height:0}
- .practice-page .shift-spot h1{margin:10px 0 20px}
- .practice-page .shift-ribbon{scroll-snap-type:x proximity}
- .practice-page .shift-ribbon button{scroll-snap-align:start}
- .practice-glossary .field-terms{grid-template-columns:1fr}
- .practice-progress .skill-shelf{grid-template-columns:1fr}
-}
+@media(max-width:600px){.field-terms{columns:1}.page-title:has(+ label #field-find) h1{font-size:clamp(2rem,9vw,3rem)}.page-title:has(+ label #field-find)::after{background-size:80% auto}}
 
 /* The garment photos carry their own embroidery. */
 .uniform .ms-patch{display:none}
