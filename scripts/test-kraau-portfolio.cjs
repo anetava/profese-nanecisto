@@ -26,5 +26,19 @@ actual.status='confirmed';const l=COMPETENCY.links(actual).find(l=>l.code==='2.1
 actual.competencyReview={'2.1':{verdict:'demonstrated',note:'Cíl a skutečný výkon byly ověřeny.',reviewerRole:'mentor',reviewedAt:'2026-11-23T17:00:00Z',evidenceSignature:COMPETENCY.signature(actual,l)}};
 assert.equal(COMPUI.stats([actual]).confirmed,1);actual.sheetValues.f19='Změněný popis';assert.equal(COMPUI.stats([actual]).confirmed,0);
 const unsafe=row({f13:'<img src=x onerror=alert(1)>'});assert(!COMPUI.live(unsafe,[]).includes('<img'));
-const preview=COMPUI.live(observation,[]);assert(preview.includes('NÁHLED'));assert(preview.includes('Vaše portfolio čeká na první zkušenost'));assert(!preview.includes('0 / 18'));assert(preview.includes('Změny ještě nejsou uložené.'));
+const preview=COMPUI.live(observation,[]);assert(preview.includes('Moje portfolio'));assert(preview.includes('Proč tyto kompetence?'));assert(!preview.includes('0 / 18'));assert(preview.includes('zatím neuloženo'));assert(!preview.includes('<ol>'));assert(COMPUI.live(observation,[observation],true).includes('Záznam je uložený.'));
 console.log('KRAAU: 18 activities, source requirements, observation/own-action boundary, simulations, distinct-document counts, unsaved preview, changed evidence and HTML escaping passed.');
+
+// The simplified form preserves every omitted answer when reopening an old record.
+for(const [sheet,indices] of Object.entries(SHEETS.omitted)) {
+ const fresh=SHEETS.form(sheet);
+ for(const i of indices) {
+  assert(!fresh.includes('name="f'+i+'"'),sheet+' redundant field '+i);
+  const item=SHEET_DATA[sheet].items[i],value=item.type==='choice'?item.options[0]:'Dříve zapsaná zkušenost';
+  const restored=SHEETS.form(sheet,{values:{['f'+i]:value}});
+  assert(restored.includes('Dříve vyplněné odpovědi'));
+  assert(restored.includes('name="f'+i+'"'));
+ }
+ assert.equal((fresh.match(/>Uložit do portfolia</g)||[]).length,1);
+}
+console.log('Simplified forms: omitted prompts preserved for existing answers; one primary save.');

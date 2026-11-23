@@ -84,3 +84,30 @@
  .sheet-workspace .sheet-table td{padding:8px;vertical-align:top;font-size:16px;line-height:1.5;overflow-wrap:anywhere}
  .sheet-workspace .sheet-table textarea{display:block;box-sizing:border-box;min-width:0;min-height:46px;height:auto;field-sizing:content;width:100%;padding:10px 9px;font-size:17px;line-height:1.45;resize:vertical;overflow-y:hidden;border-radius:3px}
 }
+
+/* A single working sheet: compact facts, direct questions and a small portfolio panel. */
+@media screen {
+ .sheet-basics{display:grid;grid-template-columns:1fr 1fr;gap:16px;background:var(--practice-light,#edf8f5);padding:20px;margin-bottom:24px}
+ .sheet-basic{display:block;font-size:16px;font-weight:650;line-height:1.5}.sheet-basic input{display:block;width:100%;margin-top:6px}
+ .sheet-workspace .sheet-question{font-size:20px;margin:20px 0;padding:18px!important}
+ .sheet-workspace label.sheet-question:before,.sheet-workspace fieldset.sheet-question>legend:before{content:none}
+ .sheet-workspace .sheet-question legend{font-size:20px;padding:0;margin-bottom:12px}
+ .sheet-workspace .sheet-option{padding:11px 14px;margin:6px 0;font-size:17px}
+ .sheet-workspace .sheet-help{font-size:16px;line-height:1.5;margin:8px 0}
+ .sheet-workspace .sheet-question textarea{min-height:95px;font-size:18px}
+ .sheet-workspace .sheet-section{margin:30px 0 16px;padding:20px;font-size:27px}
+ .sheet-workspace .sheet-save{position:sticky;bottom:0;z-index:12;padding:14px;margin-top:24px;align-items:center;box-shadow:0 -2px 12px #17272212}
+ .sheet-workspace .sheet-save button,.sheet-workspace .sheet-save a{padding:12px 18px;font-size:16px}
+ .sheet-workspace .sheet-save [role=status]{font-size:14px}
+ .sheet-downloads{position:relative}.sheet-downloads summary{cursor:pointer;font-size:16px;font-weight:650}.sheet-downloads[open]{padding:12px;background:#fff}.sheet-downloads[open]>*:not(summary){display:block;margin:8px 0}
+ .sheet-previous{margin:24px 0;padding:18px;background:#f4f4f1}.sheet-previous>summary{cursor:pointer;font-size:17px;font-weight:700}
+ .sheet-workspace[data-practice] .sheet-methods{overflow:visible;max-height:none;position:sticky;top:16px}
+ .sheet-workspace .sheet-methods:has(.method-drawer[open]),.sheet-workspace .sheet-methods:has(.skill-reasons[open]){position:static}
+ .sheet-workspace .live-evidence h2{font-size:26px;margin:0 0 12px}.sheet-workspace .draft-state{font-size:15px;margin:0 0 16px}
+ .sheet-workspace .skill-preview li{padding:10px 12px;margin:8px 0;background:#ffffffb5}.sheet-workspace .skill-preview li strong{font-size:17px}.sheet-workspace .skill-preview li span{display:block;font-size:14px;margin-top:4px}
+ .sheet-workspace .skill-reasons summary{cursor:pointer;font-size:16px;font-weight:650}.sheet-workspace .saved-count{border-top:1px solid #18292b40;padding-top:16px;margin-top:18px}
+ .sheet-workspace .method-drawer{border-top:2px solid #18292b40;margin-top:24px;padding-top:16px}.sheet-workspace .method-drawer>summary{font-size:19px;margin:0;cursor:pointer}.sheet-workspace .sheet-method h3{font-size:22px}
+ .sheet-workspace .sheet-kraau{padding:18px;margin-top:24px;border:1px solid #d0d9d5}.sheet-workspace .additional-evidence>summary{font-size:18px}
+}
+@media screen and (max-width:850px){.sheet-workspace[data-practice] .sheet-methods{position:static}.sheet-basics{grid-template-columns:1fr}.sheet-workspace .sheet-save{position:sticky;bottom:0}}
+@media print{.sheet-basics{display:grid;grid-template-columns:1fr 1fr;gap:8pt}.sheet-basic input{display:none}.sheet-downloads,.sheet-kraau,.sheet-previous:not([open]){display:none}}

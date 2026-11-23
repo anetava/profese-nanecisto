@@ -105,7 +105,7 @@
     const label=role==='ivp'?'Reflexe k vyřízení':role==='mentor'?'Předané reflexe':'Moje reflexe';
     const status=n?' · '+n+(role==='student'?' k doplnění':''):'';
     return '<nav class="desk-links" aria-label="Reflexe a podklady">'+
-      (!RoleDesk.isSpecial(role)?link('reflexe',label+status,'desk-link reflection-action'):'')+
+      (!RoleDesk.isSpecial(role)?link(role==='student'&&!n?'portfolio':'reflexe',role==='student'&&!n?'Moje portfolio':label+status,'desk-link reflection-action'):'')+
       link('materialy','Dokumenty ke stažení','desk-link docs-action')+'</nav>';
   }
   function sourceRef(block,id){
@@ -150,7 +150,7 @@
   function studentHome(){
     const p=person(),m=mod(p.stage),pending=current().records.find(r=>['draft','returned'].includes(r.status)),target=pending?mod(pending.moduleId):m;
     return '<section class="hero" data-practice="'+e(target.id)+'"><div class="hero-copy"><small>'+e(p.name)+' · Učitelství praktického vyučování</small><h1>'+({group:'Co dnes uvidíte ve výuce?',micro:'Jak povedete první výstup?',continuous:'Co si žáci odnesou z hodiny?'}[p.stage])+'</h1><p>'+({group:'Při náslechu zaznamenejte průběh celé jednotky. Pro společný rozbor pak vyberte konkrétní okamžik a reakci žáků.',micro:'Naplánujte si krátkou instruktáž a určete, podle čeho poznáte, že jí skupina rozumí.',continuous:'Spojte přípravu, vlastní výuku a rozbor s cvičným učitelem do jednoho záznamu.'}[p.stage])+'</p>'+link('praxe/'+target.id,'Otevřít moji praxi →','primary')+'</div><figure class="hero-photo"><img src="praxe.webp?v=atelier-foto1" alt="Student učitelství a mentorka poslouchají, jak žák vysvětluje sestavení dřevěného spoje."><figcaption>'+e(target.title)+'</figcaption></figure></section>'+
-    '<div class="section-head"><div><small class="eyebrow">Studijní cesta</small><h2>Od náslechu k vlastní výuce</h2></div></div><div class="grid">'+modules.map((m,i)=>'<article class="tile phase-tile" data-practice="'+e(m.id)+'"><img class="phase-photo" src="phase-'+(i+1)+'.webp?v=zaci-ss1" alt="" loading="lazy"><span class="tag">'+STUDY_GUIDE.label(m.id)+' · Praxe '+String(i+1).padStart(2,'0')+'</span><h3>'+e(m.title)+'</h3><p>'+e(m.short)+'</p>'+link('praxe/'+m.id,'Otevřít praxi →')+'</article>').join('')+'</div>'+COMPUI.summary(visibleRecords())+'<div class="practice-secondary">'+link('skola','Moje škola')+link('reflexe','Moje reflexe')+link('materialy','Dokumenty')+link('druhy-pokus','Můj druhý pokus')+'</div>';
+    '<div class="section-head"><div><small class="eyebrow">Studijní cesta</small><h2>Od náslechu k vlastní výuce</h2></div></div><div class="grid">'+modules.map((m,i)=>'<article class="tile phase-tile" data-practice="'+e(m.id)+'"><img class="phase-photo" src="phase-'+(i+1)+'.webp?v=zaci-ss1" alt="" loading="lazy"><span class="tag">'+STUDY_GUIDE.label(m.id)+' · Praxe '+String(i+1).padStart(2,'0')+'</span><h3>'+e(m.title)+'</h3><p>'+e(m.short)+'</p>'+link('praxe/'+m.id,'Otevřít praxi →')+'</article>').join('')+'</div>'+COMPUI.summary(visibleRecords(),{small:true,link:true})+'<div class="practice-secondary">'+link('skola','Moje škola')+link('materialy','Dokumenty')+'</div>';
   }
   function modulePage(m,overview=false){
     const records=current().records.filter(r=>r.moduleId===m.id);
@@ -169,7 +169,7 @@
   function listRecords(){
     const normalize=s=>String(s).toLocaleLowerCase('cs').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
     const out=visibleRecords().filter(r=>(statusFilter==='all'||statusFilter===r.status)&&normalize([r.title,r.date,fmt(r.date),mod(r.moduleId)?.title,r.isBlockReflection?BLOCKS.get(r.blockId)?.title:'',COMPETENCY.links(r).map(l=>l.code).join(' '),r.competency,r.reflection,r.feedback,r.nextStep,...Object.values(r.fields||{}),...Object.values(r.review||{}),...(r.timeline||[]).flatMap(Object.values)].join(' ')).includes(normalize(search))).sort((a,b)=>b.date.localeCompare(a.date));
-    return out.length?out.map(r=>'<details class="area-box entry"><summary>'+e(r.title||'Rozepsaný záznam')+' · '+e(fmt(r.date))+'</summary>'+exportBody(r)+link(recordRoute(r),r.isRetry?'Otevřít srovnání':r.isBlockReflection?'Otevřít reflexi a odpověď':r.tool?'Otevřít modul':'Otevřít v praxi')+(role==='student'&&!r.isBlockReflection&&!r.isRetry?' '+link(sourceRef(r.tool||r.moduleId,r.id),'Navázat reflexí pro IVP','text-btn'):'')+(role==='student'&&r.nextStep&&!r.isRetry?' '+link('druhy-pokus/'+encodeURIComponent(r.id),'Porovnat s druhým pokusem','text-btn'):'')+'</details>').join(''):'<p class="empty">Žádný odpovídající záznam.</p>';
+    return out.length?out.map(r=>'<details class="area-box entry"><summary>'+e(r.title||'Rozepsaný záznam')+' · '+e(fmt(r.date))+'</summary>'+exportBody(r)+link(recordRoute(r),r.isRetry?'Otevřít srovnání':r.isBlockReflection?'Otevřít reflexi a odpověď':r.tool?'Otevřít modul':'Otevřít v praxi')+(role==='student'&&!r.isSheet&&!r.isBlockReflection&&!r.isRetry?' '+link(sourceRef(r.tool||r.moduleId,r.id),'Navázat reflexí pro IVP','text-btn'):'')+(role==='student'&&!r.isSheet&&r.nextStep&&!r.isRetry?' '+link('druhy-pokus/'+encodeURIComponent(r.id),'Porovnat s druhým pokusem','text-btn'):'')+'</details>').join(''):'<p class="empty">Žádný odpovídající záznam.</p>';
   }
   function portfolio(){
     let finalDraft=null,finalUnreadable=false;
