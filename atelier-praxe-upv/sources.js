@@ -1,5 +1,6 @@
 'use strict';
 window.SOURCES = [
+  {name:'IVP ČZU · Původní metodika 05',url:'https://www.ivp.czu.cz/dl/135149?lang=cs',note:'Oficiální metodický materiál, aktualizace 7. 10. 2024. Odlišujte od studijních průvodců Ateliéru.'},
   {name:'IVP ČZU · Studijní plán UPV',url:'https://www.ivp.czu.cz/dl/82143?lang=cs',note:'Rozložení předmětů v šesti semestrech, rozsah praxí, způsob zakončení a kredity.'},
   {name:'IVP ČZU · Profil absolventa',url:'https://www.ivp.czu.cz/dl/141454?lang=cs',note:'Tříleté kombinované bakalářské studium. Dvanáct týdnů praxe zahrnuje pozorování, vlastní výuku a reflexi.'},
   {name:'Ateliér praxí · Průvodce souvislou praxí podle metodiky IVP',url:'materialy/metodiky/05-souvisla-praxe.pdf?v=atelier-lime2',note:'Studijní zpracování pro akademický rok 2026/2027. Rozsah výstupů, portfolio, závěrečný výstup a odpovědnosti účastníků.'},
@@ -39,11 +40,12 @@ window.FINAL_METHOD = {
  id:'continuous',credit:'Zápočet zohledňuje splněné výstupy a portfolio. Závěrečný samostatný výstup hodnotí komise.',title:'Souvislá řízená pedagogická praxe',short:'Vedu vlastní výuku',place:'Cvičná SOŠ nebo SOU',
  goal:'Připravte, odučte a rozeberte výuku ve svém oboru. U závěrečného výstupu samostatně předveďte celou vyučovací jednotku.',
  steps:[
- 'S koordinátorem a cvičným učitelem sestavte rozvrh výstupů včetně závěrečného. Předejte jej koordinátorovi a pedagogovi IVP.',
+ 'S koordinátorem a cvičným učitelem sestavte rozvrh výstupů včetně závěrečného. Nejpozději do 3 dnů jej předejte koordinátorovi a pedagogovi IVP.',
  'Poznejte pracoviště, ŠVP, tematické plány a pravidla bezpečnosti. Proberte přípravy s cvičným učitelem.',
  'Standardní rozsah jsou čtyři týdny a 14 výstupů. Zkrácená varianta má dva týdny a osm výstupů a vyžaduje souhlas ředitele IVP na základě doloženého dvouletého pedagogického působení na odborné škole.',
+ 'Jednotku delší než 5 vyučovacích hodin lze podle metodiky započítat jako dva výstupy. Uveďte její délku a nechte započtení ověřit pedagogem; prostý počet záznamů v Ateliéru toto pravidlo nevyhodnocuje.',
  'Po každé jednotce proveďte s cvičným učitelem rozbor a doplňte doporučení do přípravy.',
- 'Navíc absolvujte jeden samostatně připravený závěrečný výstup před komisí. V den výstupu předložte portfolio.' ],
+ 'Navíc absolvujte jeden závěrečný výstup před komisí. Přípravu zpracujte samostatně bez pomoci cvičného učitele. Metodika požaduje všechny fáze kombinované jednotky včetně zkoušení 1–2 žáků na začátku. Termín potvrzuje pedagog IVP; v den výstupu předložte portfolio.' ],
  evidence:['Charakteristika školy a rozvrh s vyznačenými výstupy','Přípravy s vlastní reflexí a doporučeními cvičného učitele','Tištěné portfolio pro pedagoga IVP a elektronická verze do Moodlu'],
  source:['IVP ČZU · Metodika 05 k souvislé řízené pedagogické praxi','IVP ČZU · Studijní plán UPV'],
  fields:[{label:'Cíl mé výuky',hint:'Co mají žáci samostatně předvést a podle čeho to poznáte?'},{label:'Doklad o učení',hint:'Která práce, odpověď nebo změna v postupu žáků doložila výsledek?'},{label:'Rozbor výstupu',hint:'Co jste zjistili s cvičným učitelem a jak to zapracujete do další hodiny?'}]
@@ -51,8 +53,8 @@ window.FINAL_METHOD = {
 window.REFLECTION_METHOD = {
  id:'reflection',credit:'Podle sylabu VVV178Z pro rok 2026/2027 upřesňuje závazné podmínky a způsob hodnocení Moodle předmětu.',title:'Reflexe pedagogické praxe',short:'Hodnotím svůj pokrok',place:'IVP · závěr studia',
  goal:'Porovnejte, jak jste vyučování pozorovali na začátku studia a jak je dnes sami řídíte. Využijte konkrétní doklady z portfolia.',
- steps:['Vyberte z portfolia starší záznam z pozorování a vlastní výstup s podobným tématem.','U obou popište situaci, činnost žáků a doklad o jejich učení.','Zpracujte celkové zhodnocení praxí alespoň na tři strany a nahrajte je do Moodlu.','Absolvujte reflexi v celém rozsahu. V řízené diskusi na IVP vysvětlete vlastní didaktická rozhodnutí a proberte silné stránky i potřeby dalšího rozvoje.'],
- evidence:['Komplexní zhodnocení praxí v rozsahu nejméně tří stran pro Moodle','Podklady k diskusi: náslechové archy a přípravy vlastních hodin','Zápočet uděluje garant praxe na základě splněných podmínek.'],
+ steps:['Vyberte z portfolia starší záznam z pozorování a vlastní výstup s podobným tématem.','U obou popište situaci, činnost žáků a doklad o jejich učení.','Dodaná metodika 06 požaduje celkové zhodnocení alespoň na tři strany do Moodlu. Aktuální sylabus odkazuje závazný rozsah a kritéria na Moodle předmětu; před odevzdáním ověřte aktuální zadání.','Absolvujte reflexi v celém rozsahu. V řízené diskusi na IVP vysvětlete vlastní didaktická rozhodnutí a proberte silné stránky i potřeby dalšího rozvoje.'],
+ evidence:['Komplexní zhodnocení praxí: dodaná metodika uvádí nejméně tři strany; aktuální zadání ověřte v Moodlu','Podklady k diskusi: náslechové archy a přípravy vlastních hodin','Zápočet uděluje garant praxe na základě splněných podmínek.'],
  source:['IVP ČZU · Metodické pokyny 06 pro UPV, Reflexe pedagogické praxe','IVP ČZU · Studijní plán UPV. Předmět má rozsah 1 týden, 2 ECTS, zápočet.'],
  fields:[{label:'Co ukazují mé dvě ukázky?',hint:'Uveďte vlastní pozorování a srovnatelný moment z pozdější výuky.'},{label:'Co se změnilo v mém rozhodování?',hint:'Co byste dnes udělali jinak a na jakém dokladu to můžete ukázat?'},{label:'Na co se zaměřím dál?',hint:'Zvolte jednu kompetenci a naplánujte konkrétní pokus v další výuce.'}]
 };

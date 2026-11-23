@@ -40,7 +40,7 @@ window.PRACTICE = (() => {
     if (!isObservation(m) && m.id!=='continuous') return '';
     const completed = rows.filter(r=>['submitted','confirmed','returned'].includes(r.status));
     if (m.id==='continuous') return '<p class="muted">Zapsané výstupy · vlastní '+completed.filter(r=>r.kind==='teaching').length+' · závěrečné '+completed.filter(r=>r.kind==='final').length+'</p>';
-    return '<p class="muted">Předané záznamy · teoretická výuka '+completed.filter(r=>r.kind==='theory').length+' z '+m.observationTargets.theory+' · praktické vyučování '+completed.filter(r=>r.kind==='practical').length+' z '+m.observationTargets.practice+'</p>';
+    return '<p class="muted">Předané záznamy (nejde o potvrzení splnění praxe) · teoretická výuka '+completed.filter(r=>r.kind==='theory').length+' z '+m.observationTargets.theory+' · praktické vyučování '+completed.filter(r=>r.kind==='practical').length+' z '+m.observationTargets.practice+'</p>';
   }
 
   function render(m, records=[], role='student', context={}) {
@@ -78,7 +78,7 @@ window.PRACTICE = (() => {
       (options.length>1?'<fieldset class="pick-field"><legend>Druh jednotky</legend><div class="pick-list">'+options.map(k=>'<label class="pick-tile"><input type="radio" name="kind" value="'+k+'" '+(k===(r.kind||options[0])?'checked':'')+'><span>'+kinds[k]+'</span></label>').join('')+'</div></fieldset>':'<input type="hidden" name="kind" value="'+options[0]+'">')+'</div></section>'+
       '<section class="record-ref"><h4>Co si odnáším</h4>'+Volba.field({label:'Moje reflexe',name:'reflection',items:hints[2],value:r.reflection||'',required:true})+
       Volba.field({label:'Můj další krok',name:'nextStep',items:hints[3],value:r.nextStep||''})+'</section></div>'+
-      '<details open class="rec-evidence"><summary>Podklady z praxe</summary><p>Pro rozbor vyberte alespoň jeden podklad z vlastní praxe.</p><div class="fields">'+fieldEditors+'</div></details>'+
+      '<details open class="rec-evidence"><summary>Podklady z praxe</summary><p>Zaznamenejte skutečný průběh a vlastní rozbor. Krátké volby jsou nápověda; nenahrazují kompletní náslechový arch, přípravu na hodinu ani požadovaný rozsah závěrečné reflexe.</p><div class="fields">'+fieldEditors+'</div></details>'+
       (observed?'<details class="rec-timeline" '+(r.timeline?.length?'open':'')+'><summary>Časová osa náslechu</summary><p>Ke stejnému okamžiku zachyťte činnost učitele i reakci žáků.</p><div class="stack" data-time-rows>'+(r.timeline?.length?r.timeline:[{}]).map(timelineRow).join('')+'</div><button type="button" class="secondary" data-rec-moment>Přidat další okamžik</button></details>':'')+
       '<div class="fields">'+
       (areas?'<label>Kompetence, kterou zde dokládám<select name="competency"><option value="">Vyberu později</option>'+areas+'</select></label>':'')+'</div>'+

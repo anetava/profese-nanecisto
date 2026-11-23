@@ -144,7 +144,7 @@ window.BLOCKS = (() => {
   function sourceLinks(item) {
     const files = window.IVP_DOCUMENTS?.[item.id] || [];
     if (!files.length) return '';
-    return '<details class="area-box document-sources"><summary>Metodika a přílohy <span class="document-count">' + files.length + '</span></summary><p>Postup, požadavky a podklady k rozboru. Vše pro akademický rok 2026/2027.</p><ul>' +
+    return '<details class="area-box document-sources"><summary>Metodika a přílohy <span class="document-count">' + files.length + '</span></summary><p>Jde o studijní průvodce a pracovní pomůcky Ateliéru, nikoli originály metodik IVP. Závazné zadání a termíny ověřte u předmětu v Moodlu; původ podkladů najdete v sekci Metodiky a zdroje.</p><ul>' +
       files.map(file => '<li><a href="' + escape(file.url) + '" target="_blank" rel="noopener">' +
         escape(file.label) + ' ↗</a>' + (file.purpose ? '<p>' + escape(file.purpose) + '</p>' : '') + (file.use ? '<p class="document-use">' + escape(file.use) + '</p>' : '') + (file.kind ? '<small>' + escape(file.kind) + '</small>' : '') + '</li>').join('') + '</ul></details>';
   }
