@@ -2,10 +2,10 @@
    Screen-only layer: printed student documents keep their prepared page layout. */
 @media screen {
   :root {
-    --brand-forest:#4b2030;
-    --brand-lime:#efb7c9;
+    --brand-forest:#172722;
+    --brand-lime:#b2f36a;
     --brand-aqua:#61cdbf;
-    --brand-ivory:#fcf9fa;
+    --brand-ivory:#f3f3e8;
     --brand-mint:#dcece4;
     --brand-rose:#efb7c9;
     --paper:var(--brand-ivory);
@@ -422,6 +422,5 @@
 @media screen {
   .lc-preview-bar { background:#e2e8d6;color:#172722;border-left:4px solid #617e62; }
 }
-
-/* Shared Ateliér identity: burgundy, turquoise and rose; preserve cover layouts. */
-@media screen { .hub-intro {background:#762b46;color:#fff} .hub-intro h1,.hub-intro p,.hub-intro :is(.eyebrow,small){color:#fff} .hub-intro :is(.eyebrow,small)::before{background:#61cdbf}.hub-intro .primary{background:#f3cbd8;color:#4b2030;border-color:#f3cbd8}.site-head .account{background:#622c42;border-color:#b88096}.site-head nav :is(a,button):hover{background:#762b46}.orientation{display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin:12px 0 22px}.primary:hover{background:#762b46;border-color:#762b46}.document-hero{background:#762b46}.document-hero :is(h1,p,.eyebrow){color:white}.study-downloads>.document-kit{--cover:#762b46}.study-downloads>.document-kit:nth-child(even){--cover:#246b64} }
+/* Restore the user's light, pastel design reference. */
+@media screen{ :root{--brand-lime:#b9e9df;--brand-ivory:#faf9f6;--brand-forest:#172722}.site-head{background:#faf9f6;color:#172722}.site-head .brand,.site-head .brand small,.site-head nav a{color:#172722}.site-head nav{border-color:#d8e6df}.site-head nav a[aria-current=page]{background:#172722;color:white}.site-head .account{background:#d9eee7;border-color:#d9eee7;color:#172722}.site-head .account select{color:#172722}.hub-intro{background:#b9e9df;color:#172722}.hub-intro h1,.hub-intro p,.hub-intro .eyebrow{color:#172722}.orientation{display:flex;gap:18px;flex-wrap:wrap;margin:12px 0 22px}.hub-intro .primary{background:#172722;color:white}.brand-symbol{display:inline-flex}.brand-symbol img{object-fit:contain}.guide-banner{background:#d9eee7;color:#172722}.guide-banner h2,.guide-banner p,.guide-banner small{color:#172722}}
