@@ -139,14 +139,14 @@ window.BLOCKS = (() => {
   const activity = (id, choice) => get(id)?.activities.find(item => item.id === String(choice));
   const prompts = (id, choice) => activity(id, choice)?.prompts || get(id)?.prompts || [];
   function sheetLink(item) {
-    return '<a class="primary" href="' + item.file + '?v=atelier-lime2" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', DOCX">Upravit ve Wordu · DOCX ↓</a><a class="secondary" href="materialy/' + item.id + '.pdf?v=atelier-lime2" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', PDF">Vytisknout · PDF ↓</a>';
+    return '<a class="primary" href="' + item.file + '?v=dokumenty-bordo-20261123" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', DOCX">Upravit ve Wordu · DOCX ↓</a><a class="secondary" href="materialy/' + item.id + '.pdf?v=dokumenty-bordo-20261123" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', PDF">Vytisknout · PDF ↓</a>';
   }
   function sourceLinks(item) {
     const files = window.IVP_DOCUMENTS?.[item.id] || [];
     if (!files.length) return '';
     return '<details class="area-box document-sources"><summary>Metodika a přílohy <span class="document-count">' + files.length + '</span></summary><p>Jde o studijní průvodce a pracovní pomůcky Ateliéru, nikoli originály metodik IVP. Závazné zadání a termíny ověřte u předmětu v Moodlu; původ podkladů najdete v sekci Metodiky a zdroje.</p><ul>' +
       files.map(file => '<li><a href="' + escape(file.url) + '" target="_blank" rel="noopener">' +
-        escape(file.label) + ' ↗</a>' + (file.purpose ? '<p>' + escape(file.purpose) + '</p>' : '') + (file.use ? '<p class="document-use">' + escape(file.use) + '</p>' : '') + (file.kind ? '<small>' + escape(file.kind) + '</small>' : '') + '</li>').join('') + '</ul></details>';
+        escape(file.label) + ' ↗</a>' + '<p><a href="'+escape(file.docxUrl)+'" download>Upravit ve Wordu · DOCX ↓</a> · <a href="'+escape(file.pdfUrl)+'" target="_blank" rel="noopener">Vytisknout · PDF ↗</a></p>' + (file.purpose ? '<p>' + escape(file.purpose) + '</p>' : '') + (file.use ? '<p class="document-use">' + escape(file.use) + '</p>' : '') + (file.kind ? '<small>' + escape(file.kind) + '</small>' : '') + '</li>').join('') + '</ul></details>';
   }
   const reflectionLink = (item, choice, label) => '<a href="#reflexe/nova/' + item.id +
     (choice ? '/' + choice.id : '') + '">' + escape(label) + '</a>';

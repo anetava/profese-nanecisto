@@ -41,3 +41,11 @@ Potvrdit rozsah bloku 03 a oborové zaměření bloku 02, ověřit aktuální za
 
 ## Navazující rozhodnutí 23. 11. 2026
 Uživatelka výslovně zvolila rozsah bloku 03: 10 teoretických + 2 praktické náslechy. Aplikace nyní používá tento pevný rozsah podle metodiky 03 ve všech profilech; studentský přepínač a jeho obsluha byly odstraněny. Dříve uložená volba guidedPlan již výpočet neovlivňuje. Záznamy studentů zůstávají zachovány. Tím je rozhodnuto nastavení aplikace; rozpor s veřejným sylabem UIS ani ostatní otevřené body auditu tím nejsou odstraněny. Výše uvedený popis původní volby 4 + 6 zachycuje stav před tímto rozhodnutím.
+
+## Dokumenty a pracovní archy – doplnění 23. 11. 2026
+
+- Sjednoceno 21 dokumentů ve Wordu a PDF (42 souborů), včetně nového jednostránkového návodu a editovatelného průvodce souvislou praxí.
+- Rozsah řízených náslechů 10 + 2 promítnut do průvodce, archu a odkazů podle rozhodnutí zadavatelky; rozdíl vůči veřejnému UIS zůstává popsán ve zdrojích.
+- Bordó sazba, bez původního obrázkového loga; účel, načasování, konkrétní postup a další krok. Příklady odlišují pozorování od interpretace.
+- Zpřesněna návaznost na videomonitoring, portfolio, plán souvislé praxe a Moodle. Tyto studijní pomůcky nenahrazují závazné zadání předmětu.
+- Zkontrolováno všech 49 stran renderovaných PDF; Word a PDF pocházejí ze stejného obsahu. Úplný soulad s neveřejným zadáním v Moodle nadále nebyl ověřen.
