@@ -63,3 +63,7 @@
   .competency-area>summary{background:var(--pastel-vanilla);color:var(--ink)}
   .case-options .reaction[aria-pressed=true]{background:var(--pastel-mint);color:var(--ink);border-color:var(--burgundy)}
 }
+@media screen {
+ .study-block:nth-child(3n),.study-block:nth-child(3n) :is(h3,p,.study-records,.study-actions a:not(.primary)),.study-block:nth-child(3n) .study-meta>small{color:var(--ink)}
+ .study-block:nth-child(3n) .primary{background:var(--burgundy);border-color:var(--burgundy);color:white}
+}
