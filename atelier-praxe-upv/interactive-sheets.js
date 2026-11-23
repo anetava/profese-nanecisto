@@ -4,7 +4,7 @@ window.SHEETS=(()=>{
  const allowed=(id,role)=>id==='rozbor-cvicny-ucitel'?['ivp','mentor'].includes(role):role==='student';
  // Redundant prompts are omitted from new forms; prior answers remain editable below.
  const omitted={ivp:[17,19,20],group:[18,21,24],guided:[18,21,24],micro:[23,25,27],continuous:[17,20,22],reflection:[10,17,18,20,26],'arch-naslechu':[24]};
- const intro={ivp:'Zaznamenejte mapu školy, pozorovanou výuku a závěr z diskuse.',group:'Jeden arch pro jednu hodinu: průběh výuky a rozbor.',guided:'Jeden arch pro jednu hodinu: průběh výuky a rozbor.',micro:'Připravte mikrovýstup. Po jeho provedení doplňte rozbor ve stejném archu.',continuous:'Připravte hodinu. Po výuce zde doplňte, co se podařilo a co příště změníte.',reflection:'Porovnejte náslech a vlastní výuku. Napište, co jste se naučili a co chcete zlepšit.','arch-naslechu':'Jeden arch pro jednu hodinu: průběh výuky a rozbor.'};
+ const intro={ivp:'Zaznamenejte mapu školy, pozorovanou výuku a závěr z diskuse.',group:'Jeden arch pro jednu hodinu: průběh výuky a rozbor.',guided:'Jeden arch pro jednu hodinu: průběh výuky a rozbor.',micro:'Připravte mikrovýstup. Po jeho provedení doplňte rozbor ve stejném archu.',continuous:'Připravte hodinu. Po každé odučené jednotce zde doplňte vlastní reflexi a doporučení z rozboru s cvičným učitelem.',reflection:'Zde souhrnně zhodnoťte zkušenosti z praxí. Průběžnou reflexi a rozbor zapisujete přímo do archu každého náslechu nebo vlastního výstupu.','arch-naslechu':'Jeden arch pro jednu hodinu: průběh výuky a rozbor.'};
  function render(id,entry,role,practice){
   const d=SHEET_DATA[id];if(!d)return '<p>Arch nebyl nalezen.</p>';
   const docs=(entry.sheets?.[id]||[]).filter(r=>allowed(id,role)||r.status==='submitted'||r.status==='confirmed');

@@ -79,3 +79,16 @@ Omezení: automatika propojuje strukturované podklady, nezjišťuje pravdivost 
 ## Interaktivní pracovní archy
 
 12 pracovních šablon převedeno z existujících DOCX do online formulářů: 10 hlavních pracovních sad, úplný náslechový arch a podklad pro rozbor cvičného učitele. Výběry, vícečetná zaškrtnutí, volné odpovědi a rozšiřitelné tabulky. Podklady a metodiky určené ke čtení nejsou zaměňovány za formuláře. Online tlačítko má přednost před stažením. Uložení je explicitní, místní, po studentech; archy lze opakovat a upravovat. Arch není automaticky odevzdaný ani potvrzený pedagogem. Test v prohlížeči: volba, text, nový řádek, uložení, reload, otevření uloženého archu, výskyt v portfoliu a navigace z obálky. Ověřeny formuláře šesti různých typů a vykreslení všech12 šablon. Generátor `scripts/build-interactive-sheets.py` spouštět z kořene repozitáře.
+
+## Průběžná reflexe a nepovinný nácvik — další revize
+
+Znovu přečteny lokálně zachované plné sylaby UIS načtené 23.11.2026, všechny pro 2026/27. Webové načtení UIS nyní selhalo; nešlo o novou kontrolu neveřejného Moodle. Oficiální metodika05 z https://www.ivp.czu.cz/dl/135149?lang=cs znovu načtena: úkol08 vyžaduje rozbor každé realizované jednotky a zápis doporučení; úkol09 řadí sebereflexi a doporučení do portfolia.
+
+- 01 / VVV173Z: rozbor AV výuky, řízená diskuse, reflexe a sebereflexe jako profesní učení.
+- 02 / VVV174Z: následné rozbory záznamů náslechů, skupinový rozhovor o průběhu a výsledcích.
+- 03 / VVV175Z: analýza a rozbor konkrétního náslechového záznamu.
+- 04 / VVV176Z: sebereflexe po mikrovýstupu, následná skupinová diskuse, videomonitoring.
+- 05 / VVV177E: sebereflexe a společný rozbor každé odučené jednotky.
+- 06 / VVV178Z: souhrnné zpracování zkušeností, diskuse a supervize nad přípravami, hospitačními a sebereflektivními záznamy; konkrétní rozsah určuje Moodle.
+
+Implementace: reflexe zůstává uvnitř existujících archů, zvýrazněno její načasování. Nebyl přidán další povinný formulář ani závěrečná práce po každém bloku. Nácvik je označen jako nepovinná příprava; místo dvou dalších výběrů následuje jeden vlastní přenos do oboru. Tři scénáře nabízejí podmíněné důsledky, nikoli skóre správnosti. Uložení zůstává modelovou přípravou, nikdy potvrzenou kompetencí. Zpřesněna kritéria instruktáže, diagnostika obtíží a oddělení pozorované pochvaly od nedoloženého účinku. Dosavadní záznamy a Adaptio zachovány.
