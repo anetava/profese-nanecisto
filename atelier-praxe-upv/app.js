@@ -66,7 +66,7 @@
   const person=()=>people.find(p=>p.id===who);
   const current=()=>db[who];
   const recordRoute=r=>r.isRetry?'druhy-pokus/'+encodeURIComponent(r.id):r.isBlockReflection?IVPREF.route(r.blockId,r.id):r.tool?r.tool:'praxe/'+r.moduleId+'/zaznam/'+encodeURIComponent(r.id);
-  const navItems=[['umisteni','Studenti a praxe'],['start','Úvod a nácvik'],['ivp','Praxe IVP'],['nacvik','Praxe nanečisto'],['adaptio','Adaptio'],['ss','Praxe SŠ'],['kurzy','Kurzy ČZU']];
+  const navItems=[['umisteni','Studenti a praxe'],['start','Všechny moduly'],['ivp','Praxe IVP'],['nacvik','Praxe nanečisto'],['adaptio','Adaptio'],['ss','Praxe SŠ'],['kurzy','Kurzy ČZU']];
   const names={student:'Student',mentor:'Cvičný učitel',ivp:'Přehled IVP'};
   const section=(ey,title,desc='')=>'<header class="subhead"><small class="eyebrow">'+e(ey)+'</small><h1>'+e(title)+'</h1>'+(desc?'<p>'+e(desc)+'</p>':'')+'</header>';
   const visibleRecords=()=>allowedPeople().some(p=>p.id===who)
@@ -119,15 +119,9 @@
     return '<div class="block-extras">'+BLOCKS.docs(id,role)+IVPREF.block(id,refContext())+'</div>';
   }
   function hub(){
-    const student=role==='student', special=RoleDesk.isSpecial(role);
-    const title=student?'Vaše pedagogická praxe':'Pedagogické praxe na IVP';
-    const personal=student?'Začněte svou aktuální praxí. Zadání, záznamy a podklady k odevzdání najdete u příslušného bloku.':'Začněte přehledem studentů. Potom otevřete jejich podklady k rozboru nebo zadání jednotlivých praxí.';
-    const route=window.IVP_ROSTER?'umisteni':'ivp';
-    const actions=student?[['studium','Zadání mé praxe','Šest bloků studia a požadavky k jejich splnění.'],['materialy','Formuláře a metodiky','Pracovní listy, průvodce a závěrečné dokumenty.'],['portfolio','Moje portfolio','Záznamy a reflexe, které si uchováváte pro odevzdání.']]:[['podklady','Podklady k rozboru','Předané záznamy a reflexe studentů.'],['studium','Zadání praxí','Přehled šesti bloků a jejich požadavků.'],['materialy','Formuláře a metodiky','Podklady pro studenty a cvičné učitele.']];
-    return '<section class="hub-hero"><div class="hub-intro"><small class="eyebrow">Učitelství praktického vyučování</small><h1>'+title+'</h1><p>'+(special?RoleDesk.intro(role):personal)+'</p>'+link(route,student?'Otevřít moji praxi':special?RoleDesk.caption(role):'Otevřít přehled studentů','primary')+'</div><figure><img src="hub.webp?v=atelier-foto1" alt="Studující různých generací přicházejí do školy."></figure></section>'+
-    '<section class="start-actions" aria-label="Hlavní kroky">'+(special?actions.filter(x=>x[0]!=='podklady'):actions).map(([id,title,desc])=>'<a href="#'+id+'"><strong>'+title+'</strong><span>'+desc+'</span></a>').join('')+'</section>'+
-    '<p class="method-note">Ateliér pomáhá připravit podklady. Uložení nebo předání v této aplikaci není odevzdání do Moodle ani udělení zápočtu. Způsob odevzdání najdete v zadání svého předmětu.</p>'+
-    '<details class="extra-modules"><summary>Nácvik a další podpora</summary><p>Dobrovolné pomůcky k přípravě. Nenahrazují předepsané praxe.</p><div class="hub-grid">'+catalog.filter(row=>row[0]!=='ivp').map(([id,name,kind,title,desc,photo])=>'<a class="hub-card" href="#'+id+'"><img src="'+photo+'" alt="" loading="lazy"><div><small>'+e(name)+'</small><h3>'+e(title)+'</h3><p>'+e(desc)+'</p></div></a>').join('')+'</div></details>';
+    const personal=RoleDesk.isSpecial(role)?RoleDesk.intro(role):role==='student'?'Připravte se na další hodinu, zkuste si náročnou situaci nebo se vraťte k tomu, co jste viděli při náslechu.':role==='mentor'?'Otevřete si práci studenta, připravte společný rozbor nebo si vyberte situaci pro další setkání.':'Podívejte se, kdo čeká na přijetí na školu a které práce už prošly společným rozborem.';
+    return '<section class="hub-hero"><div class="hub-intro"><small class="eyebrow">Ateliér praxí · IVP ČZU</small><h1>Co právě potřebujete?</h1><p>'+personal+'</p>'+link(window.IVP_ROSTER?'umisteni':'ivp',role==='student'?'Moje pedagogická praxe →':role==='mentor'?'Otevřít práce k rozboru →':(RoleDesk.isSpecial(role)?RoleDesk.caption(role):'Otevřít koordinaci praxí →'),'primary')+'</div><figure><img src="hub.webp?v=atelier-foto1" alt="Studující různých generací spolu přicházejí do školy."></figure></section>'+
+    shortcuts()+'<header class="hub-head"><h2>Vyberte si podle situace</h2></header><div class="hub-grid">'+catalog.map(([id,name,kind,title,desc,photo])=>'<a class="hub-card" href="#'+id+'"><img src="'+photo+'" alt=""><div><small>'+e(name)+'</small><h3>'+e(title)+'</h3><p>'+e(desc)+'</p><span aria-hidden="true">↗</span></div></a>').join('')+'</div>';
   }
   function practiceLinks(){
     const links=role==='student'?[['skola','Moje škola'],['plan','Termíny'],['skills','Moje kompetence'],['portfolio','Moje portfolio'],['sources','Metodiky a pomoc']]:[['skola',role==='ivp'?'Žádosti o školu':'Přijetí na školu'],['skills','Kompetence'],['portfolio','Portfolio'],['sources','Metodiky a pomoc']];
@@ -218,8 +212,8 @@
       if(owners.length===1)rememberStudent(owners[0].id);else recordUnavailable=true;
     }
     const baseModule=parts[0]==='praxe'?mod(parts[1]):null,m=baseModule&&window.IVP_ROSTER?{...baseModule,schoolOptions:[...new Set((current().placements||[]).filter(r=>r.moduleId===baseModule.id).map(r=>r.school).filter(Boolean))]}:baseModule,refPage=parts[0]==='reflexe';
-    const liveNav=role==='ivp'?[['umisteni','Přehled studentů'],['studium','Bloky praxí'],['podklady','Podklady k rozboru'],['materialy','Dokumenty'],['start','Úvod a nácvik']]:[['umisteni','Moje praxe'],['studium','Studijní cesta'],['plan','Můj plán'],['reflexe','Moje reflexe'],['portfolio','Portfolio'],['materialy','Dokumenty']];
-    const demoNav=role==='student'?[['ivp','Moje praxe'],['studium','Studijní cesta'],['plan','Můj plán'],['reflexe','Moje reflexe'],['portfolio','Portfolio'],['materialy','Dokumenty']]:role==='ivp'?[['ivp','Přehled studentů'],['studium','Bloky praxí'],['podklady','Podklady k rozboru'],['materialy','Dokumenty'],['start','Úvod a nácvik'],['umisteni','Import studentů']]:navItems;
+    const liveNav=role==='ivp'?[['umisteni','Přehled studentů'],['studium','Bloky praxí'],['podklady','Podklady k rozboru'],['materialy','Dokumenty'],['start','Všechny moduly']]:[['umisteni','Moje praxe'],['studium','Studijní cesta'],['plan','Můj plán'],['reflexe','Moje reflexe'],['portfolio','Portfolio'],['materialy','Dokumenty']];
+    const demoNav=role==='student'?[['ivp','Moje praxe'],['studium','Studijní cesta'],['plan','Můj plán'],['reflexe','Moje reflexe'],['portfolio','Portfolio'],['materialy','Dokumenty']]:role==='ivp'?[['ivp','Přehled studentů'],['studium','Bloky praxí'],['podklady','Podklady k rozboru'],['materialy','Dokumenty'],['start','Všechny moduly'],['umisteni','Import studentů']]:navItems;
     const nav=window.IVP_ROSTER?liveNav:special?[['ivp',role==='method'?'Přehled metodika':'Přehled školy'],['adaptio','Adaptio'],['materialy','Dokumenty'],['sources','Metodiky']]:demoNav;
     let active=parts[0]==='reflexe'?(role==='ivp'&&window.IVP_ROSTER?'podklady':'reflexe'):parts[0]==='materialy'?'materialy':nav.some(([id])=>id===page)?page:(window.IVP_ROSTER&&['praxe','zadani','skills','druhy-pokus'].includes(parts[0])?'studium':special||!['materialy','sources'].includes(page)?'ivp':'');
     if(window.IVP_ROSTER&&role==='ivp'&&(page==='portfolio'||(parts[0]==='praxe'&&parts[2]==='zaznam')))active='podklady';
