@@ -61,7 +61,7 @@ window.REFLECTION_METHOD = {
 const ivpSyllabi = [
   ['VVV173Z',294587,'Průběžná pedagogická praxe','LS · 2 kredity. Pozorování a analýza výuky, práce s hospitačním záznamem a reflexe.'],
   ['VVV174Z',285935,'Skupinový náslech','ZS · 2 kredity. Pozorování ve vlastním zaměření a rozbor ve skupině.'],
-  ['VVV175Z',285936,'Řízená náslechová praxe','LS · 8 kreditů. Sylabus uvádí 4 teoretické a 6 praktických jednotek. Přiložená metodika 03 uvádí 10 a 2. Rozsah pro svou skupinu si potvrďte s garantem.'],
+  ['VVV175Z',285936,'Řízená náslechová praxe','LS · 8 kreditů. Sylabus uvádí 4 teoretické a 6 praktických jednotek. Přiložená metodika 03 uvádí 10 a 2. Pro tento Ateliér byl dne 23. 11. 2026 stanoven rozsah podle metodiky 03: 10 teoretických a 2 praktické jednotky. Rozdíl vůči UIS tím není odstraněn.'],
   ['VVV176Z',285934,'Microteaching','ZS · 4 kredity. Mikrovýstup, videomonitoring a rozbor didaktického, slovního i neverbálního projevu.'],
   ['VVV177E',294600,'Souvislá řízená praxe','LS · 10 kreditů. Vlastní výuka, její rozbor a samostatně připravený závěrečný výstup před komisí.'],
   ['VVV178Z',294594,'Reflexe pedagogické praxe','LS · 2 kredity. Reflexe doložených zkušeností, supervize a profesní cíle. Závazná kritéria a způsob hodnocení najdete v Moodlu předmětu.']

@@ -161,9 +161,9 @@
   }
   function modulePage(m,overview=false){
     const records=current().records.filter(r=>r.moduleId===m.id);
-    const mi=modules.findIndex(item=>item.id===m.id), syl=syllabi[mi], guided=m.id==='guided', chosen=overview?'uis':current().guidedPlan||'uis';
-    const targets=guided&&chosen==='uis'?{theory:4,practice:6}:m.observationTargets;
-    const variant=guided?'<aside class="notice"><strong>Rozsah řízeného náslechu</strong><p>Sylabus UIS pro rok 2026/2027 a dodaná metodika 03 uvádějí různé počty. Rozsah musí určit garant pro vaši skupinu. Tato volba pouze mění orientační počítadlo; není potvrzením rozsahu ani splnění praxe.</p><label>Počítat podle<select id="guided-target" '+(role==='student'?'':'disabled')+'><option value="uis" '+(chosen==='uis'?'selected':'')+'>UIS 2026/2027 · 4 teoretické a 6 praktických</option><option value="method" '+(chosen==='method'?'selected':'')+'>Metodika 03 · 10 teoretických a 2 praktické</option></select></label></aside>':'';
+    const mi=modules.findIndex(item=>item.id===m.id), syl=syllabi[mi], guided=m.id==='guided';
+    const targets=m.observationTargets;
+    const variant=guided?'<aside class="notice"><strong>Rozsah řízeného náslechu: 10 + 2</strong><p>Absolvujte 10 náslechů teoretické výuky a 2 náslechy praktického vyučování. Rozsah je stanoven podle metodiky 03; student si jej nevolí. Počítadlo je orientační a samo nepotvrzuje splnění praxe.</p></aside>':'';
     return (!overview&&role==='ivp'?'<nav class="record-owner"><a href="#podklady">← Podklady k rozboru</a><strong>'+e(person().name)+'</strong><a href="#portfolio">Portfolio studenta →</a></nav>':'')+section('Praxe '+String(modules.findIndex(item=>item.id===m.id)+1).padStart(2,'0')+' · '+(overview?'Zadání a podklady':person().name),m.title,m.goal)+blockNav(m.id)+variant+
     '<details open class="area-box"><summary>Jak praxe probíhá a co doložím</summary>'+(syl?'<p><a href="'+e(syl.url)+'" target="_blank" rel="noopener">'+e(syl.name)+'</a><br>'+e(syl.note)+'</p>':'')+'<p>'+e(m.place)+'</p><ol class="steps">'+m.steps.map(x=>'<li>'+e(x)+'</li>').join('')+'</ol><h3>Co předložit</h3><ul>'+m.evidence.map(x=>'<li>'+e(x)+'</li>').join('')+'</ul><p>'+e(m.credit)+'</p><small>'+e((m.source||[]).join(' · '))+'</small></details>'+(overview?BLOCKS.docs(m.id,role):'<div id="record-space">'+PRACTICE.render({...m,observationTargets:targets},records,role,{reflections:current().reflections})+'</div>'+blockExtras(m.id));
   }
@@ -299,7 +299,6 @@
       else tool.bind(root.querySelector('#tool-space'),page,notes,save,role,page==='adaptio'&&scenarioMatch?Number(scenarioMatch[2])-1:null);
       if(scenarioMatch&&page==='nacvik')root.querySelector('[data-scenario="'+(Number(scenarioMatch[2])-1)+'"]')?.click();
     }
-    if(m?.id==='guided'&&role==='student')document.querySelector('#guided-target').onchange=ev=>{const before=current().guidedPlan;current().guidedPlan=ev.target.value;if(!persist()){current().guidedPlan=before;ev.target.value=before||'uis';return;}render()};
     if(m&&!recordUnavailable){PRACTICE.bind(document.querySelector('#record-space'),m,current().records.filter(r=>r.moduleId===m.id),{role,save:items=>{
       const beforeRecords=current().records,beforeLog=current().reviewLog;
       const changed=items.find(r=>beforeRecords.find(old=>old.id===r.id)!==r);

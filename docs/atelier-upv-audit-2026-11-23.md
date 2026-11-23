@@ -38,3 +38,6 @@ Základní návaznost šesti bloků odpovídá studijnímu plánu UPV. Úplný s
 
 ## Co zbývá pro prohlášení úplného souladu
 Potvrdit rozsah bloku 03 a oborové zaměření bloku 02, ověřit aktuální zadání Moodle, sjednotit všechny stažitelné dokumenty a exporty s tímto zadáním a ověřit kompletní studentský průchod včetně skutečného způsobu odevzdání a hodnocení. Změna barev ani přejmenování tlačítek tyto věcné podmínky nenahrazuje.
+
+## Navazující rozhodnutí 23. 11. 2026
+Uživatelka výslovně zvolila rozsah bloku 03: 10 teoretických + 2 praktické náslechy. Aplikace nyní používá tento pevný rozsah podle metodiky 03 ve všech profilech; studentský přepínač a jeho obsluha byly odstraněny. Dříve uložená volba guidedPlan již výpočet neovlivňuje. Záznamy studentů zůstávají zachovány. Tím je rozhodnuto nastavení aplikace; rozpor s veřejným sylabem UIS ani ostatní otevřené body auditu tím nejsou odstraněny. Výše uvedený popis původní volby 4 + 6 zachycuje stav před tímto rozhodnutím.
