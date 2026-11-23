@@ -9,7 +9,7 @@ window.ATDOC = (() => {
   ];
   function fileCard(item) {
     const [title,desc,open,url]=item;
-    return '<article class="file-card"><small class="document-kind">Hodnocení pedagoga · 2026/2027</small><h3>'+title+'</h3><p>'+desc+'</p><div><a class="primary" href="'+url+'?v=sjednoceno1" target="_blank" rel="noopener">'+open+' ↗</a><a class="text-btn" href="'+url+'?v=sjednoceno1" download>Stáhnout HTML ↓</a></div></article>';
+    return '<article class="file-card"><small class="document-kind">Hodnocení pedagoga · 2026/2027</small><h3>'+title+'</h3><p>'+desc+'</p><div><a class="primary" href="'+url+'?v=sesity2" target="_blank" rel="noopener">'+open+' ↗</a><a class="text-btn" href="'+url+'?v=sesity2" download>Stáhnout HTML ↓</a></div></article>';
   }
   const expo=(kind,label)=>'<button type="button" class="secondary" data-exp-kind="'+kind+'">'+label+'</button>';
   function exportCards(role='student') {
@@ -18,16 +18,16 @@ window.ATDOC = (() => {
       ['brief','K rozboru · 2026/2027','Stručné portfolio','Stručný podklad k rozhovoru: mapa kompetencí, až tři doklady a další krok. Úplné záznamy zůstávají v celém portfoliu.','portfolio-praxi-strucne-ukazka.html']
     ];
     return variants.map(([kind,badge,title,desc,file])=>{
-      const demo='<a href="materialy/foxy/'+file+'?v=sjednoceno1" target="_blank" rel="noopener">Ukázka s fiktivními údaji ↗</a>';
+      const demo='<a href="materialy/foxy/'+file+'?v=sesity2" target="_blank" rel="noopener">Ukázka s fiktivními údaji ↗</a>';
       const actions=role==='student'?'<div><a class="primary" href="#nahled/'+kind+'">Prohlédnout moje portfolio</a>'+expo(kind,'Stáhnout HTML ↓')+'</div><p class="sample-link">'+demo+'</p>':
-        '<div>'+demo+'<a href="materialy/foxy/'+file+'?v=sjednoceno1" download>Stáhnout vzor ↓</a></div>';
+        '<div>'+demo+'<a href="materialy/foxy/'+file+'?v=sesity2" download>Stáhnout vzor ↓</a></div>';
       return '<article class="file-card"><small class="document-kind">'+badge+'</small><h3>'+title+'</h3><p>'+desc+'</p>'+actions+'</article>';
     }).join('');
   }
   function library(role = 'student', section = 'all') {
     const student = role === 'student';
     const header = '<header class="document-hero"><div><small class="eyebrow">Akademický rok 2026/2027</small><h1>Všechno k praxi.<br>Na jednom místě.</h1><p>'+(student?'Vyberte svůj blok. Vyplňte arch online a uložte jej do portfolia. Word a PDF jsou další možnosti.':'U každého bloku jsou pohromadě formuláře pro studenta, metodika i požadované výstupy.')+'</p><div class="document-jumps"><a href="#pracovni-listy" data-worksheets>Formuláře k praxi ↓</a><a href="#materialy/vystupy">Závěrečné výstupy a portfolio ↓</a></div></div><img src="phase-6.webp?v=atelier-foto1" alt=""></header>';
-    const guide = '<section class="panel"><h2>Začněte krátkým návodem</h2><p>Šest kroků vysvětluje, proč záznam vedete, jak jej vyplnit a co zkontrolovat před odevzdáním. Pro náslechy platí 10 teoretických a 2 praktické jednotky.</p><div class="actions"><a class="primary" href="materialy/zacnete-zde.pdf?v=sjednoceno1" target="_blank" rel="noopener">Jak pracovat s dokumenty · PDF ↗</a><a class="secondary" href="materialy/zacnete-zde.docx?v=sjednoceno1" download>Návod ve Wordu ↓</a></div></section>';
+    const guide = '<section class="panel"><h2>Začněte krátkým návodem</h2><p>Šest kroků vysvětluje, proč záznam vedete, jak jej vyplnit a co zkontrolovat před odevzdáním. Pro náslechy platí 10 teoretických a 2 praktické jednotky.</p><div class="actions"><a class="primary" href="materialy/zacnete-zde.pdf?v=sesity2" target="_blank" rel="noopener">Jak pracovat s dokumenty · PDF ↗</a><a class="secondary" href="materialy/zacnete-zde.docx?v=sesity2" download>Návod ve Wordu ↓</a></div></section>';
     const outputs = '<section class="document-section" id="dokumenty-vystupy" tabindex="-1" aria-label="Závěrečné dokumenty a portfolio"><div class="document-section-heading"><div><small class="eyebrow">UZAVŘENÍ PRAXE · 2026/2027</small><h2>Závěrečné dokumenty a portfolio</h2></div><p>Sebehodnocení vyplňuje student. Protokol zachycuje hodnocení závěrečného pedagogického výstupu. Portfolio uchovává doklady z celého studia.</p></div><section class="student-output final-output"><small>VÝSTUP STUDENTA · 2026/2027</small><h3>Závěrečné sebehodnocení studenta</h3><p>'+(student?'Vyberte, co dokládáte, zhodnoťte svůj posun a připravte podklad k závěrečnému rozboru.':'Student vybírá své doklady, hodnotí profesní posun a připravuje podklad k závěrečnému rozboru.')+' Hodnocení pedagoga a podpisy zůstávají v protokolu.</p><div class="actions"><a class="primary" href="zaverecny-vystup.html">'+(student?'Vyplnit sebehodnocení':'Prohlédnout výstupní formulář')+' →</a><a class="secondary" href="zaverecny-vystup.html" download>Stáhnout vyplnitelný formulář ↓</a>'+(student?'<a class="secondary" href="#nahled/full">Moje portfolio →</a>':'')+'</div></section><div class="file-grid" aria-label="Protokoly a portfolia">'+documents.map(fileCard).join('')+exportCards(role)+'</div></section>';
     return section === 'header' ? header + guide : section === 'outputs' ? outputs : header + guide + outputs;
   }

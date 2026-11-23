@@ -139,7 +139,7 @@ window.BLOCKS = (() => {
   const activity = (id, choice) => get(id)?.activities.find(item => item.id === String(choice));
   const prompts = (id, choice) => activity(id, choice)?.prompts || get(id)?.prompts || [];
   function sheetLink(item,role='student') {
-    return (role==='student'?'<a class="primary" href="#arch/'+item.id+'">Vyplnit arch online</a>':'')+'<a class="secondary" href="' + item.file + '?v=sjednoceno1" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', DOCX">Upravit ve Wordu · DOCX ↓</a><a class="secondary" href="materialy/' + item.id + '.pdf?v=sjednoceno1" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', PDF">Prázdný arch pro ruční vyplnění · PDF ↓</a>';
+    return (role==='student'?'<a class="primary" href="#arch/'+item.id+'">Vyplnit arch online</a>':'')+'<a class="secondary" href="' + item.file + '?v=sesity2" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', DOCX">Upravit ve Wordu · DOCX ↓</a><a class="secondary" href="materialy/' + item.id + '.pdf?v=sesity2" download aria-label="Stáhnout pracovní list, ' + escape(item.sheet) + ', PDF">Prázdný arch pro ruční vyplnění · PDF ↓</a>';
   }
   function sourceLinks(item,role,annexesOnly=false) {
     const allFiles = window.IVP_DOCUMENTS?.[item.id] || [];
