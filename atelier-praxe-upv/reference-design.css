@@ -150,6 +150,6 @@
  .rf-section[data-rf-widget="block"]{background:#f0f4df;border:2px solid #879147;border-top-width:6px}
  .rf-section .rf-row,.rf-section .rf-thread{border:2px solid #a39851;border-left-width:6px;background:#fffdf3}
  .rf-section .rf-source,.rf-section .rf-answer{background:#e2eee3;border:1px solid #829e79}
- .sheet-workspace[data-practice] .sheet-question{border:2px solid var(--practice-accent,#879147);border-top-width:5px}
- .sheet-workspace[data-practice] .sheet-methods{border:2px solid var(--practice-accent,#879147);border-top-width:6px}
+ .sheet-workspace[data-practice] .sheet-question{border:2px solid var(--practice-deep,#879147);border-top-width:5px}
+ .sheet-workspace[data-practice] .sheet-methods{border:2px solid var(--practice-deep,#879147);border-top-width:6px}
 }
