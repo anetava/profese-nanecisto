@@ -153,3 +153,5 @@
  .sheet-workspace[data-practice] .sheet-question{border:2px solid var(--practice-deep,#879147);border-top-width:5px}
  .sheet-workspace[data-practice] .sheet-methods{border:2px solid var(--practice-deep,#879147);border-top-width:6px}
 }
+
+@media screen{.rf-start{margin:24px 0}.rf-practice-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:20px 0}.rf-practice-links a{padding:18px;background:#faf3d2;border:2px solid #aa963e;color:#172722;text-decoration:none}.rf-practice-links a:nth-child(even){background:#e4ebc8;border-color:#879147}.rf-practice-links strong{margin-right:10px}.rf-start details,.rf-file-transfer{padding:16px;margin:14px 0;border:1px solid #929d60}.rf-start summary,.rf-file-transfer summary{cursor:pointer;font-weight:700}.rf-start .empty p{margin:8px 0}.rf-row dd{white-space:pre-wrap;overflow-wrap:anywhere}}@media(max-width:650px){.rf-practice-links{grid-template-columns:1fr}}

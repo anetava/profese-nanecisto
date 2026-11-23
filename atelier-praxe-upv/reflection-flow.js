@@ -112,6 +112,16 @@ window.IVPREF = (() => {
       (target?'<p>Vyberte situaci nebo svůj uložený zápis. Zvolte postřeh a další krok, případně je doplňte vlastními slovy. Odpověď koordinátora najdete u této reflexe.</p><details class="rf-new"'+(composing?' open':'')+'><summary>Vyplnit reflexi</summary>'+form(ctx,peer.id,blockId,null,opts.activityId,opts.sourceId)+'</details>':'')+
       (relevant.length?relevant.map(x=>rowCard(ctx,x.p,x.row,opts.focus===x.row.id)).join(''):target?'':'<p>Student zatím nepředal reflexi tohoto bloku.</p>')+'</section>';
   }
+  function practiceHistory(ctx) {
+    if(ctx.role!=='student')return [];
+    return (ctx.practiceRecords?.()||[]).filter(r=>phaseIds.includes(r.moduleId)).map(r=>{
+      const fields=Object.entries(r.fields||{}).filter(([k,v])=>typeof v==='string'&&v.trim()&&/rozbor|reflex|vysvětlení|příště|odnáším|změnilo|doporučení|další krok|vyzkoušet/i.test(k));
+      if(r.reflection&&!fields.some(([,v])=>v===r.reflection))fields.push(['Moje reflexe',r.reflection]);
+      if(r.nextStep)fields.push(['Další krok',r.nextStep]);
+      return fields.length?{date:r.date,status:r.status||'draft',blockId:r.moduleId,html:'<article class="rf-row"><small>'+esc(blockName(r.moduleId))+' · '+esc(displayDate(r.date))+' · Reflexe v archu</small><h3>'+esc(r.title||'Záznam z praxe')+'</h3><dl class="rf-body">'+fields.map(([k,v])=>'<div><dt>'+esc(k.replace(/\s*\[f[^\]]+\]$/,''))+'</dt><dd>'+esc(v)+'</dd></div>').join('')+'</dl><a class="secondary" href="#'+esc(ctx.recordRoute(r))+'">Otevřít původní arch →</a></article>'}:null;
+    }).filter(Boolean);
+  }
+  function studentStart(){return '<div class="rf-start"><h3>Po praxi otevřete svůj arch a doplňte reflexi</h3><p>Uložené reflexe z archů i samostatné reflexe najdete níže podle data. Stejnou zkušenost nemusíte zapisovat dvakrát.</p><div class="rf-practice-links">'+phaseIds.map((k,i)=>'<a href="#praxe/'+k+'"><strong>0'+(i+1)+'</strong> '+esc(blockName(k))+' →</a>').join('')+'</div><details><summary>Chci zapsat další samostatnou reflexi</summary><p>Například po rozhovoru s mentorem. Vyberte praxi:</p>'+phaseIds.map(k=>'<p><a href="#reflexe/nova/'+k+'">'+esc(blockName(k))+' →</a></p>').join('')+'</details><details><summary>Jak reflexi nadiktovat bez placeného přepisu</summary><p>Otevřete textové pole v archu. Ve Windows stiskněte Win + H; na telefonu použijte mikrofon klávesnice. Přepis zkontrolujte a arch uložte. Nástroj neúčtuje přepis ani neukládá zvuk.</p><p>Dostupnost závisí na zařízení a jazyku. Diktování může zpracovávat hlas online u poskytovatele systému. Neuvádějte jména ani citlivé údaje žáků.</p></details><aside class="empty"><strong>Kde se historie uchovává?</strong><p>Uložené záznamy zůstávají v tomto prohlížeči a profilu i po zavření stránky. Nejde o zálohu na serveru: smazání dat prohlížeče je odstraní a na jiném zařízení se samy neobjeví.</p><a href="#portfolio">Stáhnout portfolio pro vlastní archiv →</a></aside></div>';}
   function queue(ctx,opts={}) {
     if(!allowed.includes(ctx.role))return '';
     const picks=allVisible(ctx),student=ctx.role==='student', person=opts.person || '',state=opts.state || '', block=opts.block || '';
@@ -119,11 +129,12 @@ window.IVPREF = (() => {
     const filters='<div class="rf-filters">'+(!student?'<label>Studující<select data-rf-filter="person">'+option('','Všichni',person)+ctx.people.filter(p=>canSee(ctx,p.id)).map(p=>option(p.id,p.name,person)).join('')+'</select></label>':'')+
       '<label>Blok<select data-rf-filter="block">'+option('','Všechny bloky',block)+blockIds.map(k=>option(k,blockName(k),block)).join('')+'</select></label><label>Stav<select data-rf-filter="state">'+option('','Všechny stavy',state)+Object.entries(labels).filter(([k])=>student||k!=='draft').map(([v,l])=>option(v,l,state)).join('')+'</select></label></div>';
     const focusExists=picks.some(x=>x.row.id===opts.focus);
+    const combined=[...available.map(x=>({date:x.row.date,html:rowCard(ctx,x.p,x.row,x.row.id===opts.focus)})),...practiceHistory(ctx).filter(r=>(!block||r.blockId===block)&&(!state||r.status===state))].sort((a,b)=>String(b.date).localeCompare(String(a.date)));
     return '<section class="rf-section" data-rf-widget="queue"><div class="rf-heading"><div><small class="eyebrow">'+(student?'Moje praxe':'Pedagogické praxe')+'</small><h2 tabindex="-1">'+(student?'Moje reflexe':ctx.role==='ivp'?'Reflexe pro koordinátora IVP':'Reflexe mých studentů')+'</h2></div></div><p>'+
-      (student?'Tady najdete své rozepsané reflexe i odpovědi z IVP.':ctx.role==='ivp'?'Otevřete předanou reflexi a napište studentovi, o co se může opřít při další praxi.':'Zde si můžete přečíst předané reflexe svých studentů a odpovědi koordinátora.')+'</p>'+
-      (student?'<p><a class="secondary" href="#materialy">Vybrat blok a napsat reflexi →</a></p>':'')+(opts.focus&&!focusExists?'<p class="notice">Tato reflexe není v tomto profilu dostupná.</p>':'')+filters+
-      '<div class="rf-list">'+(available.length?available.map(x=>rowCard(ctx,x.p,x.row,x.row.id===opts.focus)).join(''):'<p class="empty">'+(picks.length?'Pro tento výběr tu žádná reflexe není.':'Zatím tu není žádná '+(student?'uložená':'předaná')+' reflexe.')+'</p>')+'</div>'+
-      (window.RFX?.inbox(ctx.role)||'')+'</section>';
+      (student?'Historie vašich uložených reflexí ze všech praxí — z pracovních archů i samostatných zápisů.':ctx.role==='ivp'?'Otevřete předanou reflexi a napište studentovi, o co se může opřít při další praxi.':'Zde si můžete přečíst předané reflexe svých studentů a odpovědi koordinátora.')+'</p>'+
+      (student?studentStart():'')+(opts.focus&&!focusExists?'<p class="notice">Tato reflexe není v tomto profilu dostupná.</p>':'')+filters+
+      '<div class="rf-list">'+(combined.length?combined.map(x=>x.html).join(''):'<p class="empty">'+(picks.length?'Pro tento výběr tu žádná reflexe není.':'Zatím tu není žádná '+(student?'uložená':'předaná')+' reflexe.')+'</p>')+'</div>'+
+      '<details class="rf-file-transfer"><summary>Předání souborem · odpověď od koordinátora</summary>'+(window.RFX?.inbox(ctx.role)||'')+'</details>'+'</section>';
   }
   function portfolio(ctx) {
     return allVisible(ctx).filter(x=>x.p.id===ctx.who).map(({row})=>{

@@ -47,7 +47,7 @@
   const entryProfile=new URLSearchParams(location.search).get('profil');
   try {useProfile(entryProfile||sessionStorage.getItem(KEY+'.view')||(window.IVP_ROSTER?'ivp':'student/alex'));} catch {if(entryProfile)useProfile(entryProfile);}
   const refContext=()=>({
-    db,who,role,people:allowedPeople(),toast,openRecord,canSee:id=>allowedPeople().some(p=>p.id===id),
+    db,who,role,people:allowedPeople(),toast,openRecord,practiceRecords:()=>[...current().records,...SHEETS.portfolio(current())],recordRoute,canSee:id=>allowedPeople().some(p=>p.id===id),
     save:(id,rows)=>{
       if(!allowedPeople().some(p=>p.id===id)||!['ivp','student'].includes(role))return false;
       const before=db[id].reflections;db[id].reflections=rows;
