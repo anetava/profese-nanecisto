@@ -139,6 +139,7 @@
     const ref={nacvik:['Původní trenažér Foxy','https://foxy-studio-campus-pilot.web.app/modules/nanecisto/index.html#prace/upv'],ss:['Kampus Foxy · Praxe SŠ','https://foxy-studio-campus-pilot.web.app/']}[page];
     const last=notes.at(-1);
     const recent=last?'<p class="saved-source"><strong>Poslední uložený podklad</strong> '+e(last.title)+' '+link(sourceRef(page,last.id),'Navázat reflexí pro IVP','text-btn')+'</p>':'';
+    if(page==='nacvik')return '<div id="tool-space" data-page="nacvik">'+ATools.render(page,notes,role)+'</div>'+link('portfolio','Moje uložené přípravy →','text-btn');
     if(page==='adaptio'){
       if(scenarioMatch)return '<div id="tool-space" data-page="adaptio">'+ATools.adaptioCase()+'</div>';
       const portfolio=role==='student'&&last?'<aside class="adapt-saved"><small class="eyebrow">V mém portfoliu</small><h3>'+e(last.title)+'</h3><p>'+e(last.nextStep)+'</p><div>'+link('portfolio','Otevřít moje portfolio','text-btn')+' '+link(sourceRef(page,last.id),'Připravit reflexi pro IVP','text-btn')+'</div></aside>':'';
